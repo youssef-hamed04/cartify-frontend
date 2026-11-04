@@ -44,6 +44,7 @@
                 <th>Return ID</th>
                 <th>Status</th>
                 <th>Image</th>
+                <th>Box check</th>
                 <th>File Size</th>
                 <th>Firmware</th>
                 <th>Captured</th>
@@ -51,7 +52,7 @@
               </tr>
             </thead>
             <tbody id="sessions-body">
-              <tr><td colspan="9"><div class="spinner-wrap"><div class="spin"></div> Loading…</div></td></tr>
+              <tr><td colspan="10"><div class="spinner-wrap"><div class="spin"></div> Loading…</div></td></tr>
             </tbody>
           </table>
         </div>
@@ -107,9 +108,28 @@
     let deleteId   = null;
     let searchTimer;
 
+    // SmartBox drop-off check: weight + CLIP image score, computed by the backend
+    function verificationCell(s) {
+      const v = s.verification;
+      if (!v) return '<span style="color:var(--neutral-400);font-size:.75rem">—</span>';
+      if (v.verdict === 'processing') return '<span class="badge badge-processing">Checking…</span>';
+      if (v.verdict === 'error') return `<span class="badge badge-failed" title="${v.error || ''}">Check failed</span>`;
+      const ok = v.verdict === 'match';
+      const pct = v.visual?.score != null ? Math.round(v.visual.score * 100) + '%' : '—';
+      const w = v.weight || {};
+      const weightTxt = w.passed == null
+        ? 'weight not checked'
+        : `${w.measured} g / ${w.expected} g ${w.passed ? '✓' : '✗'}`;
+      return `<div style="display:flex;flex-direction:column;gap:3px;min-width:150px">
+        <span class="badge ${ok ? 'badge-completed' : 'badge-pending'}">${ok ? 'Item matches' : 'Needs review'}</span>
+        <span style="font-size:.72rem;color:var(--neutral-500)">Image ${pct}${v.visual?.passed ? ' ✓' : ' ✗'} · ${weightTxt}</span>
+        ${!ok && v.reasons?.length ? `<span style="font-size:.7rem;color:#92400e">${v.reasons[0]}</span>` : ''}
+      </div>`;
+    }
+
     async function loadSessions() {
       const body = document.getElementById('sessions-body');
-      body.innerHTML = `<tr><td colspan="9"><div class="spinner-wrap"><div class="spin"></div></div></td></tr>`;
+      body.innerHTML = `<tr><td colspan="10"><div class="spinner-wrap"><div class="spin"></div></div></td></tr>`;
 
       const status = document.getElementById('status-filter').value;
       const search = document.getElementById('search-input').value.trim();
@@ -125,7 +145,7 @@
         totalPages  = res.data?.totalPages || res.totalPages || Math.ceil(total / LIMIT);
 
         if (!rows.length) {
-          body.innerHTML = `<tr><td colspan="9">
+          body.innerHTML = `<tr><td colspan="10">
             <div class="empty-state">
               <i class="fa-solid fa-camera"></i>
               <h3>No camera sessions found</h3>
@@ -157,6 +177,7 @@
                         onclick="window.open('${s.imageUrl}','_blank')">`
                 : `<div class="tbl-img-placeholder"><i class="fa-solid fa-camera-slash"></i></div>`}
             </td>
+            <td>${verificationCell(s)}</td>
             <td style="font-size:.82rem">${sizeKb}</td>
             <td style="font-size:.78rem;color:var(--neutral-400)">${s.deviceFirmware || '—'}</td>
             <td style="font-size:.75rem;color:var(--neutral-400)">${fmtDateTime(s.capturedAt || s.createdAt)}</td>
@@ -178,7 +199,7 @@
         buildPagination('pg-btns', 'pg-info', page, totalPages, total, LIMIT, (p) => { page = p; loadSessions(); });
 
       } catch (err) {
-        body.innerHTML = `<tr><td colspan="9">
+        body.innerHTML = `<tr><td colspan="10">
           <div class="empty-state" style="color:var(--danger)">
             <i class="fa-solid fa-circle-exclamation"></i>
             <h3>Failed to load sessions</h3>
