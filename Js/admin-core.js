@@ -71,7 +71,7 @@ export function injectSidebar(user, pendingReturns = 0) {
 
   sidebar.innerHTML = `
     <div class="sidebar-logo">
-      <img src="./img/the main logo 2.png" alt="Cartify" onerror="this.style.display='none'">
+      <img src="./img/logo-mark-white.png" alt="" onerror="this.style.display='none'">
       <span>Cartify</span>
       <span class="badge-admin">Admin</span>
     </div>
