@@ -39,6 +39,14 @@ export const productsAdminAPI = {
     return adminFetch(`/products${q ? '?' + q : ''}`);
   },
   delete: (id) => adminFetch(`/products/${id}`, { method: 'DELETE' }),
+  // multipart: fields + variantsMeta JSON + image files (no JSON Content-Type)
+  create: async (formData) => {
+    const res = await fetch(BASE + '/products', { method: 'POST', credentials: 'include', body: formData });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw Object.assign(new Error(data.err || data.errors?.[0]?.msg || data.message || 'Request failed'), { status: res.status, data });
+    return data;
+  },
+  syncCategoryCounts: () => adminFetch('/categories/sync-counts', { method: 'POST' }),
   setWeights: (id, weights) => adminFetch(`/products/${id}/weights`, { method: 'PATCH', body: JSON.stringify({ weights }) }),
 };
 

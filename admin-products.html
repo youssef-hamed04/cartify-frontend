@@ -9,6 +9,57 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./CSS/all.min.css" />
   <link rel="stylesheet" href="./CSS/admin.css" />
+  <style>
+    /* Add-product form */
+    .pf-section { font-size: .72rem; font-weight: 700; color: var(--neutral-400); text-transform: uppercase; letter-spacing: .7px; margin: 4px 0 12px; }
+    .pf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; margin-bottom: 22px; }
+    .pf-grid .full { grid-column: 1 / -1; }
+    .pf-field { display: flex; flex-direction: column; gap: 6px; }
+    .pf-field label { font-size: .8rem; font-weight: 600; color: var(--neutral-600); }
+    .pf-field label .opt { font-weight: 400; color: var(--neutral-400); }
+    .pf-field input, .pf-field select, .pf-field textarea {
+      font: inherit; font-size: .88rem; padding: 10px 12px; border: 1px solid var(--neutral-200); border-radius: 10px;
+      background: #fff; color: var(--neutral-800); outline: none; transition: border-color .15s, box-shadow .15s; width: 100%;
+    }
+    .pf-field textarea { min-height: 90px; resize: vertical; }
+    .pf-field input:focus, .pf-field select:focus, .pf-field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+    .pf-field.invalid input, .pf-field.invalid select, .pf-field.invalid textarea { border-color: var(--danger); }
+    .pf-prefix { position: relative; }
+    .pf-prefix span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--neutral-400); font-size: .88rem; }
+    .pf-prefix input { padding-left: 26px; }
+    .pf-price-note { font-size: .75rem; color: var(--neutral-400); }
+
+    .variant { border: 1px solid var(--neutral-200); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+    .variant-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-size: .85rem; font-weight: 700; color: var(--brand-dark); }
+    .variant-remove { background: none; border: 0; color: var(--neutral-400); cursor: pointer; font-size: .8rem; padding: 4px 6px; border-radius: 6px; }
+    .variant-remove:hover { color: var(--danger); background: #fef2f2; }
+    .variant-grid { display: grid; grid-template-columns: 1.4fr auto 1fr 1fr; gap: 12px; align-items: end; }
+    .pf-color { width: 46px !important; height: 42px; padding: 4px !important; cursor: pointer; }
+    .dropzone { margin-top: 12px; border: 1.5px dashed var(--neutral-200); border-radius: 12px; padding: 14px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; transition: border-color .15s, background .15s; }
+    .dropzone.over { border-color: var(--accent); background: var(--accent-light); }
+    .dropzone.invalid { border-color: var(--danger); }
+    .dz-add { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 84px; height: 84px; border-radius: 10px; background: var(--neutral-50); color: var(--neutral-400); font-size: .72rem; cursor: pointer; border: 1px solid var(--neutral-200); }
+    .dz-add:hover { color: var(--accent); border-color: var(--accent); }
+    .dz-add i { font-size: 1.1rem; }
+    .dz-thumb { position: relative; width: 84px; height: 84px; border-radius: 10px; overflow: hidden; background: var(--neutral-100); }
+    .dz-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .dz-thumb button { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; border: 0; background: rgba(15, 23, 42, .7); color: #fff; font-size: .7rem; cursor: pointer; }
+    .dz-thumb .cover { position: absolute; left: 4px; bottom: 4px; background: rgba(15, 23, 42, .7); color: #fff; font-size: .6rem; font-weight: 700; padding: 2px 6px; border-radius: 99px; }
+    .dz-hint { font-size: .75rem; color: var(--neutral-400); }
+    .add-variant { width: 100%; padding: 11px; border: 1.5px dashed var(--neutral-200); border-radius: 12px; background: none; color: var(--accent); font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; }
+    .add-variant:hover { border-color: var(--accent); background: var(--accent-light); }
+
+    .pf-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 24px; border-top: 1px solid var(--neutral-200); position: sticky; bottom: 0; background: #fff; }
+    .pf-error { color: var(--danger); font-size: .8rem; flex: 1; }
+    .pf-footer .btn-action { padding: 10px 18px; display: inline-flex; align-items: center; gap: 8px; }
+    .pf-footer .btn-action:disabled { opacity: .6; cursor: progress; }
+    #product-modal .modal-box { max-width: 720px; }
+
+    @media (max-width: 640px) {
+      .pf-grid { grid-template-columns: 1fr; }
+      .variant-grid { grid-template-columns: 1fr auto; }
+    }
+  </style>
 </head>
 <body>
   <aside class="admin-sidebar" id="admin-sidebar"></aside>
@@ -36,6 +87,9 @@
             <option value="School Supplies">School Supplies</option>
           </select>
           <span id="table-info" style="margin-left:auto;font-size:.8rem;color:var(--neutral-400)"></span>
+          <button class="btn-action btn-primary" id="add-product-btn" style="display:inline-flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-plus"></i> Add product
+          </button>
         </div>
 
         <div class="admin-table-wrap">
@@ -67,9 +121,57 @@
     </div>
   </div>
 
+  <!-- Add product -->
+  <div class="modal-overlay" id="product-modal" role="dialog" aria-modal="true" aria-labelledby="pf-title">
+    <form class="modal-box" id="product-form" novalidate>
+      <div class="modal-header">
+        <span class="modal-title" id="pf-title">Add product</span>
+        <button type="button" class="modal-close" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="pf-section">Details</div>
+        <div class="pf-grid">
+          <div class="pf-field full">
+            <label for="pf-name">Product name</label>
+            <input id="pf-name" name="name" maxlength="120" placeholder="e.g. Wireless Earbuds Pro" required>
+          </div>
+          <div class="pf-field">
+            <label for="pf-category">Category</label>
+            <select id="pf-category" name="category" required></select>
+          </div>
+          <div class="pf-field">
+            <label for="pf-brand">Brand <span class="opt">(optional)</span></label>
+            <input id="pf-brand" name="brand" maxlength="60" placeholder="e.g. Sony">
+          </div>
+          <div class="pf-field">
+            <label for="pf-price">Price</label>
+            <div class="pf-prefix"><span>$</span><input id="pf-price" name="price" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" required></div>
+          </div>
+          <div class="pf-field">
+            <label for="pf-discount">Discount % <span class="opt">(optional)</span></label>
+            <input id="pf-discount" name="discount" type="number" min="0" max="100" step="1" inputmode="numeric" placeholder="0">
+          </div>
+          <div class="pf-field full">
+            <label for="pf-description">Description</label>
+            <textarea id="pf-description" name="description" maxlength="2000" placeholder="What makes this product great?" required></textarea>
+          </div>
+        </div>
+
+        <div class="pf-section">Colours &amp; photos</div>
+        <div id="pf-variants"></div>
+        <button type="button" class="add-variant" id="pf-add-variant"><i class="fa-solid fa-plus"></i> Add another colour</button>
+      </div>
+      <div class="pf-footer">
+        <span class="pf-error" id="pf-error" role="alert"></span>
+        <button type="button" class="btn-action btn-ghost" data-close>Cancel</button>
+        <button type="submit" class="btn-action btn-primary" id="pf-submit"><i class="fa-solid fa-cloud-arrow-up"></i> Publish product</button>
+      </div>
+    </form>
+  </div>
+
   <script type="module">
     import { requireAdmin, injectSidebar, statusBadge, buildPagination, toast } from './Js/admin-core.js';
-    import { productsAdminAPI, returnsAdminAPI } from './Js/admin-api.js';
+    import { productsAdminAPI, returnsAdminAPI, categoriesAdminAPI } from './Js/admin-api.js';
 
     const user = await requireAdmin();
     if (!user) throw '';
@@ -171,6 +273,238 @@
         toast(raw === '' ? `Weight cleared for ${input.dataset.color}` : `Saved ${raw} g for ${input.dataset.color}`, 'success');
       } catch (err) {
         toast('Save failed: ' + err.message, 'error');
+      }
+    });
+
+    // ── Add product ─────────────────────────────────────────────────────────
+    const modal     = document.getElementById('product-modal');
+    const form      = document.getElementById('product-form');
+    const variantsEl = document.getElementById('pf-variants');
+    const errorEl   = document.getElementById('pf-error');
+    const submitBtn = document.getElementById('pf-submit');
+    const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']; // what the backend accepts
+    const MAX_MB = 5, MAX_PHOTOS = 6;
+    const photos = new Map(); // variant key → [{ file, url }]
+    let nextKey = 0, dirty = false, busy = false;
+
+    async function loadCategories() {
+      const select = document.getElementById('pf-category');
+      let names = [];
+      try {
+        const res = await categoriesAdminAPI.getAll();
+        names = (res.categories || res.data?.categories || []).map(c => c.name);
+      } catch {}
+      if (!names.length) names = [...document.querySelectorAll('#cat-filter option')].map(o => o.value).filter(Boolean);
+      select.innerHTML = '<option value="">Choose a category…</option>' + names.map(n => `<option>${escAttr(n)}</option>`).join('');
+    }
+
+    function addVariant() {
+      const key = nextKey++;
+      photos.set(key, []);
+      const el = document.createElement('div');
+      el.className = 'variant';
+      el.dataset.key = key;
+      el.innerHTML = `
+        <div class="variant-head">
+          <span class="variant-label"></span>
+          <button type="button" class="variant-remove" data-remove title="Remove colour"><i class="fa-solid fa-trash"></i> Remove</button>
+        </div>
+        <div class="variant-grid">
+          <div class="pf-field"><label>Colour name</label><input name="color" maxlength="40" placeholder="e.g. Black"></div>
+          <div class="pf-field"><label>Swatch</label><input name="colorHex" type="color" class="pf-color" value="#1d2538"></div>
+          <div class="pf-field"><label>Stock</label><input name="stock" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div>
+          <div class="pf-field"><label>Box weight <span class="opt">(g)</span></label><input name="weight" type="number" min="1" step="1" inputmode="numeric" placeholder="Optional"></div>
+        </div>
+        <div class="dropzone">
+          <label class="dz-add"><i class="fa-solid fa-image"></i>Add photos<input type="file" accept="${IMAGE_TYPES.join(',')}" multiple hidden></label>
+          <span class="dz-hint">Drag photos here · JPG, PNG or WebP, up to ${MAX_MB} MB · the first one is the cover</span>
+        </div>`;
+      variantsEl.appendChild(el);
+      relabel();
+      return el;
+    }
+
+    function relabel() {
+      const cards = [...variantsEl.children];
+      cards.forEach((c, i) => {
+        c.querySelector('.variant-label').textContent = `Colour ${i + 1}`;
+        c.querySelector('[data-remove]').hidden = cards.length === 1;
+      });
+    }
+
+    function renderPhotos(card) {
+      const list = photos.get(Number(card.dataset.key));
+      const zone = card.querySelector('.dropzone');
+      zone.querySelectorAll('.dz-thumb').forEach(t => t.remove());
+      zone.querySelector('.dz-hint').hidden = list.length > 0;
+      zone.querySelector('.dz-add').hidden = list.length >= MAX_PHOTOS;
+      list.forEach((p, i) => {
+        const t = document.createElement('div');
+        t.className = 'dz-thumb';
+        t.innerHTML = `<img src="${p.url}" alt=""><button type="button" data-photo="${i}" aria-label="Remove photo"><i class="fa-solid fa-xmark"></i></button>${i === 0 ? '<span class="cover">Cover</span>' : ''}`;
+        zone.insertBefore(t, zone.querySelector('.dz-add'));
+      });
+    }
+
+    function addFiles(card, files) {
+      const list = photos.get(Number(card.dataset.key));
+      const skipped = [];
+      for (const file of files) {
+        if (!IMAGE_TYPES.includes(file.type)) { skipped.push(`${file.name} isn't a supported image`); continue; }
+        if (file.size > MAX_MB * 1024 * 1024) { skipped.push(`${file.name} is over ${MAX_MB} MB`); continue; }
+        if (list.length >= MAX_PHOTOS) { skipped.push(`max ${MAX_PHOTOS} photos per colour`); break; }
+        list.push({ file, url: URL.createObjectURL(file) });
+      }
+      if (skipped.length) toast(skipped[0], 'error');
+      card.querySelector('.dropzone').classList.remove('invalid');
+      dirty = true;
+      renderPhotos(card);
+    }
+
+    variantsEl.addEventListener('change', e => {
+      if (e.target.type === 'file') { addFiles(e.target.closest('.variant'), e.target.files); e.target.value = ''; }
+    });
+    variantsEl.addEventListener('click', e => {
+      const card = e.target.closest('.variant');
+      if (e.target.closest('[data-photo]')) {
+        const list = photos.get(Number(card.dataset.key));
+        const [gone] = list.splice(Number(e.target.closest('[data-photo]').dataset.photo), 1);
+        URL.revokeObjectURL(gone.url);
+        renderPhotos(card);
+      } else if (e.target.closest('[data-remove]')) {
+        photos.get(Number(card.dataset.key)).forEach(p => URL.revokeObjectURL(p.url));
+        photos.delete(Number(card.dataset.key));
+        card.remove();
+        relabel();
+      }
+    });
+    for (const type of ['dragenter', 'dragover']) variantsEl.addEventListener(type, e => {
+      const zone = e.target.closest('.dropzone');
+      if (zone) { e.preventDefault(); zone.classList.add('over'); }
+    });
+    variantsEl.addEventListener('dragleave', e => e.target.closest('.dropzone')?.classList.remove('over'));
+    variantsEl.addEventListener('drop', e => {
+      const zone = e.target.closest('.dropzone');
+      if (!zone) return;
+      e.preventDefault();
+      zone.classList.remove('over');
+      addFiles(zone.closest('.variant'), e.dataTransfer.files);
+    });
+    form.addEventListener('input', e => { dirty = true; e.target.closest('.pf-field')?.classList.remove('invalid'); errorEl.textContent = ''; });
+    document.getElementById('pf-add-variant').addEventListener('click', () => addVariant().querySelector('[name=color]').focus());
+
+    function resetForm() {
+      form.reset();
+      photos.forEach(list => list.forEach(p => URL.revokeObjectURL(p.url)));
+      photos.clear();
+      variantsEl.innerHTML = '';
+      form.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+      errorEl.textContent = '';
+      addVariant();
+      dirty = false;
+    }
+
+    async function openModal() {
+      resetForm();
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      await loadCategories();
+      document.getElementById('pf-name').focus();
+    }
+    function closeModal(force = false) {
+      if (busy) return;
+      if (!force && dirty && !confirm('Discard this product?')) return;
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('add-product-btn').addEventListener('click', openModal);
+    modal.addEventListener('click', e => { if (e.target === modal || e.target.closest('[data-close]')) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+
+    // Mirrors the backend's productRules, plus what a sellable product needs
+    function validate() {
+      const fail = (el, msg) => { el.closest('.pf-field')?.classList.add('invalid'); return { el, msg }; };
+      const f = form.elements;
+      if (!f.name.value.trim()) return fail(f.name, 'Enter a product name');
+      if (!f.category.value) return fail(f.category, 'Choose a category');
+      if (f.price.value === '' || !(Number(f.price.value) >= 0)) return fail(f.price, 'Enter a valid price');
+      if (f.discount.value !== '' && !(Number(f.discount.value) >= 0 && Number(f.discount.value) <= 100)) return fail(f.discount, 'Discount must be between 0 and 100');
+      if (!f.description.value.trim()) return fail(f.description, 'Add a short description');
+      const seen = new Set();
+      for (const card of variantsEl.children) {
+        const color = card.querySelector('[name=color]');
+        const stock = card.querySelector('[name=stock]');
+        const weight = card.querySelector('[name=weight]');
+        const name = color.value.trim().toLowerCase();
+        if (!name) return fail(color, 'Give every colour a name');
+        if (seen.has(name)) return fail(color, `"${color.value.trim()}" is listed twice`);
+        seen.add(name);
+        if (stock.value === '' || !(Number(stock.value) >= 0) || !Number.isInteger(Number(stock.value))) return fail(stock, 'Enter the stock for every colour');
+        if (weight.value !== '' && !(Number(weight.value) > 0)) return fail(weight, 'Weight must be a positive number of grams');
+        if (!photos.get(Number(card.dataset.key)).length) {
+          card.querySelector('.dropzone').classList.add('invalid');
+          return { el: card.querySelector('.dz-add'), msg: `Add at least one photo for ${color.value.trim()}` };
+        }
+      }
+      return null;
+    }
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const problem = validate();
+      if (problem) {
+        errorEl.textContent = problem.msg;
+        problem.el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        problem.el.focus?.();
+        return;
+      }
+
+      const f = form.elements;
+      const data = new FormData();
+      data.append('name', f.name.value.trim());
+      data.append('category', f.category.value);
+      data.append('price', f.price.value);
+      data.append('description', f.description.value.trim());
+      if (f.brand.value.trim()) data.append('brand', f.brand.value.trim());
+      if (f.discount.value !== '') data.append('discount', f.discount.value);
+
+      // Files go in one list; each colour points at its photos by index
+      let index = 0;
+      const variantsMeta = [...variantsEl.children].map(card => {
+        const list = photos.get(Number(card.dataset.key));
+        list.forEach(p => data.append('images', p.file));
+        const meta = {
+          color: card.querySelector('[name=color]').value.trim(),
+          colorHex: card.querySelector('[name=colorHex]').value,
+          stock: Number(card.querySelector('[name=stock]').value),
+          weight: card.querySelector('[name=weight]').value || null,
+          fileIndexes: list.map(() => index++),
+        };
+        return meta;
+      });
+      data.append('variantsMeta', JSON.stringify(variantsMeta));
+
+      busy = true;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span class="spin" style="width:14px;height:14px;border-width:2px"></span> Uploading ${index} photo${index === 1 ? '' : 's'}…`;
+      errorEl.textContent = '';
+      try {
+        const res = await productsAdminAPI.create(data);
+        const product = res.product || res.data?.product;
+        productsAdminAPI.syncCategoryCounts().catch(() => {});
+        busy = false;
+        closeModal(true);
+        toast(`"${product?.name || f.name.value.trim()}" is live in the store`, 'success');
+        document.getElementById('search-input').value = product?.name || '';
+        document.getElementById('cat-filter').value = '';
+        page = 1;
+        loadProducts();
+      } catch (err) {
+        errorEl.textContent = err.status === 401 || err.status === 403 ? 'Your admin session expired. Sign in again.' : `Couldn't publish: ${err.message}`;
+      } finally {
+        busy = false;
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Publish product';
       }
     });
 
