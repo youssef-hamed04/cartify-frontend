@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cartify — My Cart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./CSS/animate.min.css" />
+    <link rel="stylesheet" href="./CSS/wow.min.css" />
+    <link rel="stylesheet" href="./CSS/all.min.css" />
+    <link rel="stylesheet" href="./CSS/bootstrap.min.css" />
+    <link rel="stylesheet" href="./CSS/mdb.min.css" />
+    <link rel="stylesheet" href="./CSS/Style.css" />
+    <link rel="stylesheet" href="./CSS/cartify-ui.css" />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg nav-home sticky-top">
+      <div class="container">
+        <a class="navbar-brand me-2 brand-name" href="./index.html">
+          <img src="./img/the main logo 2.png" alt="Cartify Logo" loading="lazy" style="margin-top:-1px" />
+        </a>
+        <button data-mdb-collapse-init class="navbar-toggler" type="button"
+          data-mdb-target="#navbarButtonsExample" aria-controls="navbarButtonsExample"
+          aria-expanded="false" aria-label="Toggle navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarButtonsExample">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-4 px-4 nav-linkss">
+            <li class="nav-item"><a class="nav-link" data-page="home" href="./index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" data-page="categories" href="./Categories.html">Categories</a></li>
+            <li class="nav-item"><a class="nav-link" data-page="returns" href="./returns.html">Returns</a></li>
+            <li class="nav-item"><a class="nav-link" data-page="support" href="./support.html">Support</a></li>
+          </ul>
+          <form class="d-flex nav-search">
+            <div class="input-group mx-3">
+              <span class="input-group-text border-end-0 icon">
+                <i class="fa-solid fa-magnifying-glass fa-xs" style="color:rgb(148,163,184)"></i>
+              </span>
+              <input class="form-control border-start-0 word" type="search"
+                placeholder="Search Products..." style="text-overflow:ellipsis" />
+            </div>
+          </form>
+          <div class="nav-icons-group">
+            <a class="text-reset" href="./profile.html" title="Account">
+              <img src="./img/MAN Icon.png" alt="Account" />
+            </a>
+            <a class="text-reset cart-icon-wrapper" href="./cart.html" title="Cart">
+              <i class="fa-solid fa-cart-shopping" style="color:#1d2538"></i>
+              <span class="cart-badge">0</span>
+            </a>
+            <a class="text-reset wishlist-nav-icon" href="./wishlist.html" title="Wishlist">
+              <img src="./img/Vector.png" alt="Wishlist" />
+              <span class="wishlist-badge">0</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="cart-container-main py-5" style="background-color:#f6f7fb;min-height:80vh;">
+      <div class="container">
+        <div class="cart-header mb-4 wow fadeInDown">
+          <h1 class="display-5 fw-bold" style="color:#0f172a;">Your Cart</h1>
+          <p class="text-muted">Your cart is looking sharp today! ✨</p>
+        </div>
+        <div class="row g-4 position-relative">
+          <div class="col-lg-7 col-xl-8" id="cart-left-column">
+            <div id="cart-items-container" class="d-flex flex-column gap-3"></div>
+            <div id="cart-actions-bottom" class="d-flex flex-wrap justify-content-between align-items-center mt-4 p-2 bg-white rounded-pill shadow-sm" style="display:none !important;">
+              <div class="d-flex align-items-center flex-grow-1">
+                <i class="fa-solid fa-ticket mx-3 text-muted"></i>
+                <input type="text" class="form-control border-0 bg-transparent shadow-none p-0"
+                  placeholder="HAVE A CODE?" style="max-width:150px;font-size:0.85rem;font-weight:600;" />
+                <button class="btn text-white rounded-pill btn-sm px-4 ms-2"
+                  style="background-color:#02067e;font-weight:600;">APPLY</button>
+              </div>
+              <a href="./Categories.html" class="text-muted text-decoration-none fw-bold me-4 d-flex align-items-center" style="font-size:0.85rem;">
+                <i class="fa-solid fa-arrow-left me-2"></i> KEEP BROWSING
+              </a>
+            </div>
+            <div id="cart-empty-state" class="text-center py-5 bg-white rounded-4 shadow-sm mx-auto" style="display:none;max-width:600px;">
+              <div class="mb-4"><i class="fa-solid fa-cart-arrow-down" style="font-size:4rem;color:#cbd5e1;"></i></div>
+              <h3 class="fw-bold" style="color:#0f172a;">Your cart is empty</h3>
+              <p class="text-muted mb-4">Looks like you haven't added anything to your cart yet.</p>
+              <a href="./Categories.html" class="btn btn-lg rounded-pill px-5 text-white" style="background-color:#02067e;">Start Shopping</a>
+            </div>
+          </div>
+          <div class="col-lg-5 col-xl-4" id="cart-summary-section" style="display:none;">
+            <div class="sticky-top" style="top:110px;z-index:10;padding-bottom:2rem;">
+              <div class="cart-summary-card bg-white p-4 rounded-4 shadow-sm mb-4">
+                <h4 class="fw-bold mb-4 mt-2" style="color:#0f172a;">Summary</h4>
+                <div class="d-flex justify-content-between mb-3 text-muted">
+                  <span class="fw-medium">Subtotal</span>
+                  <span class="fw-bold text-dark" id="summary-subtotal">$0.00</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3 text-muted">
+                  <span class="fw-medium">Shipping</span>
+                  <span class="fw-bold" style="color:#6366f1;font-size:0.75rem;letter-spacing:0.5px;">FREE <span style="font-weight:400;color:#94a3b8;">DELIVERY</span></span>
+                </div>
+                <div class="d-flex justify-content-between mb-4 text-muted border-bottom pb-4">
+                  <span class="fw-medium">Tax</span>
+                  <span class="fw-bold text-dark">$0.00</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                  <span class="fw-bold fs-5 text-dark">Grand Total</span>
+                  <span class="fw-bold fs-2 lh-1" id="summary-total" style="color:#0f172a;">$0.00</span>
+                </div>
+                <a href="./checkout.html" class="btn btn-checkout w-100 rounded-pill py-3 text-white fw-bold mb-4 d-flex justify-content-center align-items-center"
+                  style="background:linear-gradient(135deg,#4f46e5,#818cf8);border:none;font-size:1rem;letter-spacing:0.5px;box-shadow:0 8px 20px rgba(79,70,229,0.3);">
+                  CHECKOUT NOW
+                </a>
+                <div class="text-center text-muted" style="font-size:0.65rem;font-weight:700;letter-spacing:1.5px;">100% SAFE &amp; SECURE CHECKOUT</div>
+                <div class="d-flex justify-content-center gap-4 mt-3 text-muted fs-5">
+                  <i class="fa-regular fa-credit-card"></i>
+                  <i class="fa-brands fa-cc-paypal"></i>
+                  <i class="fa-solid fa-box-open"></i>
+                </div>
+              </div>
+              <div class="buyer-protection bg-white p-3 rounded-4 shadow-sm d-flex align-items-center gap-3">
+                <div class="shield-icon rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                  style="width:42px;height:42px;background-color:#02067e;color:white;">
+                  <i class="fa-solid fa-shield-halved fs-6"></i>
+                </div>
+                <div>
+                  <h6 class="fw-bold mb-1 text-dark" style="font-size:0.9rem;">Buyer Protection</h6>
+                  <div class="text-muted" style="font-size:0.8rem;line-height:1.2;">We've got your back, always.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer wow fadeIn" data-wow-offset="100">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-3 col-md-6"><div class="footer-logo"><img src="./img/icon.png" alt="Cartify Logo" /></div><p class="footer-desc">Your ultimate destination for the latest in tech and style.</p></div>
+          <div class="col-lg-3 col-md-6"><h4 class="footer-title">Quick Links</h4><ul class="footer-links"><li><a href="./index.html">Home</a></li><li><a href="./Categories.html">Categories</a></li></ul></div>
+          <div class="col-lg-3 col-md-6"><h4 class="footer-title">Support</h4><ul class="footer-links"><li><a href="#">Help Center</a></li><li><a href="#">Shipping Info</a></li><li><a href="#">Returns &amp; Refunds</a></li></ul></div>
+          <div class="col-lg-3 col-md-6"><h4 class="footer-title">Newsletter</h4><p class="newsletter-desc">Get the latest tech deals in your inbox.</p><form class="newsletter-form"><div class="newsletter-input-wrapper mb-3"><input type="email" placeholder="email@example.com" class="form-control" /></div><button type="submit" class="w-100">Join</button></form></div>
+        </div>
+        <div class="footer-bottom mt-5">
+          <div class="copyright">&copy; 2026 Cartify E-commerce. All rights reserved.</div>
+          <div class="bottom-links"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./Js/all.min.js"></script>
+    <script src="./Js/wow.min.js"></script>
+    <script>new WOW().init();</script>
+    <script src="./Js/jquery.slim.min.js"></script>
+    <script src="./Js/bootstrap.min.js"></script>
+    <script src="./Js/mdb.umd.min.js"></script>
+    <script type="module" src="./Js/main.js"></script>
+  </body>
+</html>

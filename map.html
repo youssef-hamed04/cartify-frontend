@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cartify — Smart Return Box Locator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./CSS/animate.min.css" />
+    <link rel="stylesheet" href="./CSS/wow.min.css" />
+    <link rel="stylesheet" href="./CSS/all.min.css" />
+    <link rel="stylesheet" href="./CSS/bootstrap.min.css" />
+    <link rel="stylesheet" href="./CSS/mdb.min.css" />
+    <link rel="stylesheet" href="./CSS/Style.css" />
+    <link rel="stylesheet" href="./CSS/cartify-ui.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg nav-home sticky-top">
+      <div class="container">
+        <a class="navbar-brand me-2 brand-name" href="./index.html">
+          <img src="./img/the main logo 2.png" alt="Cartify Logo" loading="lazy" style="margin-top:-1px" />
+        </a>
+        <button data-mdb-collapse-init class="navbar-toggler" type="button"
+          data-mdb-target="#navbarButtonsExample" aria-controls="navbarButtonsExample"
+          aria-expanded="false" aria-label="Toggle navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarButtonsExample">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-4 px-4 nav-linkss">
+            <li class="nav-item"><a class="nav-link" href="./index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="./Categories.html">Categories</a></li>
+            <li class="nav-item"><a class="nav-link" href="./returns.html">Returns</a></li>
+            <li class="nav-item"><a class="nav-link" href="./support.html">Support</a></li>
+          </ul>
+          <form class="d-flex nav-search">
+            <div class="input-group mx-3">
+              <span class="input-group-text border-end-0 icon"><i class="fa-solid fa-magnifying-glass fa-xs" style="color:rgb(148,163,184)"></i></span>
+              <input class="form-control border-start-0 word" type="search" placeholder="Search Products..." style="text-overflow:ellipsis" />
+            </div>
+          </form>
+          <div class="nav-icons-group">
+            <a class="text-reset" href="./profile.html" title="Account"><img src="./img/MAN Icon.png" alt="Account" /></a>
+            <a class="text-reset cart-icon-wrapper" href="./cart.html" title="Cart">
+              <i class="fa-solid fa-cart-shopping" style="color:#1d2538"></i>
+              <span class="cart-badge">0</span>
+            </a>
+            <a class="text-reset wishlist-nav-icon" href="./wishlist.html" title="Wishlist">
+              <img src="./img/Vector.png" alt="Wishlist" />
+              <span class="wishlist-badge">0</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <header class="map-hero wow fadeIn">
+      <div class="container text-center py-5">
+        <span class="map-subtitle">Smart Return Boxes</span>
+        <h1 class="map-title">Find a Drop-off Near You</h1>
+        <p class="map-desc">Locate the nearest Cartify Smart Return Box for fast, hassle-free returns — available 24/7.</p>
+        <div class="map-search-bar mx-auto">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="map-search-input" placeholder="Search by city or address..." />
+          <button id="map-search-btn" class="map-search-submit">Search</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="map-section">
+      <div class="container-fluid px-0">
+        <div class="map-layout">
+          <div class="map-sidebar" id="map-sidebar">
+            <div class="sidebar-header">
+              <h5 id="sidebar-count">Loading locations...</h5>
+              <button class="locate-me-btn" id="locate-me-btn" title="Use my location">
+                <i class="fa-solid fa-location-crosshairs me-1"></i> Near Me
+              </button>
+            </div>
+            <div class="sidebar-list" id="sidebar-list">
+              <div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Loading boxes...</div>
+            </div>
+          </div>
+          <div class="map-container" id="map"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="map-info-strip wow fadeInUp">
+      <div class="container">
+        <div class="row g-4 text-center">
+          <div class="col-md-4">
+            <div class="map-info-card">
+              <div class="map-info-icon"><i class="fa-solid fa-clock"></i></div>
+              <h5>Open 24/7</h5>
+              <p>All Smart Return Boxes are available around the clock, every day of the year.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="map-info-card">
+              <div class="map-info-icon"><i class="fa-solid fa-bolt"></i></div>
+              <h5>Instant Processing</h5>
+              <p>Drop your return and receive confirmation within seconds via email.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="map-info-card">
+              <div class="map-info-icon"><i class="fa-solid fa-shield-halved"></i></div>
+              <h5>Secure & Verified</h5>
+              <p>Each box is tamper-proof and monitored with your unique return code.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer wow fadeIn" data-wow-offset="100">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-3 col-md-6"><div class="footer-logo"><img src="./img/icon.png" alt="Cartify Logo" /></div><p class="footer-desc">Your ultimate destination for the latest in tech and style.</p></div>
+          <div class="col-lg-3 col-md-6"><h4 class="footer-title">Quick Links</h4><ul class="footer-links"><li><a href="./index.html">Home</a></li><li><a href="./Categories.html">Categories</a></li></ul></div>
+          <div class="col-lg-3 col-md-6"><h4 class="footer-title">Support</h4><ul class="footer-links"><li><a href="./support.html">Help Center</a></li><li><a href="./returns.html">Returns</a></li><li><a href="./map.html">Return Box Locator</a></li></ul></div>
+          <div class="col-lg-3 col-md-6"><h4 class="footer-title">Newsletter</h4><p class="newsletter-desc">Get the latest tech deals in your inbox.</p><form class="newsletter-form"><div class="newsletter-input-wrapper mb-3"><input type="email" placeholder="email@example.com" class="form-control" /></div><button type="submit" class="w-100">Join</button></form></div>
+        </div>
+        <div class="footer-bottom mt-5">
+          <div class="copyright">&copy; 2026 Cartify E-commerce. All rights reserved.</div>
+          <div class="bottom-links"><a href="./support.html#privacy">Privacy Policy</a><a href="./support.html#terms">Terms of Service</a></div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./Js/all.min.js"></script>
+    <script src="./Js/wow.min.js"></script>
+    <script>new WOW().init();</script>
+    <script src="./Js/jquery.slim.min.js"></script>
+    <script src="./Js/bootstrap.min.js"></script>
+    <script src="./Js/mdb.umd.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="./Js/main.js"></script>
+    <script>
+    const RETURN_BOXES = [
+      { id:1, name:"Cartify Box — Downtown SF", address:"Market St & 5th St, San Francisco, CA", lat:37.7836, lng:-122.4088, status:"available", hours:"24/7" },
+      { id:2, name:"Cartify Box — Union Square", address:"Post St & Powell St, San Francisco, CA", lat:37.7881, lng:-122.4075, status:"available", hours:"24/7" },
+      { id:3, name:"Cartify Box — SoMa Hub", address:"3rd St & Howard St, San Francisco, CA", lat:37.7823, lng:-122.3974, status:"busy", hours:"24/7" },
+      { id:4, name:"Cartify Box — Mission District", address:"Valencia St & 16th St, San Francisco, CA", lat:37.7648, lng:-122.4215, status:"available", hours:"24/7" },
+      { id:5, name:"Cartify Box — Castro", address:"Castro St & Market St, San Francisco, CA", lat:37.7609, lng:-122.4350, status:"available", hours:"24/7" },
+      { id:6, name:"Cartify Box — Haight", address:"Haight St & Masonic Ave, San Francisco, CA", lat:37.7699, lng:-122.4461, status:"maintenance", hours:"Back soon" },
+      { id:7, name:"Cartify Box — Tenderloin", address:"Turk St & Hyde St, San Francisco, CA", lat:37.7829, lng:-122.4163, status:"available", hours:"24/7" },
+      { id:8, name:"Cartify Box — SOMA South", address:"Brannan St & 4th St, San Francisco, CA", lat:37.7779, lng:-122.3978, status:"available", hours:"24/7" },
+      { id:9, name:"Cartify Box — Embarcadero", address:"Ferry Building, The Embarcadero, SF", lat:37.7955, lng:-122.3937, status:"available", hours:"24/7" },
+      { id:10, name:"Cartify Box — Nob Hill", address:"California St & Powell St, San Francisco, CA", lat:37.7921, lng:-122.4104, status:"busy", hours:"24/7" },
+    ];
+
+    const statusColor = { available:"#22c55e", busy:"#f97316", maintenance:"#94a3b8" };
+    const statusLabel = { available:"Available", busy:"Busy", maintenance:"Maintenance" };
+
+    const map = L.map('map', { center: [37.7836, -122.4088], zoom: 14 });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19
+    }).addTo(map);
+
+    function makeIcon(status) {
+      return L.divIcon({
+        className: '',
+        html: `<div style="background:${statusColor[status]};width:18px;height:18px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.25);"></div>`,
+        iconSize: [18, 18], iconAnchor: [9, 9]
+      });
+    }
+
+    const markers = {};
+    RETURN_BOXES.forEach(box => {
+      const marker = L.marker([box.lat, box.lng], { icon: makeIcon(box.status) })
+        .addTo(map)
+        .bindPopup(`<div style="font-family:'Space Grotesk',sans-serif;min-width:180px">
+          <strong style="font-size:0.9rem">${box.name}</strong><br>
+          <span style="font-size:0.78rem;color:#64748b">${box.address}</span><br>
+          <span style="display:inline-block;margin-top:6px;padding:2px 10px;border-radius:99px;background:${statusColor[box.status]};color:#fff;font-size:0.7rem;font-weight:700;">${statusLabel[box.status]}</span>
+          <span style="font-size:0.75rem;color:#64748b;margin-left:8px"><i class='fa-regular fa-clock'></i> ${box.hours}</span>
+          <br><a href="./returns.html" style="display:inline-block;margin-top:8px;font-size:0.78rem;font-weight:700;color:#02067e;text-decoration:none;">Start a Return →</a>
+        </div>`, { maxWidth: 260 });
+      markers[box.id] = marker;
+    });
+
+    function renderSidebar(boxes) {
+      const list = document.getElementById('sidebar-list');
+      const count = document.getElementById('sidebar-count');
+      count.textContent = `${boxes.length} location${boxes.length !== 1 ? 's' : ''} found`;
+      list.innerHTML = boxes.map(box => `
+        <div class="sidebar-item" data-id="${box.id}" onclick="focusBox(${box.id})">
+          <div class="sidebar-item-dot" style="background:${statusColor[box.status]}"></div>
+          <div class="sidebar-item-info">
+            <div class="sidebar-item-name">${box.name.replace('Cartify Box — ','')}</div>
+            <div class="sidebar-item-address">${box.address}</div>
+            <div class="sidebar-item-status" style="color:${statusColor[box.status]}">${statusLabel[box.status]} · ${box.hours}</div>
+          </div>
+          <i class="fa-solid fa-chevron-right sidebar-item-arrow"></i>
+        </div>
+      `).join('');
+    }
+
+    function focusBox(id) {
+      const box = RETURN_BOXES.find(b => b.id === id);
+      if (!box) return;
+      map.flyTo([box.lat, box.lng], 16, { duration: 0.8 });
+      setTimeout(() => markers[id].openPopup(), 900);
+      document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+      const activeEl = document.querySelector(`.sidebar-item[data-id="${id}"]`);
+      if (activeEl) { activeEl.classList.add('active'); activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+    }
+
+    window.focusBox = focusBox;
+    renderSidebar(RETURN_BOXES);
+
+    document.getElementById('locate-me-btn').addEventListener('click', () => {
+      if (!navigator.geolocation) return;
+      navigator.geolocation.getCurrentPosition(pos => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        map.flyTo([lat, lng], 15);
+        L.circle([lat, lng], { radius: 300, color: '#02067e', fillOpacity: 0.1 }).addTo(map);
+        const sorted = [...RETURN_BOXES].sort((a, b) => {
+          const d = (bx) => Math.hypot(bx.lat - lat, bx.lng - lng);
+          return d(a) - d(b);
+        });
+        renderSidebar(sorted);
+      }, () => alert('Location access denied.'));
+    });
+
+    document.getElementById('map-search-btn').addEventListener('click', () => {
+      const q = document.getElementById('map-search-input').value.trim().toLowerCase();
+      if (!q) { renderSidebar(RETURN_BOXES); return; }
+      const filtered = RETURN_BOXES.filter(b => b.name.toLowerCase().includes(q) || b.address.toLowerCase().includes(q));
+      renderSidebar(filtered);
+      if (filtered.length === 1) focusBox(filtered[0].id);
+      else if (filtered.length > 1) {
+        const bounds = L.latLngBounds(filtered.map(b => [b.lat, b.lng]));
+        map.fitBounds(bounds, { padding: [40, 40] });
+      }
+    });
+    document.getElementById('map-search-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('map-search-btn').click();
+    });
+    </script>
+  </body>
+</html>

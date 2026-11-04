@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartify Admin — Products</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./CSS/all.min.css" />
+  <link rel="stylesheet" href="./CSS/admin.css" />
+</head>
+<body>
+  <aside class="admin-sidebar" id="admin-sidebar"></aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+      <span class="page-title">Products</span>
+    </header>
+
+    <div class="admin-content">
+      <div class="panel">
+        <div class="table-toolbar">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" id="search-input" placeholder="Search products…" />
+          </div>
+          <select class="filter-select" id="cat-filter">
+            <option value="">All categories</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Fashion">Fashion</option>
+            <option value="Home &amp; Living">Home &amp; Living</option>
+            <option value="Beauty">Beauty</option>
+            <option value="Accessories">Accessories</option>
+            <option value="School Supplies">School Supplies</option>
+          </select>
+          <span id="table-info" style="margin-left:auto;font-size:.8rem;color:var(--neutral-400)"></span>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Discount</th>
+                <th>Rating</th>
+                <th>Variants</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="products-body">
+              <tr><td colspan="8"><div class="spinner-wrap"><div class="spin"></div> Loading…</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination-bar">
+          <span id="pg-info"></span>
+          <div class="pagination-btns" id="pg-btns"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { requireAdmin, injectSidebar, statusBadge, buildPagination, toast } from './Js/admin-core.js';
+    import { productsAdminAPI, returnsAdminAPI } from './Js/admin-api.js';
+
+    const user = await requireAdmin();
+    if (!user) throw '';
+
+    let pendingCount = 0;
+    try {
+      const pd = await returnsAdminAPI.getAll({ status: 'pending', limit: 1 });
+      pendingCount = pd.data?.total || pd.total || 0;
+    } catch {}
+    injectSidebar(user, pendingCount);
+
+    let page = 1;
+    const LIMIT = 12;
+    let totalPages = 1;
+    let searchTimer;
+
+    async function loadProducts() {
+      const body = document.getElementById('products-body');
+      body.innerHTML = `<tr><td colspan="8"><div class="spinner-wrap"><div class="spin"></div></div></td></tr>`;
+
+      const search   = document.getElementById('search-input').value.trim();
+      const category = document.getElementById('cat-filter').value;
+      const params   = { page, limit: LIMIT };
+      if (search)   params.search   = search;
+      if (category) params.category = category;
+
+      try {
+        const res  = await productsAdminAPI.getAll(params);
+        const rows = res.data?.products || res.products || res.data?.data?.products || [];
+        const total = res.data?.total || res.total || rows.length;
+        totalPages  = res.data?.totalPages || res.totalPages || Math.ceil(total / LIMIT);
+
+        if (!rows.length) {
+          body.innerHTML = `<tr><td colspan="8"><div class="empty-state">
+            <i class="fa-solid fa-box"></i><h3>No products found</h3></div></td></tr>`;
+          return;
+        }
+
+        body.innerHTML = rows.map(p => {
+          const img    = p.variants?.[0]?.images?.[0]?.url || '';
+          const price  = p.finalPrice || p.price || 0;
+          const rating = p.rating?.average || 0;
+          const vars   = (p.variants || []).length;
+
+          return `<tr>
+            <td>
+              ${img
+                ? `<img src="${img}" class="tbl-img" onerror="this.src='./img/placeholder.png'">`
+                : `<div class="tbl-img-placeholder"><i class="fa-solid fa-image"></i></div>`}
+            </td>
+            <td style="font-weight:600;font-size:.88rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</td>
+            <td><span class="badge badge-info" style="font-size:.7rem">${p.category || '—'}</span></td>
+            <td style="font-weight:600">$${price.toFixed ? price.toFixed(2) : price}</td>
+            <td>${p.discount > 0 ? `<span class="badge badge-pending">${p.discount}% off</span>` : '—'}</td>
+            <td style="font-size:.82rem">
+              <i class="fa-solid fa-star" style="color:#f59e0b;font-size:.7rem"></i>
+              ${rating.toFixed(1)} (${p.rating?.count || 0})
+            </td>
+            <td style="font-size:.82rem">${vars} color${vars !== 1 ? 's' : ''}</td>
+            <td>
+              <button class="btn-action btn-danger" style="font-size:.75rem;padding:5px 10px"
+                      onclick="deleteProduct('${p._id}','${p.name.replace(/'/g,'')}')">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>`;
+        }).join('');
+
+        buildPagination('pg-btns', 'pg-info', page, totalPages, total, LIMIT, p => { page = p; loadProducts(); });
+
+      } catch (err) {
+        body.innerHTML = `<tr><td colspan="8"><div class="empty-state" style="color:var(--danger)">
+          <i class="fa-solid fa-circle-exclamation"></i><h3>${err.message}</h3></div></td></tr>`;
+      }
+    }
+
+    window.deleteProduct = async function(id, name) {
+      if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+      try {
+        await productsAdminAPI.delete(id);
+        toast(`"${name}" deleted`, 'success');
+        loadProducts();
+      } catch (err) {
+        toast('Delete failed: ' + err.message, 'error');
+      }
+    };
+
+    document.getElementById('search-input').addEventListener('input', () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => { page = 1; loadProducts(); }, 380);
+    });
+    document.getElementById('cat-filter').addEventListener('change', () => { page = 1; loadProducts(); });
+
+    loadProducts();
+  </script>
+</body>
+</html>

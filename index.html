@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartify — Smarter Shopping Starts Here</title>
+  <meta name="description" content="Experience lightning-fast shopping and fully automated returns." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./CSS/animate.min.css" />
+  <link rel="stylesheet" href="./CSS/wow.min.css" />
+  <link rel="stylesheet" href="./CSS/all.min.css" />
+  <link rel="stylesheet" href="./CSS/bootstrap.min.css" />
+  <link rel="stylesheet" href="./CSS/mdb.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="./CSS/Style.css" />
+  <link rel="stylesheet" href="./CSS/cartify-ui.css" />
+</head>
+
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg nav-home sticky-top">
+    <div class="container">
+      <a class="navbar-brand me-2 brand-name" href="./index.html">
+        <img src="./img/the main logo 2.png" alt="Cartify Logo" loading="lazy" style="margin-top:-1px" />
+      </a>
+      <button data-mdb-collapse-init class="navbar-toggler" type="button" data-mdb-target="#navbarButtonsExample"
+        aria-controls="navbarButtonsExample" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarButtonsExample">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-4 px-4 nav-linkss">
+          <li class="nav-item"><a class="nav-link" data-page="home" href="./index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="categories" href="./Categories.html">Categories</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="returns" href="./returns.html">Returns</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="support" href="./support.html">Support</a></li>
+        </ul>
+        <form class="d-flex nav-search">
+          <div class="input-group mx-3">
+            <span class="input-group-text border-end-0 icon">
+              <i class="fa-solid fa-magnifying-glass fa-xs" style="color:rgb(148,163,184)"></i>
+            </span>
+            <input class="form-control border-start-0 word" type="search" placeholder="Search Products..."
+              style="text-overflow:ellipsis" />
+          </div>
+        </form>
+        <div class="nav-icons-group">
+          <a class="text-reset" href="./profile.html" title="Account">
+            <img src="./img/MAN Icon.png" alt="Account" />
+          </a>
+          <a class="text-reset cart-icon-wrapper" href="./cart.html" title="Cart">
+            <i class="fa-solid fa-cart-shopping" style="color:#1d2538"></i>
+            <span class="cart-badge">0</span>
+          </a>
+          <a class="text-reset wishlist-nav-icon" href="./wishlist.html" title="Wishlist">
+            <img src="./img/Vector.png" alt="Wishlist" />
+            <span class="wishlist-badge">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <main class="main-home">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 col-md-12 left-main">
+          <img src="./img/Overlay__1_-removebg-preview.png" alt="Smart Shopping Badge" class="left-img rounded-5" />
+          <h2 class="mt-4">Smarter Shopping</h2>
+          <h2 class="mt-1 mb-4">Starts Here</h2>
+          <p class="mt-3 mb-3">
+            Experience lightning-fast shopping and fully<br />
+            automated returns. Your modern retail journey<br />
+            begins with Cartify's intelligent interface.
+          </p>
+          <button data-mdb-ripple-init type="button" class="btn me-2 btn-cta-primary"
+            onclick="window.location.href='./Categories.html'">
+            Start Shopping ➜
+          </button>
+          <button class="btn-cta-secondary"
+            onclick="document.querySelector('.why-home')?.scrollIntoView({behavior:'smooth'})">
+            Explore Features
+          </button>
+          <img src="./img/Margin-removebg-preview.png" alt="Trusted by thousands" class="mt-3" />
+        </div>
+        <div class="col-lg-6 col-md-12 mt-5 mt-lg-0 right-main">
+          <div class="shadow-right"></div>
+          <div class="blue-ball"></div>
+          <div class="image-right">
+            <img src="./img/Background+Border (1).png" alt="Featured Product" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- WHY SHOP WITH US -->
+  <section class="why-home">
+    <div class="container-fluid all-why">
+      <div class="row g-4">
+        <div class="col-12 text-center mt-5 header-why">
+          <h2>Why Shop With Us</h2>
+          <p>We've automated the boring parts of shopping so you can focus on finding what you love.</p>
+        </div>
+        <div class="col-md-4">
+          <div class="same-why p-4">
+            <img src="./img/Overlay+OverlayBlur.png" alt="Fast Delivery" />
+            <h4 class="mt-4">Fast Delivery</h4>
+            <p>Hyper-local logistics ensuring your orders arrive in record time.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="not-same-why p-4">
+            <img src="./img/Overlay+OverlayBlur (1).png" alt="Secure Pay" />
+            <h4 class="mt-4">Secure Pay</h4>
+            <p>Military-grade encryption for every transaction you make.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="same-why p-4">
+            <img src="./img/Overlay+OverlayBlur (2).png" alt="Easy Returns" />
+            <h4 class="mt-4">Easy Returns</h4>
+            <p>No labels, no boxes, no stress. Just drop and go.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED PRODUCTS (populated dynamically by index.js) -->
+  <section class="products-home pb-5">
+    <div class="container">
+      <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+          <h3 class="product-head mb-1">Featured Products</h3>
+          <p class="text-muted">Curated tech and lifestyle essentials for the modern home.</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <a href="./Categories.html" class="link-product">
+            View all products <i class="fa-solid fa-arrow-up-right-from-square" style="color:#1e293b"></i>
+          </a>
+        </div>
+      </div>
+      <div class="swiper productSwiper">
+        <div class="swiper-wrapper">
+          <!-- Slides loaded dynamically by index.js -->
+          <div class="swiper-slide h-auto">
+            <div class="card-product bg-light border-0 text-start card-producct h-100"
+              style="min-height:320px;display:flex;align-items:center;justify-content:center;">
+              <div class="spinner-border text-primary m-auto"></div>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-pagination mt-4"></div>
+        <div class="swiper-button-next" style="color:var(--primary-color)"></div>
+        <div class="swiper-button-prev" style="color:var(--primary-color)"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RETURN SECTION -->
+  <section class="return-home">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-6 mt-5 left-return">
+          <img src="./img/Group 1.png" alt="Smart Return Box" />
+        </div>
+        <div class="col-md-6 mt-5">
+          <div class="right-return">
+            <h3>Return Anything.</h3>
+            <h3>Anytime.</h3>
+            <p>Forget the post office. Our Smart Boxes are everywhere and ready 24/7. It's actually fun!</p>
+            <img src="./img/Overlay+Border.png" alt="Step 1" class="mb-3" /><br />
+            <img src="./img/Overlay+Border (1).png" alt="Step 2" class="mb-3" /><br />
+            <img src="./img/Overlay+Border (2).png" alt="Step 3" class="mb-3" /><br />
+            <a href="map.html" style="text-decoration:none;">
+              <button data-mdb-ripple-init type="button" class="btn me-2 mt-3 find-box">
+                Find a Box Now
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- METHOD / STEPS -->
+  <section class="method-home">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12 mt-5 upper-method pb-5">
+          <h5 class="text-center w-100">Return in 4 Simple Steps</h5>
+        </div>
+        <div class="col-md-12 pb-5">
+          <img src="./img/Container (2).png" alt="4 Steps to Return" class="w-100" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section class="log-home mt-5 py-5">
+    <div class="container d-flex justify-content-center">
+      <div class="content-log text-center text-white">
+        <h2 class="mb-3">Shop Smarter.<br />Return Easier.</h2>
+        <p class="mb-4">Join thousands of happy shoppers who never have to worry about a return label again.</p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+          <button class="btn btn-light fw-semibold button-log" onclick="window.location.href='./signup.html'">Create
+            Account</button>
+          <button class="btn btn-outline-light button-logg" onclick="window.location.href='./Categories.html'">Explore
+            Shop</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="text-center text-lg-start text-white footer-home">
+    <section>
+      <div class="container text-center text-md-start">
+        <div class="row">
+          <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-0">
+            <h6 class="text-uppercase fw-bold mb-4">
+              <img src="./img/white logo.png" alt="Cartify" class="px-2 pb-2" />
+            </h6>
+            <p>The modern e-commerce platform that automates the shopping cycle from discovery to returns.</p>
+          </div>
+          <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-0">
+            <h6 class="text-uppercase fw-bold mb-4">Platform</h6>
+            <p><a href="#" class="text-reset">How it Works</a></p>
+            <p><a href="#" class="text-reset">SmartBoxes</a></p>
+            <p><a href="#" class="text-reset">Pricing</a></p>
+          </div>
+          <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-0">
+            <h6 class="text-uppercase fw-bold mb-4">Company</h6>
+            <p><a href="./support.html#mission" class="text-reset">About Us</a></p>
+            <p><a href="#" class="text-reset">Careers</a></p>
+            <p><a href="./support.html#privacy" class="text-reset">Privacy Policy</a></p>
+            <p><a href="./support.html#contact" class="text-reset">Contact</a></p>
+          </div>
+          <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0">
+            <h6 class="text-uppercase fw-bold mb-4">Newsletter</h6>
+            <p>Get the latest deals and features in your inbox</p>
+            <div class="email-box">
+              <input type="email" class="form-control" placeholder="Email address" />
+              <i class="fa-regular fa-paper-plane send-icon"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <hr />
+    <div class="container py-3">
+      <div class="row text-white">
+        <div class="col-md-8">© 2026 Cartify Inc. All rights reserved.</div>
+        <a href="#" class="col-md-2 text-white">Terms of Service</a>
+        <a href="#" class="col-md-2 text-white">Cookie Settings</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./Js/all.min.js"></script>
+  <script src="./Js/wow.min.js"></script>
+  <script>new WOW().init();</script>
+  <script src="./Js/jquery.slim.min.js"></script>
+  <script src="./Js/bootstrap.min.js"></script>
+  <script src="./Js/mdb.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script type="module" src="./Js/main.js"></script>
+  <script type="module" src="./Js/index.js"></script>
+</body>
+
+</html>

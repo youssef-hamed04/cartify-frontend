@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartify — Browse Categories</title>
+  <meta name="description" content="Explore our curated categories: Electronics, Fashion, Home & Living, Beauty, Accessories, and School Supplies." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./CSS/animate.min.css" />
+  <link rel="stylesheet" href="./CSS/wow.min.css" />
+  <link rel="stylesheet" href="./CSS/all.min.css" />
+  <link rel="stylesheet" href="./CSS/bootstrap.min.css" />
+  <link rel="stylesheet" href="./CSS/mdb.min.css" />
+  <link rel="stylesheet" href="./CSS/Style.css" />
+  <link rel="stylesheet" href="./CSS/cartify-ui.css" />
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg nav-home sticky-top">
+    <div class="container">
+      <a class="navbar-brand me-2 brand-name" href="./index.html">
+        <img src="./img/the main logo 2.png" alt="Cartify Logo" loading="lazy" style="margin-top:-1px" />
+      </a>
+      <button data-mdb-collapse-init class="navbar-toggler" type="button"
+        data-mdb-target="#navbarButtonsExample" aria-controls="navbarButtonsExample"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarButtonsExample">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-4 px-4 nav-linkss">
+          <li class="nav-item"><a class="nav-link" data-page="home" href="./index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="categories" href="./Categories.html">Categories</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="returns" href="./returns.html">Returns</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="support" href="./support.html">Support</a></li>
+        </ul>
+        <form class="d-flex nav-search">
+          <div class="input-group mx-3">
+            <span class="input-group-text border-end-0 icon">
+              <i class="fa-solid fa-magnifying-glass fa-xs" style="color:rgb(148,163,184)"></i>
+            </span>
+            <input class="form-control border-start-0 word" type="search"
+              placeholder="Search Products..." style="text-overflow:ellipsis" />
+          </div>
+        </form>
+        <div class="nav-icons-group">
+          <a class="text-reset" href="./profile.html" title="Account">
+            <img src="./img/MAN Icon.png" alt="Account" />
+          </a>
+          <a class="text-reset cart-icon-wrapper" href="./cart.html" title="Cart">
+            <i class="fa-solid fa-cart-shopping" style="color:#1d2538"></i>
+            <span class="cart-badge">0</span>
+          </a>
+          <a class="text-reset wishlist-nav-icon" href="./wishlist.html" title="Wishlist">
+            <img src="./img/Vector.png" alt="Wishlist" />
+            <span class="wishlist-badge">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero-section">
+    <div class="hero-circle-1"><img src="./img/Overlay+Blur-1.png" alt="" /></div>
+    <div class="hero-circle-2"><img src="./img/Overlay+Blur.png" alt="" /></div>
+    <div class="container">
+      <div class="row mb-2">
+        <div class="col-lg-12">
+          <p class="hero-sub-title">NEXT-GEN SHOPPING</p>
+          <h1 class="hero-title-main">Your Style,</h1>
+          <h1 class="hero-title-sub" style="margin-bottom:1.2rem !important">Redefined.</h1>
+        </div>
+      </div>
+      <div class="row align-items-center">
+        <div class="col-lg-7 col-md-8">
+          <p class="hero-description">
+            Ditch the ordinary. Dive into a universe of trend-setting tech and
+            fashion-forward finds curated just for you.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES GRID (populated by index.js) -->
+  <div class="container mt-5 pt-4">
+    <div class="row g-4" id="categories-grid">
+      <!-- Loading state -->
+      <div class="col-12 text-center py-5">
+        <div class="spinner-border text-primary" style="width:3rem;height:3rem;"></div>
+        <p class="mt-3 text-muted">Loading categories...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEWSLETTER CTA -->
+  <section class="log-home">
+    <div class="container">
+      <div class="content-log shadow-5">
+        <div class="row align-items-center">
+          <div class="col-lg-7 text-start">
+            <h2>Never Miss a Drop</h2>
+            <p>Subscribe to our newsletter and get notified about new collections and exclusive discounts.</p>
+          </div>
+          <div class="col-lg-5">
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-lg-end align-items-start">
+              <div class="newsletter-input-wrapper w-100">
+                <input type="email" class="form-control newsletter-input-sep"
+                  placeholder="Enter your email" style="text-overflow:ellipsis" />
+              </div>
+              <button class="btn button-logg shadow-0" type="button">Join</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="main-footer py-4">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-3 text-center text-lg-start mb-3 mb-lg-0">
+          <a class="brand-name" href="./index.html">
+            <img src="./img/icon.png" alt="Cartify Logo" loading="lazy" style="margin-top:-1px" />
+          </a>
+        </div>
+        <div class="col-lg-6">
+          <ul class="footer-links-list">
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 text-center text-lg-end d-flex gap-3 justify-content-center">
+          <a href="#" class="social-icon"><img src="./img/facebook.png" alt="Facebook" /></a>
+          <a href="#" class="social-icon"><img src="./img/Link.png" alt="Instagram" /></a>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 text-center">
+          <p class="copyright-text">© 2026 Cartify Inc. All rights reserved. Designed for the bold.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./Js/all.min.js"></script>
+  <script src="./Js/wow.min.js"></script>
+  <script>new WOW().init();</script>
+  <script src="./Js/jquery.slim.min.js"></script>
+  <script src="./Js/bootstrap.min.js"></script>
+  <script src="./Js/mdb.umd.min.js"></script>
+  <script type="module" src="./Js/main.js"></script>
+  <script type="module" src="./Js/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cartify — Track Order</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./CSS/animate.min.css" />
+    <link rel="stylesheet" href="./CSS/wow.min.css" />
+    <link rel="stylesheet" href="./CSS/all.min.css" />
+    <link rel="stylesheet" href="./CSS/bootstrap.min.css" />
+    <link rel="stylesheet" href="./CSS/mdb.min.css" />
+    <link rel="stylesheet" href="./CSS/Style.css" />
+    <link rel="stylesheet" href="./CSS/cartify-ui.css" />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg nav-home sticky-top">
+      <div class="container">
+        <a class="navbar-brand me-2 brand-name" href="./index.html">
+          <img src="./img/the main logo 2.png" alt="Cartify Logo" loading="lazy" style="margin-top:-1px" />
+        </a>
+        <button data-mdb-collapse-init class="navbar-toggler" type="button"
+          data-mdb-target="#navbarButtonsExample" aria-controls="navbarButtonsExample"
+          aria-expanded="false" aria-label="Toggle navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarButtonsExample">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-4 px-4 nav-linkss">
+            <li class="nav-item"><a class="nav-link" data-page="home" href="./index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" data-page="categories" href="./Categories.html">Categories</a></li>
+            <li class="nav-item"><a class="nav-link" data-page="returns" href="./returns.html">Returns</a></li>
+            <li class="nav-item"><a class="nav-link" data-page="support" href="./support.html">Support</a></li>
+          </ul>
+          <form class="d-flex nav-search">
+            <div class="input-group mx-3">
+              <span class="input-group-text border-end-0 icon">
+                <i class="fa-solid fa-magnifying-glass fa-xs" style="color:rgb(148,163,184)"></i>
+              </span>
+              <input class="form-control border-start-0 word" type="search" placeholder="Search Products..." style="text-overflow:ellipsis" />
+            </div>
+          </form>
+          <div class="nav-icons-group">
+            <a class="text-reset" href="./profile.html" title="Account"><img src="./img/MAN Icon.png" alt="Account" /></a>
+            <a class="text-reset cart-icon-wrapper" href="./cart.html" title="Cart">
+              <i class="fa-solid fa-cart-shopping" style="color:#1d2538"></i>
+              <span class="cart-badge">0</span>
+            </a>
+            <a class="text-reset wishlist-nav-icon" href="./wishlist.html" title="Wishlist">
+              <img src="./img/Vector.png" alt="Wishlist" />
+              <span class="wishlist-badge">0</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="track-page-container">
+      <div class="container">
+        <div class="track-header text-center">
+          <h1 class="track-title">Track Your Order</h1>
+          <div class="d-flex justify-content-center align-items-center gap-3">
+            <span class="track-subtitle" id="track-order-details">Loading order details...</span>
+            <span class="status-badge-progress">In Progress</span>
+          </div>
+        </div>
+        <div class="track-main-card">
+          <div class="track-product-card" id="track-product-container">
+            <div class="track-product-img-box">
+              <img src="./img/watch-track.png" alt="Product" id="track-product-img" onerror="this.src='./img/placeholder.png'" />
+            </div>
+            <div class="track-product-details">
+              <h4 id="track-product-name">Loading...</h4>
+              <div class="price" id="track-product-price">$0.00</div>
+              <div class="delivery-eta">
+                <i class="fa-regular fa-calendar-days me-1"></i>
+                Expected by <span id="track-delivery-date">—</span>
+              </div>
+            </div>
+          </div>
+          <div class="track-timeline">
+            <div class="timeline-item completed">
+              <div class="timeline-icon"><i class="fa-solid fa-check fa-xs"></i></div>
+              <div class="timeline-content">
+                <h5>Order Placed</h5>
+                <p>Your order has been received and confirmed.</p>
+                <span class="timestamp" id="track-placed-date">—</span>
+              </div>
+            </div>
+            <div class="timeline-item active">
+              <div class="timeline-icon"></div>
+              <div class="timeline-content">
+                <h5>Processing</h5>
+                <p>We are preparing your item for shipment.</p>
+                <span class="timestamp" id="track-processing-date">—</span>
+              </div>
+            </div>
+            <div class="timeline-item pending">
+              <div class="timeline-icon"><i class="fa-solid fa-truck fa-xs" style="color:#cbd5e1;"></i></div>
+              <div class="timeline-content">
+                <h5>Shipped</h5>
+                <p>Awaiting shipment handoff.</p>
+              </div>
+            </div>
+            <div class="timeline-item pending">
+              <div class="timeline-icon"><i class="fa-solid fa-box-open fa-xs" style="color:#cbd5e1;"></i></div>
+              <div class="timeline-content">
+                <h5>Delivered</h5>
+                <p>Scheduled arrival.</p>
+              </div>
+            </div>
+          </div>
+          <div class="track-footer-help">
+            <p>Need help with this order?</p>
+            <a href="./support.html#contact">Contact Support <i class="fa-solid fa-arrow-right fa-xs ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer wow fadeIn" data-wow-offset="100">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-3 col-md-6"><div class="footer-logo"><img src="./img/icon.png" alt="Cartify Logo" /></div><p class="footer-desc">Your ultimate destination for the latest in tech and style.</p></div>
+          <div class="col-lg-3 col-md-6"><h4 class="footer-title">Quick Links</h4><ul class="footer-links"><li><a href="./index.html">Home</a></li><li><a href="./Categories.html">Categories</a></li></ul></div>
+          <div class="col-lg-3 col-md-6"><h4 class="footer-title">Support</h4><ul class="footer-links"><li><a href="#">Help Center</a></li><li><a href="#">Shipping Info</a></li><li><a href="#">Returns &amp; Refunds</a></li></ul></div>
+          <div class="col-lg-3 col-md-6"><h4 class="footer-title">Newsletter</h4><p class="newsletter-desc">Get the latest tech deals in your inbox.</p><form class="newsletter-form"><div class="newsletter-input-wrapper mb-3"><input type="email" placeholder="email@example.com" class="form-control" /></div><button type="submit" class="w-100">Join</button></form></div>
+        </div>
+        <div class="footer-bottom mt-5">
+          <div class="copyright">&copy; 2026 Cartify E-commerce. All rights reserved.</div>
+          <div class="bottom-links"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./Js/all.min.js"></script>
+    <script src="./Js/wow.min.js"></script>
+    <script>new WOW().init();</script>
+    <script src="./Js/jquery.slim.min.js"></script>
+    <script src="./Js/bootstrap.min.js"></script>
+    <script src="./Js/mdb.umd.min.js"></script>
+    <script type="module" src="./Js/main.js"></script>
+  </body>
+</html>

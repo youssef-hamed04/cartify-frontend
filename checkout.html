@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartify — Checkout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./CSS/animate.min.css" />
+  <link rel="stylesheet" href="./CSS/wow.min.css" />
+  <link rel="stylesheet" href="./CSS/all.min.css" />
+  <link rel="stylesheet" href="./CSS/bootstrap.min.css" />
+  <link rel="stylesheet" href="./CSS/mdb.min.css" />
+  <link rel="stylesheet" href="./CSS/Style.css" />
+  <link rel="stylesheet" href="./CSS/cartify-ui.css" />
+</head>
+
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg nav-home sticky-top">
+    <div class="container">
+      <a class="navbar-brand me-2 brand-name" href="./index.html">
+        <img src="./img/the main logo 2.png" alt="Cartify Logo" loading="lazy" style="margin-top:-1px" />
+      </a>
+      <button data-mdb-collapse-init class="navbar-toggler" type="button" data-mdb-target="#navbarButtonsExample"
+        aria-controls="navbarButtonsExample" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarButtonsExample">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-4 px-4 nav-linkss">
+          <li class="nav-item"><a class="nav-link" data-page="home" href="./index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="categories" href="./Categories.html">Categories</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="returns" href="./returns.html">Returns</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="support" href="./support.html">Support</a></li>
+        </ul>
+        <form class="d-flex nav-search">
+          <div class="input-group mx-3">
+            <span class="input-group-text border-end-0 icon">
+              <i class="fa-solid fa-magnifying-glass fa-xs" style="color:rgb(148,163,184)"></i>
+            </span>
+            <input class="form-control border-start-0 word" type="search" placeholder="Search Products..."
+              style="text-overflow:ellipsis" />
+          </div>
+        </form>
+        <div class="nav-icons-group">
+          <a class="text-reset" href="./profile.html" title="Account">
+            <img src="./img/MAN Icon.png" alt="Account" />
+          </a>
+          <a class="text-reset cart-icon-wrapper" href="./cart.html" title="Cart">
+            <i class="fa-solid fa-cart-shopping" style="color:#1d2538"></i>
+            <span class="cart-badge">0</span>
+          </a>
+          <a class="text-reset wishlist-nav-icon" href="./wishlist.html" title="Wishlist">
+            <img src="./img/Vector.png" alt="Wishlist" />
+            <span class="wishlist-badge">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="checkout-container-main py-5" style="background-color:#f6f7fb;min-height:80vh;">
+    <div class="container">
+      <!-- Progress Stepper -->
+      <div class="checkout-stepper d-flex justify-content-center align-items-center mb-5 wow fadeInDown">
+        <div class="step completed">
+          <div class="step-icon"><i class="fa-solid fa-check"></i></div>
+          <div class="step-label">CART</div>
+        </div>
+        <div class="step-line completed"></div>
+        <div class="step active">
+          <div class="step-icon text-white">2</div>
+          <div class="step-label">CHECKOUT</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step text-muted">
+          <div class="step-icon text-muted bg-light">3</div>
+          <div class="step-label text-muted">SUCCESS</div>
+        </div>
+      </div>
+
+      <div class="row g-5 position-relative align-items-start">
+        <!-- Left: Form -->
+        <div class="col-lg-7 col-xl-7">
+          <div class="mb-5 wow fadeInLeft">
+            <h3 class="fw-bold d-flex align-items-center mb-4" style="color:#0f172a;">
+              <span class="badge rounded-pill me-3"
+                style="background-color:#e0e7ff;color:#4f46e5;font-size:0.75rem;letter-spacing:0.5px;">Almost
+                there!</span>
+              Shipping Information
+            </h3>
+
+            <form id="checkout-form">
+              <div class="mb-4">
+                <label class="form-label fw-bold" style="font-size:0.85rem;color:#475569;">Full Name</label>
+                <input type="text" name="full_name"
+                  class="form-control rounded-pill px-4 py-3 custom-input border-0 shadow-sm"
+                  placeholder="Your full name" required />
+              </div>
+              <div class="mb-4">
+                <label class="form-label fw-bold" style="font-size:0.85rem;color:#475569;">Email Address</label>
+                <input type="email" name="email"
+                  class="form-control rounded-pill px-4 py-3 custom-input border-0 shadow-sm"
+                  placeholder="email@example.com" required />
+              </div>
+              <div class="mb-4">
+                <label class="form-label fw-bold" style="font-size:0.85rem;color:#475569;">Street Address</label>
+                <input type="text" name="address"
+                  class="form-control rounded-pill px-4 py-3 custom-input border-0 shadow-sm"
+                  placeholder="Street address" required />
+              </div>
+              <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                  <label class="form-label fw-bold" style="font-size:0.85rem;color:#475569;">City</label>
+                  <input type="text" name="city"
+                    class="form-control rounded-pill px-4 py-3 custom-input border-0 shadow-sm" placeholder="City"
+                    required />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold" style="font-size:0.85rem;color:#475569;">Governorate</label>
+                  <select name="governorate" class="form-select rounded-pill px-4 py-3 custom-input border-0 shadow-sm"
+                    required>
+                    <option value="">Select governorate</option>
+                    <option value="Cairo">Cairo</option>
+                    <option value="Giza">Giza</option>
+                    <option value="Alexandria">Alexandria</option>
+                    <option value="Qalyubia">Qalyubia</option>
+                    <option value="Dakahlia">Dakahlia</option>
+                    <option value="Sharqia">Sharqia</option>
+                    <option value="Gharbia">Gharbia</option>
+                    <option value="Ismailia">Ismailia</option>
+                    <option value="Suez">Suez</option>
+                    <option value="Port Said">Port Said</option>
+                    <option value="Luxor">Luxor</option>
+                    <option value="Aswan">Aswan</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mb-5">
+                <label class="form-label fw-bold" style="font-size:0.85rem;color:#475569;">Phone Number</label>
+                <input type="tel" name="phone"
+                  class="form-control rounded-pill px-4 py-3 custom-input border-0 shadow-sm" placeholder="010XXXXXXXX"
+                  required />
+              </div>
+
+              <!-- Payment Method -->
+              <h3 class="fw-bold mb-4" style="color:#0f172a;">Payment Method</h3>
+              <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                  <label
+                    class="payment-method-card active w-100 p-3 rounded-pill bg-white shadow-sm d-flex align-items-center justify-content-center gap-2 cursor-pointer"
+                    style="border:2px solid transparent;">
+                    <input type="radio" name="payment_method" value="cash" checked class="d-none" />
+                    <i class="payment-icon fa-solid fa-money-bill-wave fs-5"></i>
+                    <span class="payment-text fw-bold">Cash on Delivery</span>
+                    <i class="payment-dot fa-solid fa-circle-dot ms-auto fs-5"></i>
+                  </label>
+                </div>
+                <div class="col-md-6">
+                  <label
+                    class="payment-method-card w-100 p-3 rounded-pill bg-white shadow-sm d-flex align-items-center justify-content-center gap-2 cursor-pointer"
+                    style="border:2px solid transparent;opacity:0.7;">
+                    <input type="radio" name="payment_method" value="credit_card" class="d-none" />
+                    <i class="payment-icon fa-solid fa-credit-card fs-5"></i>
+                    <span class="payment-text fw-bold">Credit / Debit Card</span>
+                    <i class="payment-dot fa-regular fa-circle ms-auto fs-5"></i>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Card Details (hidden by default since Cash is selected) -->
+              <div id="card-details-box" class="bg-white p-4 shadow-sm mb-5 pr-box"
+                style="border-radius:30px;display:none;">
+                <div class="mb-4">
+                  <label class="form-label fw-bold" style="font-size:0.85rem;color:#475569;">Card Number</label>
+                  <div class="position-relative">
+                    <input type="text" id="checkout-card-number"
+                      class="form-control rounded-pill px-4 py-3 custom-input border-0"
+                      style="background-color:#f1f5f9;" placeholder="0000 0000 0000 0000" />
+                    <div class="position-absolute d-flex gap-2" style="right:15px;top:50%;transform:translateY(-50%);">
+                      <i class="fa-brands fa-cc-visa text-muted fs-4"></i>
+                      <i class="fa-brands fa-cc-mastercard text-muted fs-4"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="row g-3">
+                  <div class="col-6">
+                    <label class="form-label fw-bold" style="font-size:0.85rem;color:#475569;">Expiry Date</label>
+                    <input type="text" id="checkout-card-expiry"
+                      class="form-control rounded-pill px-4 py-3 custom-input border-0"
+                      style="background-color:#f1f5f9;" placeholder="MM / YY" />
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label fw-bold" style="font-size:0.85rem;color:#475569;">CVV</label>
+                    <input type="text" id="checkout-card-cvv"
+                      class="form-control rounded-pill px-4 py-3 custom-input border-0"
+                      style="background-color:#f1f5f9;" placeholder="123" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label fw-bold" style="font-size:0.85rem;color:#475569;">Notes (optional)</label>
+                <input type="text" name="notes"
+                  class="form-control rounded-pill px-4 py-3 custom-input border-0 shadow-sm"
+                  placeholder="Any delivery instructions..." />
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right: Order Summary -->
+        <div class="col-lg-5 col-xl-5">
+          <div class="sticky-top" style="top:110px;z-index:10;padding-bottom:2rem;">
+            <div class="bg-white p-4 p-xl-5 shadow-sm wow fadeInRight" style="border-radius:30px;">
+              <h4 class="fw-bold mb-4" style="color:#0f172a;">Order Summary</h4>
+              <div id="checkout-items-list" class="mb-4"
+                style="max-height:250px;overflow-y:auto;overflow-x:hidden;padding-right:10px;">
+                <div class="text-center py-3">
+                  <div class="spinner-border spinner-border-sm text-primary"></div>
+                </div>
+              </div>
+              <hr style="border-color:#e2e8f0;opacity:1;" class="mb-4" />
+              <div class="d-flex justify-content-between mb-3 text-muted">
+                <span class="fw-medium">Subtotal</span>
+                <span class="fw-bold text-dark" id="checkout-subtotal">$0.00</span>
+              </div>
+              <div class="d-flex justify-content-between mb-3 text-muted">
+                <span class="fw-medium">Delivery Fee</span>
+                <span id="checkout-shipping" class="fw-bold shadow-sm rounded-pill px-3 py-1"
+                  style="color:#4f46e5;background-color:#e0e7ff;font-size:0.70rem;letter-spacing:0.5px;">FREE</span>
+              </div>
+              <div class="d-flex justify-content-between mb-4 text-muted">
+                <span class="fw-medium">Estimated Tax (1.5%)</span>
+                <span class="fw-bold text-dark" id="checkout-tax">$0.00</span>
+              </div>
+              <hr style="border-color:#e2e8f0;opacity:1;" class="mb-4" />
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <span class="fw-bold fs-5 text-dark">Total</span>
+                <span class="fw-bold fs-3" id="checkout-total" style="color:#02067e;">$0.00</span>
+              </div>
+              <button id="place-order-btn"
+                class="btn btn-checkout w-100 rounded-pill py-3 text-white fw-bold mb-3 d-flex justify-content-center align-items-center gap-2"
+                style="background:linear-gradient(135deg,#3b3db0,#5a6bde);border:none;font-size:1rem;letter-spacing:0.5px;box-shadow:0 8px 25px rgba(59,61,176,0.4);">
+                Place Order <i class="fa-solid fa-arrow-right"></i>
+              </button>
+              <div class="text-center text-muted mt-3 mb-2"
+                style="font-size:0.65rem;font-weight:700;letter-spacing:1.5px;color:#94a3b8;">
+                BY CLICKING PLACE ORDER YOU AGREE TO OUR TERMS
+              </div>
+              <div class="d-flex justify-content-center gap-4 mt-4 text-muted fs-5" style="opacity:0.7;">
+                <i class="fa-solid fa-circle-check"></i>
+                <i class="fa-solid fa-lock"></i>
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ORDER SUCCESS MODAL -->
+  <div id="order-success-overlay"
+    class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+    style="z-index:9999;background:rgba(246,248,255,0.7);backdrop-filter:blur(10px);">
+    <div class="success-modal-card text-center p-5 rounded-5 shadow-lg wow zoomIn"
+      style="background-color:#f8faff;max-width:500px;width:90%;position:relative;">
+      <div class="d-flex justify-content-center mb-4">
+        <div class="rounded-circle d-flex align-items-center justify-content-center shadow"
+          style="width:80px;height:80px;background:linear-gradient(135deg,#3b3db0,#5a6bde);color:white;">
+          <i class="fa-regular fa-circle-check" style="font-size:2.5rem;"></i>
+        </div>
+      </div>
+      <h2 class="fw-bold mb-2" style="color:#0f172a;font-size:1.8rem;">Order Placed<br />Successfully!</h2>
+      <div class="d-flex justify-content-center align-items-center gap-2 mb-3">
+        <span class="fw-bold" style="color:#02067e;font-size:0.85rem;">Order Number:</span>
+        <span class="badge rounded-pill px-3 py-2" id="success-order-id"
+          style="background-color:#e0e7ff;color:#4f46e5;font-size:0.8rem;letter-spacing:0.5px;">#—</span>
+      </div>
+      <p class="text-muted mb-4" style="font-size:0.9rem;">Thank you for your purchase!</p>
+      <div class="bg-white p-4 shadow-sm mb-4 mx-auto" style="border:1px solid #f1f5f9;border-radius:25px;width:95%;">
+        <div class="text-muted fw-bold mb-2" style="font-size:0.65rem;letter-spacing:1px;">SUMMARY</div>
+        <div class="d-flex justify-content-center align-items-baseline gap-2 mb-3">
+          <span class="fw-bold text-dark" style="font-size:1.2rem;">Total: <span id="success-total">$0.00</span></span>
+          <span class="text-muted" style="font-size:0.85rem;" id="success-items-count">(0 Items)</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center pt-3 mt-2" style="border-top:1px solid #f1f5f9;">
+          <div class="d-flex align-items-center gap-2 text-start">
+            <i class="fa-solid fa-box text-muted"></i>
+            <div style="line-height:1;">
+              <div class="fw-bold text-dark" style="font-size:0.8rem;">Processing order</div>
+            </div>
+          </div>
+          <div class="d-flex gap-1" id="success-mini-images"></div>
+        </div>
+      </div>
+      <div class="d-flex gap-3 justify-content-center">
+        <a href="./track.html" class="btn rounded-pill px-4 py-2 fw-bold text-white shadow-sm"
+          style="background-color:#02067e;font-size:0.9rem;">Track Order</a>
+        <a href="./Categories.html" class="btn rounded-pill px-4 py-2 fw-bold bg-white text-dark shadow-sm border"
+          style="font-size:0.9rem;">Continue Shopping</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer wow fadeIn" data-wow-offset="100">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-3 col-md-6">
+          <div class="footer-logo"><img src="./img/icon.png" alt="Cartify Logo" /></div>
+          <p class="footer-desc">Your ultimate destination for the latest in tech and style.</p>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h4 class="footer-title">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="./index.html">Home</a></li>
+            <li><a href="./Categories.html">Categories</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h4 class="footer-title">Support</h4>
+          <ul class="footer-links">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Shipping Info</a></li>
+            <li><a href="#">Returns &amp; Refunds</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h4 class="footer-title">Newsletter</h4>
+          <p class="newsletter-desc">Get the latest tech deals in your inbox.</p>
+          <form class="newsletter-form">
+            <div class="newsletter-input-wrapper mb-3">
+              <input type="email" placeholder="email@example.com" class="form-control" />
+            </div>
+            <button type="submit" class="w-100">Join</button>
+          </form>
+        </div>
+      </div>
+      <div class="footer-bottom mt-5">
+        <div class="copyright">&copy; 2026 Cartify E-commerce. All rights reserved.</div>
+        <div class="bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./Js/all.min.js"></script>
+  <script src="./Js/wow.min.js"></script>
+  <script>new WOW().init();</script>
+  <script src="./Js/jquery.slim.min.js"></script>
+  <script src="./Js/bootstrap.min.js"></script>
+  <script src="./Js/mdb.umd.min.js"></script>
+
+  <script type="module">
+    import { cartAPI, ordersAPI } from './Js/api.js';
+    import { getUser } from './Js/auth.js';
+
+    let cartData = null;
+
+    // ── Render cart items in the order summary panel ──────────────────────
+    async function renderCheckoutItems() {
+      const list = document.getElementById('checkout-items-list');
+      if (!list) return;
+      try {
+        const data = await cartAPI.get();
+        cartData = data;
+        const items = data.cart?.items || [];
+
+        if (!items.length) {
+          list.innerHTML = "<p class='text-muted text-center py-3'>Your cart is empty. <a href='./Categories.html'>Shop now</a></p>";
+          return;
+        }
+
+        list.innerHTML = items.map(item => {
+          const product = item.productId;
+          const name = product?.name || 'Product';
+          const color = item.color || '';
+          const price = (product?.finalPrice || product?.price || 0) * item.quantity;
+          const image = product?.variants?.find(v => v.color.toLowerCase() === color.toLowerCase())?.images?.[0]?.url
+            || product?.variants?.[0]?.images?.[0]?.url || '';
+          const cat = (product?.category || '').toLowerCase();
+          let bg = '#e2e8f0';
+          if (cat.includes('electronic')) bg = '#fcd34d';
+          else if (cat.includes('fashion') || cat.includes('beauty')) bg = '#fecdd3';
+          else if (cat.includes('home') || cat.includes('living')) bg = '#bbf7d0';
+          else if (cat.includes('school')) bg = '#bfdbfe';
+          else if (cat.includes('accessories')) bg = '#fef3c7';
+          return `
+              <div class="checkout-item-card position-relative">
+                <div class="checkout-item-img shadow-sm" style="background-color:${bg}">
+                  <img src="${image}" alt="${name}" onerror="this.src='./img/placeholder.png'" />
+                </div>
+                <div class="checkout-item-info">
+                  <div class="checkout-item-title">${name}</div>
+                  <div class="checkout-item-category">${color} · ${product?.category || ''}</div>
+                  <div class="checkout-item-qty">QTY: ${String(item.quantity).padStart(2, '0')}</div>
+                </div>
+                <div class="checkout-item-price">$${price.toFixed(2)}</div>
+              </div>`;
+        }).join('');
+
+        const subtotal = data.subtotal || 0;
+        const tax = subtotal * 0.015;
+        const total = subtotal + tax;
+        const subEl = document.getElementById('checkout-subtotal');
+        const taxEl = document.getElementById('checkout-tax');
+        const totEl = document.getElementById('checkout-total');
+        if (subEl) subEl.textContent = `$${subtotal.toFixed(2)}`;
+        if (taxEl) taxEl.textContent = `$${tax.toFixed(2)}`;
+        if (totEl) totEl.textContent = `$${total.toFixed(2)}`;
+
+        // Pre-fill from user session
+        const user = getUser();
+        if (user) {
+          const form = document.getElementById('checkout-form');
+          if (!form) return;
+          const set = (sel, val) => {
+            const el = form.querySelector(sel);
+            if (el && !el.value) el.value = val || '';
+          };
+          set('[name="full_name"]', `${user.firstName || ''} ${user.lastName || ''}`.trim());
+          set('[name="email"]', user.email);
+          set('[name="phone"]', user.phone);
+          set('[name="address"]', user.address);
+          set('[name="city"]', user.city);
+          const gov = form.querySelector('[name="governorate"]');
+          if (gov && !gov.value && user.governorate) gov.value = user.governorate;
+        }
+
+      } catch (err) {
+        console.error(err);
+        list.innerHTML = `<p class="text-danger small">Error: ${err.message}</p>`;
+      }
+    }
+
+    // ── Payment method card toggle ────────────────────────────────────────
+    document.querySelectorAll('.payment-method-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.payment-method-card').forEach(c => {
+          c.classList.remove('active');
+          c.style.opacity = '0.7';
+          const dot = c.querySelector('.payment-dot');
+          if (dot) { dot.classList.remove('fa-solid', 'fa-circle-dot'); dot.classList.add('fa-regular', 'fa-circle'); }
+        });
+        card.classList.add('active');
+        card.style.opacity = '1';
+        const dot = card.querySelector('.payment-dot');
+        if (dot) { dot.classList.remove('fa-regular', 'fa-circle'); dot.classList.add('fa-solid', 'fa-circle-dot'); }
+        const radio = card.querySelector('input[type="radio"]');
+        const box = document.getElementById('card-details-box');
+        if (radio?.value === 'credit_card') { if (box) box.style.display = 'block'; }
+        else { if (box) box.style.display = 'none'; }
+      });
+    });
+
+    // ── SINGLE place-order handler ────────────────────────────────────────
+    const placeOrderBtn = document.getElementById('place-order-btn');
+    if (placeOrderBtn) {
+      placeOrderBtn.addEventListener('click', async () => {
+        const form = document.getElementById('checkout-form');
+        if (form && !form.checkValidity()) { form.reportValidity(); return; }
+
+        placeOrderBtn.disabled = true;
+        placeOrderBtn.innerHTML = 'Placing Order... <span class="spinner-border spinner-border-sm ms-2"></span>';
+
+        const fd = new FormData(form);
+        const nameParts = (fd.get('full_name') || '').trim().split(' ');
+        const firstName = nameParts[0] || 'Guest';
+        const lastName = nameParts.slice(1).join(' ') || firstName;
+        const radio = document.querySelector('input[name="payment_method"]:checked');
+
+        const payload = {
+          email: fd.get('email') || 'guest@cartify.com',
+          firstName,
+          lastName,
+          address: fd.get('address') || '',
+          phone: fd.get('phone') || '',
+          city: fd.get('city') || '',
+          governorate: fd.get('governorate') || 'Cairo',
+          paymentMethod: radio?.value || 'cash',
+          notes: fd.get('notes') || '',
+        };
+
+        try {
+          const data = await ordersAPI.create(payload);
+          const order = data.order;
+
+          // Populate success overlay
+          const totEl = document.getElementById('checkout-total');
+          const stEl = document.getElementById('success-total');
+          const siEl = document.getElementById('success-items-count');
+          const soEl = document.getElementById('success-order-id');
+          if (stEl) stEl.textContent = totEl?.textContent || '$0.00';
+          if (siEl) siEl.textContent = `(${order?.products?.length || 0} Items)`;
+          if (soEl) soEl.textContent = `#${order?.randomId || '—'}`;
+
+          const miniImages = document.getElementById('success-mini-images');
+          if (miniImages && order?.products) {
+            miniImages.innerHTML = order.products.slice(0, 3).map(p => `
+                <div class="rounded-circle shadow-sm overflow-hidden d-flex align-items-center justify-content-center border"
+                     style="width:24px;height:24px;background:#fff;">
+                  <img src="${p.imageUrl || ''}" style="width:90%;height:90%;object-fit:contain;"
+                       onerror="this.style.display='none'" />
+                </div>`).join('');
+          }
+
+          // Save for track page
+          localStorage.setItem('cartifyLastOrder', JSON.stringify({
+            orderId: order?.randomId,
+            date: new Date(order?.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            items: order?.products || [],
+            total: totEl?.textContent || '$0.00',
+          }));
+
+          // Show success overlay
+          const overlay = document.getElementById('order-success-overlay');
+          if (overlay) {
+            overlay.classList.remove('d-none');
+            document.body.style.overflow = 'hidden';
+          }
+
+          // Reset cart badge
+          document.querySelectorAll('.cart-badge').forEach(b => {
+            b.textContent = '0';
+            b.style.display = 'none';
+          });
+
+        } catch (err) {
+          console.error(err);
+          alert(err.message || 'Failed to place order. Please try again.');
+          placeOrderBtn.disabled = false;
+          placeOrderBtn.innerHTML = 'Place Order <i class="fa-solid fa-arrow-right"></i>';
+        }
+      });
+    }
+
+    renderCheckoutItems();
+  </script>
+  <script type="module" src="./Js/main.js"></script>
+</body>
+
+</html>

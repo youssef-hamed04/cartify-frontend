@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartify — Support</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./CSS/animate.min.css" />
+  <link rel="stylesheet" href="./CSS/wow.min.css" />
+  <link rel="stylesheet" href="./CSS/all.min.css" />
+  <link rel="stylesheet" href="./CSS/bootstrap.min.css" />
+  <link rel="stylesheet" href="./CSS/mdb.min.css" />
+  <link rel="stylesheet" href="./CSS/Style.css" />
+  <link rel="stylesheet" href="./CSS/Support.css" />
+  <link rel="stylesheet" href="./CSS/cartify-ui.css" />
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg nav-home sticky-top">
+    <div class="container">
+      <a class="navbar-brand me-2 brand-name" href="./index.html">
+        <img src="./img/the main logo 2.png" alt="Cartify Logo" loading="lazy" style="margin-top:-1px" />
+      </a>
+      <button data-mdb-collapse-init class="navbar-toggler" type="button"
+        data-mdb-target="#navbarButtonsExample" aria-controls="navbarButtonsExample"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarButtonsExample">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-4 px-4 nav-linkss">
+          <li class="nav-item"><a class="nav-link" data-page="home" href="./index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="categories" href="./Categories.html">Categories</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="returns" href="./returns.html">Returns</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="support" href="./support.html">Support</a></li>
+        </ul>
+        <form class="d-flex nav-search">
+          <div class="input-group mx-3">
+            <span class="input-group-text border-end-0 icon"><i class="fa-solid fa-magnifying-glass fa-xs" style="color:rgb(148,163,184)"></i></span>
+            <input class="form-control border-start-0 word" type="search" placeholder="Search Products..." style="text-overflow:ellipsis" />
+          </div>
+        </form>
+        <div class="nav-icons-group">
+          <a class="text-reset" href="./profile.html" title="Account"><img src="./img/MAN Icon.png" alt="Account" /></a>
+          <a class="text-reset cart-icon-wrapper" href="./cart.html" title="Cart">
+            <i class="fa-solid fa-cart-shopping" style="color:#1d2538"></i>
+            <span class="cart-badge">0</span>
+          </a>
+          <a class="text-reset wishlist-nav-icon" href="./wishlist.html" title="Wishlist">
+            <img src="./img/Vector.png" alt="Wishlist" />
+            <span class="wishlist-badge">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <header class="support-hero wow fadeIn">
+    <div class="container">
+      <span class="support-sub-title">Support Center</span>
+      <h1 class="support-main-title">Cartify</h1>
+      <p class="support-description">"Everything you need for a faster, easier, and smarter shopping experience."</p>
+      <div class="support-tab-bar">
+        <button class="support-tab-btn active" id="tab-mission" onclick="activateTab(this, 'mission')">Mission</button>
+        <button class="support-tab-btn" id="tab-contact" onclick="activateTab(this, 'contact')">Contact</button>
+        <button class="support-tab-btn" id="tab-privacy" onclick="activateTab(this, 'privacy')">Privacy</button>
+        <button class="support-tab-btn" id="tab-terms" onclick="activateTab(this, 'terms')">Terms</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="mission" class="mission-section scroll-mt wow fadeInUp">
+      <div class="container-fluid px-lg-5 px-4">
+        <div class="row align-items-center g-0">
+          <div class="col-lg-6 mission-content">
+            <h2>Our Mission: <span class="highlight">Smarter Shopping</span></h2>
+            <p class="mission-text">At Cartify, we believe that modern retail should be seamless, syncing with everyday life. Cartify was born from a simple observation: retail has become complex.<br><br>Future-ready, operator-supported products should be hidden from discovery to delivery. With our "Easy Returns" guarantee and smart features, we make every purchase feel like a victory.</p>
+          </div>
+          <div class="col-lg-6">
+            <div class="mission-image-wrapper">
+              <img src="./img/support_mission.png" alt="Smarter Shopping" class="img-fluid w-100" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="contact-section scroll-mt wow fadeInUp">
+      <div class="container">
+        <div class="contact-card">
+          <div class="row">
+            <div class="col-lg-5 mb-5 mb-lg-0">
+              <h3>Get in Touch</h3>
+              <p class="mb-5">Have questions? We're here to help you find what you need and give you a friendlier experience.</p>
+              <div class="contact-info-item">
+                <div class="contact-icon-box"><i class="fa-solid fa-location-dot"></i></div>
+                <div class="contact-info-text"><h5>Headquarters</h5><p>123 Silicon Valley, San Francisco, CA 94105</p></div>
+              </div>
+              <div class="contact-info-item">
+                <div class="contact-icon-box"><i class="fa-solid fa-envelope"></i></div>
+                <div class="contact-info-text"><h5>Email Support</h5><p>hello@cartify.com</p></div>
+              </div>
+              <div class="contact-info-item">
+                <div class="contact-icon-box"><i class="fa-solid fa-phone"></i></div>
+                <div class="contact-info-text"><h5>Call Us</h5><p>+1 (555) 000-0000</p></div>
+              </div>
+            </div>
+            <div class="col-lg-7">
+              <div class="contact-form-card">
+                <form>
+                  <div class="row g-3">
+                    <div class="col-md-6"><label class="form-label-custom">First Name</label><input type="text" class="form-control-custom" placeholder="First Name"></div>
+                    <div class="col-md-6"><label class="form-label-custom">Last Name</label><input type="text" class="form-control-custom" placeholder="Last Name"></div>
+                    <div class="col-12"><label class="form-label-custom">Subject</label><input type="text" class="form-control-custom" placeholder="Subject"></div>
+                    <div class="col-12"><label class="form-label-custom">Message</label><textarea class="form-control-custom" rows="4" placeholder="How can we help you today?"></textarea></div>
+                    <div class="col-12"><button type="submit" class="btn-send-message">Send Message</button></div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="privacy" class="policy-section scroll-mt wow fadeInUp">
+      <div class="container">
+        <div class="policy-header"><i class="fa-solid fa-shield-halved"></i><h2>Privacy Policy</h2></div>
+        <div class="policy-card">
+          <div class="policy-item"><h4><span>1.</span> Information Collection</h4><p>We collect basic user information such as name, email, phone number, and address to process orders and improve the shopping experience.</p></div>
+          <div class="policy-item"><h4><span>2.</span> Use of Information</h4><p>Your information is used to process and deliver orders, provide customer support, improve platform performance, and enable the Smart Return Box system for hassle-free returns.</p></div>
+          <div class="policy-grid">
+            <div class="policy-grid-item"><i class="fa-solid fa-clock-rotate-left"></i><h5>Control Usage</h5><p>We monitor and ensure user experience remains performant and secure for all participants.</p></div>
+            <div class="policy-grid-item"><i class="fa-solid fa-share-nodes"></i><h5>Data Sharing</h5><p>We do not sell your personal data to third parties. Data is only shared with shipping partners to ensure delivery.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="terms" class="policy-section scroll-mt wow fadeInUp">
+      <div class="container">
+        <div class="policy-header"><i class="fa-solid fa-gavel"></i><h2>Terms of Service</h2></div>
+        <div class="policy-card">
+          <div class="policy-item"><h4><i class="fa-solid fa-terminal fa-xs"></i> Using Our Platform</h4><p>By using Cartify, you agree to follow the terms and conditions. Any misuse of the automated return system or platform will lead to account suspension.</p></div>
+          <div class="policy-highlight-box"><h4><i class="fa-solid fa-undo fa-xs"></i> Refunds</h4><p>Refunds are processed automatically once the item is returned through our Smart Boxes and verified by the system.</p></div>
+          <div class="policy-item"><h4><i class="fa-solid fa-triangle-exclamation fa-xs"></i> Limitation of Liability</h4><p>Cartify is not liable for indirect damages related to platform use. We strive to maintain the best service, but platform downtime may occasionally occur.</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer wow fadeIn" data-wow-offset="100">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-3 col-md-6"><div class="footer-logo"><img src="./img/icon.png" alt="Cartify Logo" /></div><p class="footer-desc">Your ultimate destination for the latest in tech and style.</p></div>
+        <div class="col-lg-3 col-md-6"><h4 class="footer-title">Quick Links</h4><ul class="footer-links"><li><a href="./index.html">Home</a></li><li><a href="./Categories.html">Categories</a></li></ul></div>
+        <div class="col-lg-3 col-md-6"><h4 class="footer-title">Support</h4><ul class="footer-links"><li><a href="./support.html#mission">Help Center</a></li><li><a href="./support.html#contact">Shipping Info</a></li><li><a href="./support.html#terms">Returns &amp; Refunds</a></li></ul></div>
+        <div class="col-lg-3 col-md-6"><h4 class="footer-title">Newsletter</h4><p class="newsletter-desc">Get the latest tech deals in your inbox.</p><form class="newsletter-form"><div class="newsletter-input-wrapper mb-3"><input type="email" placeholder="email@example.com" class="form-control" /></div><button type="submit" class="w-100">Join</button></form></div>
+      </div>
+      <div class="footer-bottom mt-5">
+        <div class="copyright">&copy; 2026 Cartify E-commerce. All rights reserved.</div>
+        <div class="bottom-links"><a href="./support.html#privacy">Privacy Policy</a><a href="./support.html#terms">Terms of Service</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./Js/all.min.js"></script>
+  <script src="./Js/wow.min.js"></script>
+  <script>new WOW().init();</script>
+  <script src="./Js/jquery.slim.min.js"></script>
+  <script src="./Js/bootstrap.min.js"></script>
+  <script src="./Js/mdb.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+    function scrollToSection(sectionId) {
+      const el = document.getElementById(sectionId);
+      if (el) { const top = el.getBoundingClientRect().top + window.pageYOffset - 90; window.scrollTo({ top, behavior: 'smooth' }); }
+    }
+    function activateTab(btn, sectionId) {
+      document.querySelectorAll('.support-tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      scrollToSection(sectionId);
+    }
+    window.addEventListener('scroll', () => {
+      const sections = ['mission', 'contact', 'privacy', 'terms'];
+      let current = 'mission';
+      sections.forEach(id => { const el = document.getElementById(id); if (el && window.pageYOffset >= el.offsetTop - 150) current = id; });
+      document.querySelectorAll('.support-tab-btn').forEach(b => b.classList.remove('active'));
+      const activeTab = document.getElementById('tab-' + current);
+      if (activeTab) activeTab.classList.add('active');
+    });
+  </script>
+  <script type="module" src="./Js/main.js"></script>
+</body>
+</html>

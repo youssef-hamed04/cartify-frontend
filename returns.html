@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartify — Request Return</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./CSS/animate.min.css" />
+  <link rel="stylesheet" href="./CSS/wow.min.css" />
+  <link rel="stylesheet" href="./CSS/all.min.css" />
+  <link rel="stylesheet" href="./CSS/bootstrap.min.css" />
+  <link rel="stylesheet" href="./CSS/mdb.min.css" />
+  <link rel="stylesheet" href="./CSS/Style.css" />
+  <link rel="stylesheet" href="./CSS/cartify-ui.css" />
+</head>
+
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg nav-home sticky-top">
+    <div class="container">
+      <a class="navbar-brand me-2 brand-name" href="./index.html">
+        <img src="./img/the main logo 2.png" alt="Cartify Logo" loading="lazy" style="margin-top:-1px" />
+      </a>
+      <button data-mdb-collapse-init class="navbar-toggler" type="button" data-mdb-target="#navbarButtonsExample"
+        aria-controls="navbarButtonsExample" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarButtonsExample">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-4 px-4 nav-linkss">
+          <li class="nav-item"><a class="nav-link" data-page="home" href="./index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="categories" href="./Categories.html">Categories</a></li>
+          <li class="nav-item"><a class="nav-link active" data-page="returns" href="./returns.html">Returns</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="support" href="./support.html">Support</a></li>
+        </ul>
+        <form class="d-flex nav-search">
+          <div class="input-group mx-3">
+            <span class="input-group-text border-end-0 icon">
+              <i class="fa-solid fa-magnifying-glass fa-xs" style="color:rgb(148,163,184)"></i>
+            </span>
+            <input class="form-control border-start-0 word" type="search" placeholder="Search Products..."
+              style="text-overflow:ellipsis" />
+          </div>
+        </form>
+        <div class="nav-icons-group">
+          <a class="text-reset" href="./profile.html" title="Account">
+            <img src="./img/MAN Icon.png" alt="Account" />
+          </a>
+          <a class="text-reset cart-icon-wrapper" href="./cart.html" title="Cart">
+            <i class="fa-solid fa-cart-shopping" style="color:#1d2538"></i>
+            <span class="cart-badge">0</span>
+          </a>
+          <a class="text-reset wishlist-nav-icon" href="./wishlist.html" title="Wishlist">
+            <img src="./img/Vector.png" alt="Wishlist" />
+            <span class="wishlist-badge">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    <!-- Request View -->
+    <div id="request-view">
+      <div class="header-section mb-5">
+        <h2>Return Request</h2>
+        <p>Easy returns with Smart Return Box. Select your item and reason to generate a drop-off code.</p>
+      </div>
+
+      <div class="row g-5">
+        <!-- Left: Item selection -->
+        <div class="col-lg-6">
+          <div class="section-title">
+            <i class="fas fa-shopping-bag me-1" style="color:var(--primary-color)"></i>
+            Select Item
+          </div>
+
+          <!-- Loading orders -->
+          <div id="orders-loading" class="text-center py-4">
+            <div class="spinner-border text-primary spinner-border-sm"></div>
+            <span class="ms-2 text-muted small">Loading your orders...</span>
+          </div>
+
+          <!-- No orders state -->
+          <div id="no-orders" style="display:none;" class="text-center py-4">
+            <i class="fa-solid fa-box-open fa-2x text-muted mb-2"></i>
+            <p class="text-muted">No delivered orders found.</p>
+            <a href="./Categories.html" class="btn btn-sm btn-primary rounded-pill px-3">Shop Now</a>
+          </div>
+
+          <!-- Dynamic order items -->
+          <div id="order-items-list"></div>
+        </div>
+
+        <!-- Right: Reason & Notes -->
+        <div class="col-lg-6">
+          <div class="section-title">
+            <i class="fas fa-check-circle me-1" style="color:var(--primary-color)"></i>
+            Return Reason
+          </div>
+          <div class="mb-4">
+            <div class="reason-chip active" onclick="selectReason(this)" data-reason="defective">Defective item</div>
+            <div class="reason-chip" onclick="selectReason(this)" data-reason="wrong_size">Too small/large</div>
+            <div class="reason-chip" onclick="selectReason(this)" data-reason="changed_mind">Changed my mind</div>
+            <div class="reason-chip" onclick="selectReason(this)" data-reason="wrong_item">Wrong item sent</div>
+            <div class="reason-chip" onclick="selectReason(this)" data-reason="other">Other</div>
+          </div>
+
+          <div class="section-title">
+            <i class="fas fa-comment-alt me-1" style="color:var(--primary-color)"></i>
+            Additional Notes
+          </div>
+          <textarea id="return-notes" class="note-area" placeholder="Tell us more about the issue..."></textarea>
+
+          <!-- Error alert -->
+          <div id="return-alert" class="alert d-none mb-3 rounded-4 small fw-semibold"></div>
+
+          <button class="btn btn-generate" id="generate-code-btn" onclick="submitReturnRequest()">
+            <span id="generate-btn-text">Generate Return Code</span>
+            <span id="generate-spinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+          </button>
+          <p class="text-center mt-3 text-muted" style="font-size:0.75rem">
+            Valid for 48 hours at any Smart Return Box location.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success View -->
+    <div id="success-view" style="display:none;">
+      <div class="row justify-content-center g-4">
+        <div class="col-md-6">
+          <div class="success-card">
+            <div class="status-section">
+              <div class="status-pill-circle">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <div class="status-text">
+                <h6>Return Authorized</h6>
+                <p class="small">Valid for the next 48 hours</p>
+              </div>
+            </div>
+
+            <div class="code-container">
+              <div class="card-container">
+                <div class="qr-icon-bg">
+                  <svg class="box-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                      d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                    </path>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                  </svg>
+                </div>
+              </div>
+              <p class="mb-0 text-muted small text-uppercase fw-bold" style="letter-spacing:1.5px">Unique Access Key</p>
+              <p class="mb-1 text-muted small text-uppercase fw-bold" style="letter-spacing:1.5px">Your User ID</p>
+              <div class="code-number" id="return-user-id-display"
+                style="font-size:2rem;letter-spacing:2px;margin-bottom:8px">——</div>
+              <p class="mb-1 text-muted small text-uppercase fw-bold" style="letter-spacing:1.5px">Unlock Code</p>
+              <div class="code-number" id="return-code-display">——</div>
+            </div>
+
+            <button data-mdb-ripple-init type="button" class="btn me-2 btn-cta-primary"
+              onclick="window.location.href='./map.html'">
+              <i class="fas fa-location-arrow me-2"></i> Find Nearest Box
+            </button>
+            <button class="btn-cta-secondary" id="copy-code-btn">
+              <i class="fa-regular fa-copy"></i> Copy Code
+            </button>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card shadow-0 border p-4" style="border-radius:20px">
+            <div class="row mb-4">
+              <div class="col-6">
+                <p class="text-muted small mb-1">ORDER REFERENCE</p>
+                <p class="fw-bold mb-0" id="success-order-ref">#—</p>
+              </div>
+              <div class="col-6">
+                <p class="text-muted small mb-1">PACKAGE DETAILS</p>
+                <p class="fw-bold mb-0" id="success-package-details">—</p>
+              </div>
+            </div>
+            <hr class="mb-4" />
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <p class="fw-bold mb-0">Nearby Locations</p>
+              <span class="text-primary small fw-bold">3 AVAILABLE</span>
+            </div>
+            <div class="p-3 border rounded-4 bg-light d-flex align-items-center mb-3">
+              <div class="bg-white p-2 rounded-3 me-3">
+                <i class="fas fa-cube text-primary"></i>
+              </div>
+              <div class="flex-grow-1">
+                <p class="mb-0 small fw-bold">Mall Elgamaa</p>
+                <p class="mb-0 text-muted" style="font-size:0.7rem">0.4 KM AWAY</p>
+              </div>
+              <span class="badge rounded-pill bg-success px-2">AVAILABLE</span>
+            </div>
+            <a href="./map.html" class="btn btn-sm btn-primary rounded-pill w-100 mt-2">
+              View All Locations
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer wow fadeIn" data-wow-offset="100">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-3 col-md-6">
+          <div class="footer-logo"><img src="./img/icon.png" alt="Cartify Logo" /></div>
+          <p class="footer-desc">Your ultimate destination for the latest in tech and style.</p>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h4 class="footer-title">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="./index.html">Home</a></li>
+            <li><a href="./Categories.html">Categories</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h4 class="footer-title">Support</h4>
+          <ul class="footer-links">
+            <li><a href="./support.html#mission">Help Center</a></li>
+            <li><a href="./support.html#contact">Shipping Info</a></li>
+            <li><a href="./support.html#terms">Returns &amp; Refunds</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h4 class="footer-title">Newsletter</h4>
+          <p class="newsletter-desc">Get the latest tech deals in your inbox.</p>
+          <form class="newsletter-form">
+            <div class="newsletter-input-wrapper mb-3">
+              <input type="email" placeholder="email@example.com" class="form-control" />
+            </div>
+            <button type="submit" class="w-100">Join</button>
+          </form>
+        </div>
+      </div>
+      <div class="footer-bottom mt-5">
+        <div class="copyright">&copy; 2026 Cartify E-commerce. All rights reserved.</div>
+        <div class="bottom-links">
+          <a href="./support.html#privacy">Privacy Policy</a>
+          <a href="./support.html#terms">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./Js/all.min.js"></script>
+  <script src="./Js/wow.min.js"></script>
+  <script>new WOW().init();</script>
+  <script src="./Js/jquery.slim.min.js"></script>
+  <script src="./Js/bootstrap.min.js"></script>
+  <script src="./Js/mdb.umd.min.js"></script>
+
+  <script type="module">
+    import { ordersAPI, returnsAPI } from './Js/api.js';
+
+    let selectedOrderId = null;
+    let selectedProductId = null;
+    let selectedProductName = null;
+    let selectedProductColor = 'Default';
+    let selectedReason = 'defective';
+
+    // ── Load delivered/recent orders ────────────────────────────────────
+    async function loadOrders() {
+      const loadingEl = document.getElementById('orders-loading');
+      const noOrdersEl = document.getElementById('no-orders');
+      const listEl = document.getElementById('order-items-list');
+
+      try {
+        const data = await ordersAPI.getMy({ limit: 10 });
+        const orders = (data.orders || []).filter(o =>
+          ['delivered', 'placed', 'confirmed', 'shipping'].includes(o.status)
+        );
+
+
+        if (loadingEl) loadingEl.style.display = 'none';
+
+        if (!orders.length) {
+          if (noOrdersEl) noOrdersEl.style.display = 'block';
+          return;
+        }
+
+        // Flatten to individual product items
+        const items = [];
+        orders.forEach(order => {
+          (order.products || []).forEach(product => {
+            console.log(order);
+
+            if (!product.isRefundRequested) {
+              items.push({ order, product });
+            }
+          });
+        });
+
+        if (!items.length) {
+          if (noOrdersEl) noOrdersEl.style.display = 'block';
+          return;
+        }
+
+        listEl.innerHTML = items.slice(0, 6).map((item, i) => {
+          const img = item.product.imageUrl || './img/tablet.png';
+          const name = item.product.name || 'Product';
+          const date = new Date(item.order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          const price = `$${((item.product.unitPrice || 0) * (item.product.quantity || 1)).toFixed(2)}`;
+          return `
+              <div class="item-card ${i === 0 ? 'selected' : ''}"
+                   onclick="window._selectItem(this)"
+                   data-order-id="${item.order._id}"
+                   data-product-id="${item.product.productId._id}"
+                   data-product-name="${name}"
+                   data-color="${item.product.color || 'Default'}">
+                <div class="item-img-placeholder">
+                  <img src="${img}" alt="${name}"
+                       onerror="this.src='./img/tablet.png'"
+                       style="width:100%;height:100%;object-fit:cover;" />
+                </div>
+                <div class="item-details">
+                  <h6>${name}</h6>
+                  <p>Purchased ${date}</p>
+                  <p>ORDER #${item.order.randomId}</p>
+                </div>
+                <div class="price-tag">${price}</div>
+              </div>`;
+        }).join('');
+
+        // Set initial selection
+        const first = listEl.querySelector('.item-card');
+        if (first) {
+          selectedOrderId = first.dataset.orderId;
+          selectedProductId = first.dataset.productId;
+          selectedProductName = first.dataset.productName;
+          selectedProductColor = first.dataset.color || 'Default';
+        }
+
+      } catch (_) {
+        // Fallback demo items when not logged in
+        if (loadingEl) loadingEl.style.display = 'none';
+        listEl.innerHTML = `
+            <div class="item-card selected" onclick="window._selectItem(this)"
+                 data-order-id="" data-product-id="" data-product-name="Ultra-Quiet Humidifier" data-color="White">
+              <div class="item-img-placeholder"><img src="./img/tablet.png" alt="item" /></div>
+              <div class="item-details"><h6>Ultra-Quiet Humidifier</h6><p>Purchased 2 days ago</p><p>ORDER #882210</p></div>
+              <div class="price-tag">$89.00</div>
+            </div>
+            <div class="item-card" onclick="window._selectItem(this)"
+                 data-order-id="" data-product-id="" data-product-name="Sonic Pro Headphones" data-color="Black">
+              <div class="item-img-placeholder"><img src="./img/headphone.png" alt="item" /></div>
+              <div class="item-details"><h6>Sonic Pro Headphones</h6><p>Purchased 5 days ago</p><p>ORDER #882104</p></div>
+              <div class="price-tag">$249.00</div>
+            </div>`;
+        const first = listEl.querySelector('.item-card');
+        if (first) {
+          selectedProductName = first.dataset.productName;
+          selectedProductId = first.dataset.productId;
+          selectedOrderId = first.dataset.orderId;
+          selectedProductColor = first.dataset.color || 'Default';
+        }
+      }
+    }
+
+    // Expose onclick handlers on window
+    window._selectItem = function (el) {
+      document.querySelectorAll('.item-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedOrderId = el.dataset.orderId;
+      selectedProductId = el.dataset.productId;
+      selectedProductName = el.dataset.productName;
+      selectedProductColor = el.dataset.color || 'Default';
+    };
+
+    window.selectItem = window._selectItem;   // keep onclick= compatibility
+
+    window.selectReason = function (el) {
+      document.querySelectorAll('.reason-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      selectedReason = el.dataset.reason || 'other';
+    };
+
+    // ── Submit return request ───────────────────────────────────────────
+    window.submitReturnRequest = async function () {
+      const btn = document.getElementById('generate-code-btn');
+      const btnText = document.getElementById('generate-btn-text');
+      const spinner = document.getElementById('generate-spinner');
+      const alertEl = document.getElementById('return-alert');
+      const notes = document.getElementById('return-notes')?.value?.trim() || '';
+
+      if (alertEl) alertEl.classList.add('d-none');
+      if (btn) btn.disabled = true;
+      if (btnText) btnText.textContent = 'Generating...';
+      if (spinner) spinner.classList.remove('d-none');
+
+      const payload = {
+        reason: selectedReason,
+        notes,
+        items: [{
+          productId: selectedProductId || '000000000000000000000001',
+          name: selectedProductName || 'Product',
+          color: selectedProductColor || 'Default',
+          quantity: 1,
+        }],
+      };
+      if (selectedOrderId) payload.orderId = selectedOrderId;
+
+      try {
+        console.log(payload);
+        const data = await returnsAPI.create(payload);
+        const rr = data.returnRequest;
+
+        // Show the user ID (for locker entry)
+        const userIdEl = document.getElementById('return-user-id-display');
+        if (userIdEl) userIdEl.textContent = rr.lockerUserId || '——';
+
+        // Show the 4-digit unlock code
+        const codeEl = document.getElementById('return-code-display');
+        if (codeEl) codeEl.textContent = rr.unlockCode || '——';
+
+        // Fill sidebar details
+        const refEl = document.getElementById('success-order-ref');
+        const pkgEl = document.getElementById('success-package-details');
+        if (refEl) refEl.textContent = selectedOrderId
+          ? `#RT-${selectedOrderId.slice(-6).toUpperCase()}` : '#RT-DEMO';
+        if (pkgEl) pkgEl.textContent = selectedProductName || 'Product';
+
+        // Switch views
+        const reqView = document.getElementById('request-view');
+        const sucView = document.getElementById('success-view');
+        if (reqView) reqView.style.display = 'none';
+        if (sucView) sucView.style.display = 'block';
+        window.scrollTo(0, 0);
+
+      } catch (err) {
+        console.error(err);
+        if (alertEl) {
+          alertEl.textContent = err.message || 'Failed to create return. Please try again.';
+          alertEl.className = 'alert alert-danger mb-3 rounded-4 small fw-semibold';
+          alertEl.classList.remove('d-none');
+        }
+        if (btn) btn.disabled = false;
+        if (btnText) btnText.textContent = 'Generate Return Code';
+        if (spinner) spinner.classList.add('d-none');
+      }
+    };
+
+    // ── Copy code button ────────────────────────────────────────────────
+    const copyBtn = document.getElementById('copy-code-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        const userId = document.getElementById('return-user-id-display')?.textContent || '';
+        const code = document.getElementById('return-code-display')?.textContent || '';
+        const text = `User ID: ${userId}  Unlock Code: ${code}`;
+        navigator.clipboard.writeText(text).then(() => {
+          copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+          setTimeout(() => copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Code', 2000);
+        });
+      });
+    }
+
+    loadOrders();
+  </script>
+  <script type="module" src="./Js/main.js"></script>
+</body>
+
+</html>

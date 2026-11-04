@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartify Admin — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./CSS/all.min.css" />
+  <link rel="stylesheet" href="./CSS/admin.css" />
+</head>
+<body>
+  <aside class="admin-sidebar" id="admin-sidebar"></aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+      <span class="page-title">Dashboard</span>
+      <div class="header-actions">
+        <a href="./index.html" class="btn-action btn-ghost" style="font-size:.8rem">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> View Store
+        </a>
+      </div>
+    </header>
+
+    <div class="admin-content">
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card"><div class="spin"></div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;flex-wrap:wrap;">
+        <!-- Recent Returns -->
+        <div class="panel" style="grid-column:1/-1">
+          <div class="panel-header">
+            <i class="fa-solid fa-rotate-left" style="color:var(--accent)"></i>
+            <span class="panel-title">Recent Return Requests</span>
+            <a href="./admin-returns.html" class="btn-action btn-ghost" style="font-size:.78rem">View all</a>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Locker User ID</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                  <th>Image</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="recent-returns-body">
+                <tr><td colspan="6"><div class="spinner-wrap"><div class="spin"></div></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Camera Sessions -->
+        <div class="panel" style="grid-column:1/-1">
+          <div class="panel-header">
+            <i class="fa-solid fa-camera" style="color:var(--accent)"></i>
+            <span class="panel-title">Recent Camera Sessions</span>
+            <a href="./admin-camera.html" class="btn-action btn-ghost" style="font-size:.78rem">View all</a>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Box ID</th>
+                  <th>Return</th>
+                  <th>Status</th>
+                  <th>Image</th>
+                  <th>Captured</th>
+                </tr>
+              </thead>
+              <tbody id="recent-camera-body">
+                <tr><td colspan="5"><div class="spinner-wrap"><div class="spin"></div></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { requireAdmin, injectSidebar, fmtDateTime, statusBadge } from './Js/admin-core.js';
+    import { statsAPI, returnsAdminAPI, cameraAdminAPI } from './Js/admin-api.js';
+
+    const user = await requireAdmin();
+    if (!user) throw '';
+
+    // Pending returns count for sidebar badge
+    let pendingCount = 0;
+    try {
+      const pd = await returnsAdminAPI.getAll({ status: 'pending', limit: 1 });
+      pendingCount = pd.data?.total || pd.total || 0;
+    } catch {}
+
+    injectSidebar(user, pendingCount);
+
+    // ── Stats ────────────────────────────────────────────────────────────────
+    const statsGrid = document.getElementById('stats-grid');
+    const [prodD, ordD, retD, camD] = await Promise.allSettled([
+      statsAPI.products(),
+      statsAPI.orders(),
+      returnsAdminAPI.getAll({ limit: 1 }),
+      cameraAdminAPI.getSessions({ limit: 1 }),
+    ]);
+
+    const get = (r, ...keys) => {
+      if (r.status !== 'fulfilled') return '—';
+      let v = r.value?.data || r.value;
+      for (const k of keys) v = v?.[k];
+      return v ?? '—';
+    };
+
+    const stats = [
+      { icon: 'fa-box',         cls: 'blue',   label: 'Products',         val: get(prodD, 'total') || get(prodD, 'data', 'total') },
+      { icon: 'fa-receipt',     cls: 'purple', label: 'Total Orders',      val: get(ordD,  'total') || get(ordD,  'data', 'total') },
+      { icon: 'fa-rotate-left', cls: 'orange', label: 'Return Requests',   val: get(retD,  'total') || get(retD,  'data', 'total') },
+      { icon: 'fa-camera',      cls: 'teal',   label: 'Camera Sessions',   val: get(camD,  'total') || get(camD,  'data', 'total') },
+      { icon: 'fa-clock',       cls: 'red',    label: 'Pending Returns',   val: pendingCount },
+    ];
+
+    statsGrid.innerHTML = stats.map(s => `
+      <div class="stat-card">
+        <div class="stat-icon ${s.cls}"><i class="fa-solid ${s.icon}"></i></div>
+        <div class="stat-info">
+          <div class="stat-label">${s.label}</div>
+          <div class="stat-value">${s.val}</div>
+        </div>
+      </div>`).join('');
+
+    // ── Recent Returns ────────────────────────────────────────────────────────
+    const retBody = document.getElementById('recent-returns-body');
+    try {
+      const rd   = await returnsAdminAPI.getAll({ limit: 6, sort: '-createdAt' });
+      const rows = rd.data?.returns || rd.returns || rd.data?.data?.returns || [];
+      if (!rows.length) {
+        retBody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No returns yet</p></div></td></tr>`;
+      } else {
+        retBody.innerHTML = rows.map(r => `
+          <tr>
+            <td style="font-family:monospace;font-size:.75rem">${r._id.slice(-8)}</td>
+            <td><code style="font-size:.82rem">${r.lockerUserId || '—'}</code></td>
+            <td>${r.reason?.replace(/_/g,' ') || '—'}</td>
+            <td>${statusBadge(r.status)}</td>
+            <td>${r.imageUrl
+              ? `<img src="${r.imageUrl}" class="tbl-img" onclick="window.open('${r.imageUrl}')">`
+              : `<div class="tbl-img-placeholder"><i class="fa-solid fa-camera-slash"></i></div>`}
+            </td>
+            <td style="color:var(--neutral-400);font-size:.78rem">${fmtDateTime(r.createdAt)}</td>
+          </tr>`).join('');
+      }
+    } catch {
+      retBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Failed to load</td></tr>`;
+    }
+
+    // ── Recent Camera Sessions ────────────────────────────────────────────────
+    const camBody = document.getElementById('recent-camera-body');
+    try {
+      const cd   = await cameraAdminAPI.getSessions({ limit: 6 });
+      const rows = cd.data?.sessions || cd.sessions || [];
+      if (!rows.length) {
+        camBody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-camera"></i><p>No sessions yet</p></div></td></tr>`;
+      } else {
+        camBody.innerHTML = rows.map(s => `
+          <tr>
+            <td><code style="font-size:.82rem">${s.boxId}</code></td>
+            <td style="font-family:monospace;font-size:.75rem">${(s.returnId?._id || s.returnId || '').toString().slice(-8)}</td>
+            <td>${statusBadge(s.status)}</td>
+            <td>${s.imageUrl
+              ? `<img src="${s.imageUrl}" class="tbl-img" onclick="window.open('${s.imageUrl}')">`
+              : `<div class="tbl-img-placeholder"><i class="fa-solid fa-camera-slash"></i></div>`}
+            </td>
+            <td style="color:var(--neutral-400);font-size:.78rem">${fmtDateTime(s.capturedAt || s.createdAt)}</td>
+          </tr>`).join('');
+      }
+    } catch {
+      camBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Failed to load</td></tr>`;
+    }
+  </script>
+</body>
+</html>

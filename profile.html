@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Profile — Cartify</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./CSS/wow.min.css" />
+  <link rel="stylesheet" href="./CSS/all.min.css" />
+  <link rel="stylesheet" href="./CSS/animate.min.css" />
+  <link rel="stylesheet" href="./CSS/bootstrap.min.css" />
+  <link rel="stylesheet" href="./CSS/mdb.min.css" />
+  <link rel="stylesheet" href="./CSS/Style.css" />
+  <link rel="stylesheet" href="./CSS/cartify-ui.css" />
+</head>
+
+<body class="site-viewport-body">
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg nav-home sticky-top">
+    <div class="container">
+      <a class="navbar-brand me-2 brand-name" href="./index.html">
+        <img src="./img/the main logo 2.png" alt="Cartify Logo" loading="lazy" style="margin-top:-1px" />
+      </a>
+      <button data-mdb-collapse-init class="navbar-toggler" type="button" data-mdb-target="#navbarButtonsExample"
+        aria-controls="navbarButtonsExample" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarButtonsExample">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-4 px-4 nav-linkss">
+          <li class="nav-item"><a class="nav-link" data-page="home" href="./index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="categories" href="./Categories.html">Categories</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="returns" href="./returns.html">Returns</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="support" href="./support.html">Support</a></li>
+        </ul>
+        <form class="d-flex nav-search">
+          <div class="input-group mx-3">
+            <span class="input-group-text border-end-0 icon">
+              <i class="fa-solid fa-magnifying-glass fa-xs" style="color:rgb(148,163,184)"></i>
+            </span>
+            <input class="form-control border-start-0 word" type="search" placeholder="Search Products..."
+              style="text-overflow:ellipsis" />
+          </div>
+        </form>
+        <div class="nav-icons-group">
+          <a class="text-reset" href="./profile.html" title="Account">
+            <img src="./img/MAN Icon.png" alt="Account" />
+          </a>
+          <a class="text-reset cart-icon-wrapper" href="./cart.html" title="Cart">
+            <i class="fa-solid fa-cart-shopping" style="color:#1d2538"></i>
+            <span class="cart-badge">0</span>
+          </a>
+          <a class="text-reset wishlist-nav-icon" href="./wishlist.html" title="Wishlist">
+            <img src="./img/Vector.png" alt="Wishlist" />
+            <span class="wishlist-badge">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN DASHBOARD -->
+  <main class="dashboard-main-area">
+    <div class="container">
+
+      <!-- Loading state -->
+      <div id="profile-loading" class="text-center py-5">
+        <div class="spinner-border text-primary"></div>
+        <p class="mt-3 text-muted">Loading your profile...</p>
+      </div>
+
+      <!-- Not logged in state -->
+      <div id="profile-guest" class="text-center py-5" style="display:none;">
+        <i class="fa-solid fa-user-slash fa-3x text-muted mb-3"></i>
+        <h3>You're not logged in</h3>
+        <p class="text-muted">Please login to view your profile.</p>
+        <a href="./login.html" class="btn btn-primary rounded-pill px-4 mt-2">Login</a>
+      </div>
+
+      <!-- Profile content (shown when logged in) -->
+      <div id="profile-content" style="display:none;">
+
+        <!-- Profile Card -->
+        <section class="user-identity-card mb-4">
+          <div class="user-identity-left">
+            <img src="./img/man.png" alt="avatar" class="user-portrait-img" />
+            <div class="user-credential-info">
+              <h1 class="user-display-name" id="profile-name">—</h1>
+              <p class="user-email-text" id="profile-email">—</p>
+              <span class="membership-status-badge" id="profile-tier">BRONZE MEMBER</span>
+            </div>
+          </div>
+          <div class="d-flex flex-column gap-2">
+            <button class="profile-modify-btn" id="edit-profile-btn">
+              <i class="fa-solid fa-pen"></i> Edit Profile
+            </button>
+
+            <a href="./admin-dashboard.html" id="admin-dashboard-link" class="btn btn-primary" style="display:none;">
+              Dashboard
+            </a>
+          </div>
+        </section>
+
+        <!-- Edit Profile Form (hidden by default) -->
+        <section id="edit-profile-section" class="mb-4" style="display:none;">
+          <div class="bg-white rounded-4 p-4 shadow-sm">
+            <h5 class="fw-bold mb-3">Edit Profile</h5>
+            <div id="edit-alert" class="alert d-none mb-3 rounded-4 small fw-semibold"></div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">First Name</label>
+                <input type="text" id="edit-firstName" class="form-control rounded-pill custom-input"
+                  placeholder="First Name" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Last Name</label>
+                <input type="text" id="edit-lastName" class="form-control rounded-pill custom-input"
+                  placeholder="Last Name" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Phone</label>
+                <input type="tel" id="edit-phone" class="form-control rounded-pill custom-input"
+                  placeholder="010XXXXXXXX" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">City</label>
+                <input type="text" id="edit-city" class="form-control rounded-pill custom-input" placeholder="City" />
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-bold">Address</label>
+                <input type="text" id="edit-address" class="form-control rounded-pill custom-input"
+                  placeholder="Street Address" />
+              </div>
+              <div class="col-12 d-flex gap-2">
+                <button id="save-profile-btn" class="btn btn-primary rounded-pill px-4">
+                  <span id="save-btn-text">Save Changes</span>
+                  <span id="save-spinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+                </button>
+                <button id="cancel-edit-btn" class="btn btn-outline-secondary rounded-pill px-4">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Dashboard Grid -->
+        <section class="row g-4 wow fadeInUp" data-wow-duration="1s">
+          <!-- Orders History -->
+          <div class="col-12 col-lg-6">
+            <div class="metric-panel-box h-100">
+              <div class="panel-top-row">
+                <h2 class="panel-heading-text">Orders History</h2>
+                <a href="./history.html" class="panel-action-element">View All</a>
+              </div>
+              <div id="recent-order-card" class="order-summary-item" style="cursor:pointer;"
+                onclick="window.location.href='./history.html'">
+                <div class="order-thumb-graphic-wrap">
+                  <img src="./img/head-pro.png" alt="order" class="order-thumb-graphic" />
+                </div>
+                <div class="order-text-details">
+                  <span class="order-tracking-num" id="recent-order-id">No recent orders</span>
+                  <h3 class="order-product-title" id="recent-order-name">—</h3>
+                  <p class="order-shipping-status">
+                    <span class="shipping-dot-indicator"></span>
+                    <span id="recent-order-status">—</span>
+                  </p>
+                </div>
+                <div class="order-end-icon"><i class="fa-solid fa-truck"></i></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Returns -->
+          <div class="col-12 col-lg-6">
+            <div class="metric-panel-box h-100">
+              <div class="panel-top-row">
+                <h2 class="panel-heading-text">Recent Returns</h2>
+                <button class="panel-action-btn" onclick="window.location.href='./returns.html'">
+                  <i class="fa-solid fa-arrows-rotate"></i>
+                </button>
+              </div>
+              <div class="return-status-wrapper">
+                <div class="return-status-header">
+                  <div class="return-icon-block">
+                    <img src="./img/Backgroundd.png" alt="return" />
+                  </div>
+                  <div>
+                    <h3 class="return-status-title-text">Smart Return Box</h3>
+                    <p class="return-box-ref" id="return-box-status">No active returns</p>
+                  </div>
+                </div>
+                <p class="return-directive-text" id="return-directive">
+                  Start a return request to get a drop-off code for the nearest Smart Box.
+                </p>
+                <hr />
+                <div class="return-action-row">
+                  <span class="return-time-limit">
+                    <i class="fa-regular fa-clock"></i>
+                    <span id="return-time-text">Valid for 48 hours</span>
+                  </span>
+                  <a href="./returns.html" class="return-code-link">Start Return</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Saved Addresses -->
+          <div class="col-12 col-lg-6">
+            <div class="metric-panel-box h-100">
+              <div class="panel-top-row">
+                <h2 class="panel-heading-text">Saved Address</h2>
+                <button class="panel-action-btn" id="add-address-btn">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+              <div class="address-item-wrapper">
+                <div class="address-icon-block"><i class="fa-solid fa-house"></i></div>
+                <div class="address-text-group">
+                  <h3 class="address-label-text">Home (Default)</h3>
+                  <p class="address-location-line" id="profile-address">—</p>
+                  <p class="address-location-line" id="profile-city">—</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Methods -->
+          <div class="col-12 col-lg-6">
+            <div class="metric-panel-box h-100">
+              <div class="panel-top-row">
+                <h2 class="panel-heading-text">Payment Methods</h2>
+              </div>
+              <div class="payment-brands-grid">
+                <div class="payment-brand-item"><img src="./img/cib_cc-mastercard.png" alt="Mastercard"
+                    class="payment-img-asset" /></div>
+                <div class="payment-brand-item"><img src="./img/visa.png" class="pay" alt="VISA" /></div>
+                <div class="payment-brand-item"><img src="./img/ic_baseline-paypal.png" alt="Paypal"
+                    class="payment-img-asset" /></div>
+                <div class="payment-brand-item"><img src="./img/flowbite_cash-outline.png" alt="Cash"
+                    class="payment-img-asset" /></div>
+                <div class="payment-brand-item"><img src="./img/cib_apple-pay.png" alt="Apple Pay"
+                    class="payment-img-asset" /></div>
+              </div>
+              <!-- Logout button -->
+              <div class="mt-4 pt-3 border-top">
+                <button id="logout-btn" class="btn btn-outline-danger rounded-pill px-4 w-100">
+                  <i class="fa-solid fa-sign-out-alt me-2"></i> Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div><!-- /profile-content -->
+    </div>
+  </main>
+
+  <footer class="footer wow fadeIn" data-wow-offset="100">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-3 col-md-6">
+          <div class="footer-logo"><img src="./img/icon.png" alt="Cartify Logo" /></div>
+          <p class="footer-desc">Your ultimate destination for the latest in tech and style.</p>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h4 class="footer-title">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="./index.html">Home</a></li>
+            <li><a href="./Categories.html">Categories</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h4 class="footer-title">Support</h4>
+          <ul class="footer-links">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Shipping Info</a></li>
+            <li><a href="#">Returns & Refunds</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h4 class="footer-title">Newsletter</h4>
+          <p class="newsletter-desc">Get the latest tech deals in your inbox.</p>
+          <form class="newsletter-form">
+            <div class="newsletter-input-wrapper mb-3">
+              <input type="email" placeholder="email@example.com" class="form-control" />
+            </div>
+            <button type="submit" class="w-100">Join</button>
+          </form>
+        </div>
+      </div>
+      <div class="footer-bottom mt-5">
+        <div class="copyright">&copy; 2026 Cartify E-commerce. All rights reserved.</div>
+        <div class="bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./Js/all.min.js"></script>
+  <script src="./Js/wow.min.js"></script>
+  <script>new WOW().init();</script>
+  <script src="./Js/jquery.slim.min.js"></script>
+  <script src="./Js/bootstrap.min.js"></script>
+  <script src="./Js/mdb.umd.min.js"></script>
+  <script type="module">
+    import { getUser, refreshUser, updateProfile, logout } from './Js/auth.js';
+    import { ordersAPI, returnsAPI } from './Js/api.js';
+
+    async function initProfile() {
+      const loadingEl = document.getElementById('profile-loading');
+      const guestEl = document.getElementById('profile-guest');
+      const contentEl = document.getElementById('profile-content');
+
+      // Try to get current user (refresh from server)
+      let user = getUser();
+      if (!user) {
+        try { user = await refreshUser(); } catch (_) { }
+      }
+      if (user.role === 'admin') {
+        document.getElementById('admin-dashboard-link').style.display = 'inline-block';
+      }
+      loadingEl.style.display = 'none';
+
+      if (!user) {
+        guestEl.style.display = 'block';
+        return;
+      }
+
+      contentEl.style.display = 'block';
+
+      // Populate profile fields
+      document.getElementById('profile-name').textContent = user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.email;
+      document.getElementById('profile-email').textContent = user.email || '—';
+      document.getElementById('profile-tier').textContent = (user.membershipTier || 'BRONZE') + ' MEMBER';
+      document.getElementById('profile-address').textContent = user.address || 'No address saved';
+      document.getElementById('profile-city').textContent = user.city ? `${user.city}, ${user.governorate || ''}`.trim().replace(/,\s*$/, '') : '—';
+
+      // Pre-fill edit form
+      document.getElementById('edit-firstName').value = user.firstName || '';
+      document.getElementById('edit-lastName').value = user.lastName || '';
+      document.getElementById('edit-phone').value = user.phone || '';
+      document.getElementById('edit-city').value = user.city || '';
+      document.getElementById('edit-address').value = user.address || '';
+
+      // Load recent order
+      try {
+        const ordersData = await ordersAPI.getMy({ page: 1, limit: 1 });
+        const orders = ordersData.orders || [];
+        if (orders.length > 0) {
+          const o = orders[0];
+          document.getElementById('recent-order-id').textContent = `ORDER #${o.randomId}`;
+          document.getElementById('recent-order-name').textContent = o.products?.[0]?.name || 'Order';
+          document.getElementById('recent-order-status').textContent = o.status;
+          const firstImg = o.products?.[0]?.imageUrl;
+          if (firstImg) {
+            const imgEl = document.querySelector('#recent-order-card .order-thumb-graphic');
+            if (imgEl) imgEl.src = firstImg;
+          }
+        }
+      } catch (_) { }
+
+      // Load recent return
+      try {
+        const returnsData = await returnsAPI.getMy({ page: 1, limit: 1 });
+        const returns = returnsData.returns || [];
+        if (returns.length > 0) {
+          const r = returns[0];
+          document.getElementById('return-box-status').textContent = `Code: ${r.code} — ${r.status}`;
+          document.getElementById('return-directive').textContent = `Return for "${r.items?.[0]?.name || 'item'}" — ${r.reason.replace('_', ' ')}`;
+          if (r.status === 'pending') {
+            const expiry = new Date(r.expiresAt);
+            document.getElementById('return-time-text').textContent = `Expires: ${expiry.toLocaleDateString()}`;
+          }
+        }
+      } catch (_) { }
+    }
+
+    // Edit profile toggle
+    document.getElementById('edit-profile-btn').addEventListener('click', () => {
+      const sec = document.getElementById('edit-profile-section');
+      sec.style.display = sec.style.display === 'none' ? 'block' : 'none';
+    });
+    document.getElementById('cancel-edit-btn').addEventListener('click', () => {
+      document.getElementById('edit-profile-section').style.display = 'none';
+    });
+
+    // Save profile
+    document.getElementById('save-profile-btn').addEventListener('click', async () => {
+      const btn = document.getElementById('save-profile-btn');
+      const btnText = document.getElementById('save-btn-text');
+      const spinner = document.getElementById('save-spinner');
+      const alertEl = document.getElementById('edit-alert');
+
+      btn.disabled = true;
+      btnText.textContent = 'Saving...';
+      spinner.classList.remove('d-none');
+      alertEl.classList.add('d-none');
+
+      const payload = {
+        firstName: document.getElementById('edit-firstName').value.trim(),
+        lastName: document.getElementById('edit-lastName').value.trim(),
+        phone: document.getElementById('edit-phone').value.trim(),
+        city: document.getElementById('edit-city').value.trim(),
+        address: document.getElementById('edit-address').value.trim(),
+      };
+
+      try {
+        const user = await updateProfile(payload);
+        document.getElementById('profile-name').textContent = `${user.firstName} ${user.lastName || ''}`.trim() || user.email;
+        document.getElementById('profile-address').textContent = user.address || 'No address saved';
+        document.getElementById('profile-city').textContent = user.city ? `${user.city}, ${user.governorate || ''}`.trim().replace(/,\s*$/, '') : '—';
+        alertEl.textContent = 'Profile updated successfully!';
+        alertEl.className = 'alert alert-success mb-3 rounded-4 small fw-semibold';
+        alertEl.classList.remove('d-none');
+        setTimeout(() => document.getElementById('edit-profile-section').style.display = 'none', 1500);
+      } catch (err) {
+        alertEl.textContent = err.message || 'Failed to update profile.';
+        alertEl.className = 'alert alert-danger mb-3 rounded-4 small fw-semibold';
+        alertEl.classList.remove('d-none');
+      } finally {
+        btn.disabled = false;
+        btnText.textContent = 'Save Changes';
+        spinner.classList.add('d-none');
+      }
+    });
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await logout();
+    });
+
+    initProfile();
+  </script>
+  <script type="module" src="./Js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartify Admin — Camera Sessions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./CSS/all.min.css" />
+  <link rel="stylesheet" href="./CSS/admin.css" />
+</head>
+<body>
+  <aside class="admin-sidebar" id="admin-sidebar"></aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+      <span class="page-title">Camera Sessions</span>
+    </header>
+
+    <div class="admin-content">
+      <div class="panel">
+        <div class="table-toolbar">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" id="search-input" placeholder="Search by box ID…" />
+          </div>
+          <select class="filter-select" id="status-filter">
+            <option value="">All statuses</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="uploading">Uploading</option>
+            <option value="failed">Failed</option>
+          </select>
+          <span id="table-info" style="margin-left:auto;font-size:.8rem;color:var(--neutral-400)"></span>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Session ID</th>
+                <th>Box ID</th>
+                <th>Return ID</th>
+                <th>Status</th>
+                <th>Image</th>
+                <th>File Size</th>
+                <th>Firmware</th>
+                <th>Captured</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="sessions-body">
+              <tr><td colspan="9"><div class="spinner-wrap"><div class="spin"></div> Loading…</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination-bar">
+          <span id="pg-info"></span>
+          <div class="pagination-btns" id="pg-btns"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm delete modal -->
+  <div class="modal-overlay" id="del-modal" onclick="if(event.target===this)closeDelModal()">
+    <div class="modal-box" style="max-width:420px">
+      <div class="modal-header">
+        <i class="fa-solid fa-triangle-exclamation" style="color:var(--danger)"></i>
+        <span class="modal-title">Delete Session</span>
+        <button class="modal-close" onclick="closeDelModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom:20px;color:var(--neutral-600)">
+          This will permanently delete the session record <strong>and</strong> the image from Cloudinary.
+          This cannot be undone.
+        </p>
+        <div style="display:flex;gap:10px;justify-content:flex-end">
+          <button class="btn-action btn-ghost" onclick="closeDelModal()">Cancel</button>
+          <button class="btn-action btn-danger" id="confirm-del-btn">
+            <i class="fa-solid fa-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { requireAdmin, injectSidebar, fmtDateTime, statusBadge, buildPagination, toast } from './Js/admin-core.js';
+    import { returnsAdminAPI, cameraAdminAPI } from './Js/admin-api.js';
+
+    const user = await requireAdmin();
+    if (!user) throw '';
+
+    let pendingCount = 0;
+    try {
+      const pd = await returnsAdminAPI.getAll({ status: 'pending', limit: 1 });
+      pendingCount = pd.data?.total || pd.total || 0;
+    } catch {}
+    injectSidebar(user, pendingCount);
+
+    let page       = 1;
+    const LIMIT    = 20;
+    let totalPages = 1;
+    let deleteId   = null;
+    let searchTimer;
+
+    async function loadSessions() {
+      const body = document.getElementById('sessions-body');
+      body.innerHTML = `<tr><td colspan="9"><div class="spinner-wrap"><div class="spin"></div></div></td></tr>`;
+
+      const status = document.getElementById('status-filter').value;
+      const search = document.getElementById('search-input').value.trim();
+
+      const params = { page, limit: LIMIT };
+      if (status) params.status = status;
+      if (search) params.boxId  = search;
+
+      try {
+        const res  = await cameraAdminAPI.getSessions(params);
+        const rows = res.data?.sessions || res.sessions || [];
+        const total = res.data?.total || res.total || rows.length;
+        totalPages  = res.data?.totalPages || res.totalPages || Math.ceil(total / LIMIT);
+
+        if (!rows.length) {
+          body.innerHTML = `<tr><td colspan="9">
+            <div class="empty-state">
+              <i class="fa-solid fa-camera"></i>
+              <h3>No camera sessions found</h3>
+              <p>Sessions appear here after ESP32-CAM uploads an image</p>
+            </div></td></tr>`;
+          buildPagination('pg-btns', 'pg-info', 1, 1, 0, LIMIT, () => {});
+          return;
+        }
+
+        body.innerHTML = rows.map(s => {
+          const returnId = s.returnId?._id || s.returnId || '';
+          const sizeKb   = s.fileSizeBytes ? Math.round(s.fileSizeBytes / 1024) + ' KB' : '—';
+
+          return `<tr>
+            <td style="font-family:monospace;font-size:.72rem;color:var(--neutral-400)">${s._id.slice(-10)}</td>
+            <td><code style="font-size:.82rem">${s.boxId}</code></td>
+            <td>
+              ${returnId
+                ? `<a href="./admin-returns.html" style="font-family:monospace;font-size:.72rem;color:var(--accent);text-decoration:none"
+                      onclick="sessionStorage.setItem('openReturn','${returnId}')" title="${returnId}">
+                     ${returnId.slice(-8)}
+                   </a>`
+                : '—'}
+            </td>
+            <td>${statusBadge(s.status)}</td>
+            <td>
+              ${s.imageUrl
+                ? `<img src="${s.imageUrl}" class="tbl-img" style="cursor:pointer"
+                        onclick="window.open('${s.imageUrl}','_blank')">`
+                : `<div class="tbl-img-placeholder"><i class="fa-solid fa-camera-slash"></i></div>`}
+            </td>
+            <td style="font-size:.82rem">${sizeKb}</td>
+            <td style="font-size:.78rem;color:var(--neutral-400)">${s.deviceFirmware || '—'}</td>
+            <td style="font-size:.75rem;color:var(--neutral-400)">${fmtDateTime(s.capturedAt || s.createdAt)}</td>
+            <td>
+              <div style="display:flex;gap:6px">
+                ${s.imageUrl
+                  ? `<a href="${s.imageUrl}" target="_blank" class="btn-action btn-ghost" style="font-size:.75rem;padding:5px 10px" title="Open image">
+                       <i class="fa-solid fa-image"></i>
+                     </a>` : ''}
+                <button class="btn-action btn-danger" style="font-size:.75rem;padding:5px 10px"
+                        onclick="promptDelete('${s._id}')" title="Delete session">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+
+        buildPagination('pg-btns', 'pg-info', page, totalPages, total, LIMIT, (p) => { page = p; loadSessions(); });
+
+      } catch (err) {
+        body.innerHTML = `<tr><td colspan="9">
+          <div class="empty-state" style="color:var(--danger)">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <h3>Failed to load sessions</h3>
+            <p>${err.message}</p>
+          </div></td></tr>`;
+      }
+    }
+
+    window.promptDelete = function(id) {
+      deleteId = id;
+      document.getElementById('del-modal').classList.add('open');
+    };
+    window.closeDelModal = function() {
+      document.getElementById('del-modal').classList.remove('open');
+      deleteId = null;
+    };
+
+    document.getElementById('confirm-del-btn').addEventListener('click', async () => {
+      if (!deleteId) return;
+      try {
+        await cameraAdminAPI.deleteSession(deleteId);
+        toast('Session deleted successfully', 'success');
+        closeDelModal();
+        loadSessions();
+      } catch (err) {
+        toast('Delete failed: ' + err.message, 'error');
+      }
+    });
+
+    document.getElementById('status-filter').addEventListener('change', () => { page = 1; loadSessions(); });
+    document.getElementById('search-input').addEventListener('input', () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => { page = 1; loadSessions(); }, 380);
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDelModal(); });
+
+    loadSessions();
+  </script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cartify — Login</title>
+    <meta name="description" content="Login to your Cartify account to access smarter shopping and automated returns." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./CSS/animate.min.css" />
+    <link rel="stylesheet" href="./CSS/wow.min.css" />
+    <link rel="stylesheet" href="./CSS/all.min.css" />
+    <link rel="stylesheet" href="./CSS/bootstrap.min.css" />
+    <link rel="stylesheet" href="./CSS/mdb.min.css" />
+    <link rel="stylesheet" href="./CSS/Style.css" />
+  <link rel="stylesheet" href="./CSS/cartify-ui.css" />
+  <link rel="stylesheet" href="./CSS/auth-screens.css" />
+  </head>
+  <body class="auth-page min-vh-100 d-flex align-items-center justify-content-center bg-light m-0">
+    <div class="container d-flex justify-content-center px-3">
+      <div class="login-container bg-white rounded-5 shadow-lg position-relative p-4 animate__animated animate__zoomIn animate__faster" style="max-width:440px;width:100%;">
+        <button class="btn-close position-absolute top-0 end-0 m-4" aria-label="Close" onclick="window.location.href='index.html'"></button>
+        <div class="d-flex align-items-center justify-content-center mx-auto mb-3">
+          <img src="./img/icon.png" alt="Cartify Logo" class="img-fluid" style="max-height:70px;" />
+        </div>
+        <div class="text-center mb-3">
+          <h1 class="h4 fw-bold mb-1 header-title">Welcome Back</h1>
+          <p class="text-muted small mb-0">Login to your Cartify account</p>
+        </div>
+
+        <!-- Alert -->
+        <div id="login-alert" class="alert d-none mb-3 rounded-4 small fw-semibold" role="alert"></div>
+
+        <form id="login-form">
+          <div class="mb-3">
+            <label for="email" class="form-label small fw-bold text-dark mb-1">Email Address</label>
+            <input type="email" class="form-control rounded-pill py-2 px-3 small custom-input h-50"
+              id="email" placeholder="name@example.com" required />
+          </div>
+          <button type="submit" id="login-btn"
+            class="btn btn-primary w-100 rounded-pill py-2 mt-2 fw-bold primary-btn h-50">
+            <span id="login-btn-text">Login / Sign Up</span>
+            <span id="login-spinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+          </button>
+          <p class="text-muted text-center small mt-2 mb-0">
+            Enter your email — we'll create your account if it doesn't exist yet.
+          </p>
+        </form>
+
+        <div class="d-flex align-items-center my-3">
+          <hr class="flex-grow-1 text-muted" />
+          <span class="mx-3 text-uppercase text-muted small fw-semibold" style="letter-spacing:.05em;font-size:.75rem;">Or continue with</span>
+          <hr class="flex-grow-1 text-muted" />
+        </div>
+
+        <div class="d-flex gap-2 mb-3">
+          <button type="button" class="btn btn-outline-secondary w-100 rounded-pill d-flex align-items-center justify-content-center py-2 social-btn" disabled title="Coming soon">
+            <i class="fa-brands fa-google fa-lg mx-2" style="color:#000;"></i>
+            <span class="fw-semibold text-dark text-capitalize" style="font-size:.85rem;">Google</span>
+          </button>
+          <button type="button" class="btn btn-outline-secondary w-100 rounded-pill d-flex align-items-center justify-content-center py-2 social-btn" disabled title="Coming soon">
+            <i class="fa-brands fa-apple fs-5 me-2 text-dark"></i>
+            <span class="fw-semibold text-dark text-capitalize" style="font-size:.85rem;">Apple</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./Js/all.min.js"></script>
+    <script src="./Js/wow.min.js"></script>
+    <script>new WOW().init();</script>
+    <script src="./Js/jquery.slim.min.js"></script>
+    <script src="./Js/bootstrap.min.js"></script>
+    <script src="./Js/mdb.umd.min.js"></script>
+    <script type="module">
+      import { login } from './Js/auth.js';
+      import { getUser } from './Js/auth.js';
+
+      // If already logged in, redirect
+      if (getUser()) window.location.href = './profile.html';
+
+      document.getElementById('login-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const email   = document.getElementById('email').value.trim();
+        const btn     = document.getElementById('login-btn');
+        const btnText = document.getElementById('login-btn-text');
+        const spinner = document.getElementById('login-spinner');
+        const alert   = document.getElementById('login-alert');
+
+        if (!email) return;
+
+        btn.disabled = true;
+        btnText.textContent = 'Logging in...';
+        spinner.classList.remove('d-none');
+        alert.classList.add('d-none');
+
+        try {
+          await login(email);
+          // Redirect to previous page or profile
+          const returnTo = new URLSearchParams(window.location.search).get('returnTo') || './profile.html';
+          window.location.href = returnTo;
+        } catch(err) {
+          alert.textContent = err.message || 'Login failed. Please try again.';
+          alert.className = 'alert alert-danger mb-3 rounded-4 small fw-semibold';
+          btn.disabled = false;
+          btnText.textContent = 'Login / Sign Up';
+          spinner.classList.add('d-none');
+        }
+      });
+    </script>
+  </body>
+</html>

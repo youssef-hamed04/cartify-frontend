@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartify Admin — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./CSS/all.min.css" />
+  <link rel="stylesheet" href="./CSS/admin.css" />
+</head>
+<body style="display:block;">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <img src="./img/the main logo 2.png" alt="Cartify" onerror="this.style.display='none'">
+        <h2>Admin Dashboard</h2>
+        <p>Sign in with your administrator account</p>
+      </div>
+
+      <div class="login-err" id="login-err"></div>
+
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" placeholder="admin@cartify.com" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <button class="login-btn" id="login-btn">
+        <span id="btn-text">Sign In</span>
+      </button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { adminAuth } from './Js/admin-api.js';
+
+    // Already logged in?
+    try {
+      const d = await adminAuth.me();
+      if (d?.data?.user?.role === 'admin' || d?.user?.role === 'admin') {
+        window.location.href = './admin-dashboard.html';
+      }
+    } catch {}
+
+    const emailEl  = document.getElementById('email');
+    const passEl   = document.getElementById('password');
+    const btn      = document.getElementById('login-btn');
+    const btnText  = document.getElementById('btn-text');
+    const errEl    = document.getElementById('login-err');
+
+    async function doLogin() {
+      errEl.classList.remove('show');
+      const email    = emailEl.value.trim();
+      const password = passEl.value;
+      if (!email || !password) {
+        errEl.textContent = 'Please enter your email and password.';
+        errEl.classList.add('show');
+        return;
+      }
+      btn.disabled  = true;
+      btnText.textContent = 'Signing in…';
+      try {
+        const data = await adminAuth.login(email, password);
+        const user = data.data?.user || data.user;
+        if (!user || user.role !== 'admin') {
+          errEl.textContent = 'This account does not have admin access.';
+          errEl.classList.add('show');
+          return;
+        }
+        window.location.href = './admin-dashboard.html';
+      } catch (err) {
+        errEl.textContent = err.data?.err || err.message || 'Login failed. Check your credentials.';
+        errEl.classList.add('show');
+      } finally {
+        btn.disabled  = false;
+        btnText.textContent = 'Sign In';
+      }
+    }
+
+    btn.addEventListener('click', doLogin);
+    passEl.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  </script>
+</body>
+</html>

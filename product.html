@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartify — Product</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./CSS/animate.min.css" />
+  <link rel="stylesheet" href="./CSS/wow.min.css" />
+  <link rel="stylesheet" href="./CSS/all.min.css" />
+  <link rel="stylesheet" href="./CSS/bootstrap.min.css" />
+  <link rel="stylesheet" href="./CSS/mdb.min.css" />
+  <link rel="stylesheet" href="./CSS/Style.css" />
+  <link rel="stylesheet" href="./CSS/cartify-ui.css" />
+</head>
+
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg nav-home sticky-top">
+    <div class="container">
+      <a class="navbar-brand me-2 brand-name" href="./index.html">
+        <img src="./img/the main logo 2.png" alt="Cartify Logo" loading="lazy" style="margin-top:-1px" />
+      </a>
+      <button data-mdb-collapse-init class="navbar-toggler" type="button" data-mdb-target="#navbarButtonsExample"
+        aria-controls="navbarButtonsExample" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarButtonsExample">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-4 px-4 nav-linkss">
+          <li class="nav-item"><a class="nav-link" data-page="home" href="./index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="categories" href="./Categories.html">Categories</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="returns" href="./returns.html">Returns</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="support" href="./support.html">Support</a></li>
+        </ul>
+        <form class="d-flex nav-search">
+          <div class="input-group mx-3">
+            <span class="input-group-text border-end-0 icon">
+              <i class="fa-solid fa-magnifying-glass fa-xs" style="color:rgb(148,163,184)"></i>
+            </span>
+            <input class="form-control border-start-0 word" type="search" placeholder="Search Products..."
+              style="text-overflow:ellipsis" />
+          </div>
+        </form>
+        <div class="nav-icons-group">
+          <a class="text-reset" href="./profile.html" title="Account">
+            <img src="./img/MAN Icon.png" alt="Account" />
+          </a>
+          <a class="text-reset cart-icon-wrapper" href="./cart.html" title="Cart">
+            <i class="fa-solid fa-cart-shopping" style="color:#1d2538"></i>
+            <span class="cart-badge">0</span>
+          </a>
+          <a class="text-reset wishlist-nav-icon" href="./wishlist.html" title="Wishlist">
+            <img src="./img/Vector.png" alt="Wishlist" />
+            <span class="wishlist-badge">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container my-5">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-custom wow fadeIn" data-wow-delay="0.2s">
+      <a href="./index.html"><i class="fa-solid fa-house me-1"></i> Home</a>
+      <i class="fa-solid fa-chevron-right mx-2" style="font-size:0.6rem"></i>
+      <a href="./Categories.html">Categories</a>
+      <i class="fa-solid fa-chevron-right mx-2" style="font-size:0.6rem"></i>
+      <span class="active" id="product-breadcrumb">Product</span>
+    </div>
+
+    <!-- Loading -->
+    <div id="product-loading" class="text-center py-5">
+      <div class="spinner-border text-primary" style="width:3rem;height:3rem;"></div>
+      <p class="mt-3 text-muted">Loading product...</p>
+    </div>
+
+    <!-- Product Detail -->
+    <div id="product-detail" style="display:none;">
+      <div class="row g-5">
+        <!-- Left: Images -->
+        <div class="col-lg-6">
+          <div class="main-product-image mb-4 shadow-lg">
+            <img width="100%" id="product-img" class="img-fluid" alt="Product" />
+          </div>
+          <div class="row g-3" id="product-thumbnails"></div>
+        </div>
+
+        <!-- Right: Details -->
+        <div class="col-lg-6 ps-lg-5 d-flex flex-column justify-content-center" id="product-info">
+          <h6 class="text-primary fw-bold text-uppercase mb-2 small permium-label" style="letter-spacing:2px"
+            id="product-brand">Premium Series</h6>
+          <h1 class="fw-bold mb-3 display-5" id="product-name">Loading...</h1>
+
+          <div class="d-flex align-items-center mb-4">
+            <div class="text-warning me-2 small" id="product-stars"></div>
+            <span class="text-muted small" id="product-review-count">(0 reviews)</span>
+            <span class="ms-3 fw-bold text-primary small" id="product-brand-tag"></span>
+          </div>
+
+          <div class="mb-4 d-flex align-items-end">
+            <span class="price-tag-hot me-3" id="product-final-price">$0.00</span>
+            <span class="old-price mb-2" id="product-original-price" style="display:none;">$0.00</span>
+          </div>
+
+          <p class="text-muted mb-5 lead" style="font-size:1rem" id="product-description">—</p>
+
+          <!-- Color Variants -->
+          <div class="mb-5" id="color-section">
+            <p class="text-uppercase fw-bold text-muted small mb-3">Color Variant</p>
+            <div class="d-flex flex-wrap gap-2" id="color-options"></div>
+          </div>
+
+          <!-- Stock info -->
+          <div id="stock-info" class="mb-3">
+            <span id="stock-badge" class="badge rounded-pill px-3 py-2"
+              style="background-color:#eef2ff;color:#4f46e5;font-size:0.75rem;"></span>
+          </div>
+
+          <!-- Quantity + Add to Cart -->
+          <div class="row g-3 mb-5">
+            <p class="text-uppercase fw-bold text-muted small mb-3">Quantity</p>
+            <div class="col-md-4">
+              <div class="d-flex align-items-center justify-content-between bg-light rounded-pill px-3 py-2">
+                <button id="decrease" class="btn btn-link text-muted p-0"><i class="fas fa-minus"></i></button>
+                <span id="quantity" class="fw-bold">1</span>
+                <button id="increase" class="btn btn-link text-muted p-0"><i class="fas fa-plus"></i></button>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <button id="add-to-cart-btn" class="btn btn-add-cart w-100 shadow">
+                <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+              </button>
+            </div>
+          </div>
+
+          <div class="row border-top pt-4">
+            <div class="col-6 d-flex align-items-center gap-2 fw-bold small">
+              <img src="./img/delivery Icon.png" alt="" /> Free Delivery
+            </div>
+            <div class="col-6 d-flex align-items-center gap-2 fw-bold small">
+              <img src="./img/warrantyIcon.png" alt="" /> 2 Year Warranty
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- You May Also Like -->
+      <div class="container py-4 mt-4">
+        <h2 class="fw-bold mb-5">You may also like</h2>
+        <div id="product-grid" class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4 mt-2"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer wow fadeIn" data-wow-offset="100">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-3 col-md-6">
+          <div class="footer-logo"><img src="./img/icon.png" alt="Cartify Logo" /></div>
+          <p class="footer-desc">Your ultimate destination for the latest in tech and style.</p>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h4 class="footer-title">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="./index.html">Home</a></li>
+            <li><a href="./Categories.html">Categories</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h4 class="footer-title">Support</h4>
+          <ul class="footer-links">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Shipping Info</a></li>
+            <li><a href="#">Returns &amp; Refunds</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h4 class="footer-title">Newsletter</h4>
+          <p class="newsletter-desc">Get the latest tech deals in your inbox.</p>
+          <form class="newsletter-form">
+            <div class="newsletter-input-wrapper mb-3">
+              <input type="email" placeholder="email@example.com" class="form-control" />
+            </div>
+            <button type="submit" class="w-100">Join</button>
+          </form>
+        </div>
+      </div>
+      <div class="footer-bottom mt-5">
+        <div class="copyright">&copy; 2026 Cartify E-commerce. All rights reserved.</div>
+        <div class="bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./Js/all.min.js"></script>
+  <script src="./Js/wow.min.js"></script>
+  <script>new WOW().init();</script>
+  <script src="./Js/jquery.slim.min.js"></script>
+  <script src="./Js/bootstrap.min.js"></script>
+  <script src="./Js/mdb.umd.min.js"></script>
+  <script type="module">
+    import { updateCartBadge } from './Js/main.js';
+    import { addToCartBackend } from './Js/main.js';   // ← import AFTER statements
+    import { productsAPI, cartAPI } from './Js/api.js';
+
+    let selectedColor = '';
+    let currentProduct = null;
+    let _qty = 1;
+
+    function starsHTML(rating = 0) {
+      const full = Math.floor(rating);
+      const half = rating % 1 >= 0.5;
+      let html = '';
+      for (let i = 0; i < full; i++) html += '<i class="fas fa-star"></i>';
+      if (half) html += '<i class="fas fa-star-half-stroke"></i>';
+      const empty = 5 - full - (half ? 1 : 0);
+      for (let i = 0; i < empty; i++) html += '<i class="far fa-star text-muted"></i>';
+      return html;
+    }
+
+    // ── Load product ──────────────────────────────────────────────────────
+    async function loadProduct() {
+      const productId = new URLSearchParams(window.location.search).get('id');
+      if (!productId) {
+        document.getElementById('product-loading').innerHTML =
+          '<p class="text-danger">No product ID provided.</p>';
+        return;
+      }
+
+      try {
+        const data = await productsAPI.getById(productId);
+        const product = data.product;
+        if (!product) throw new Error('Product not found');
+        currentProduct = product;
+
+        document.getElementById('product-loading').style.display = 'none';
+        document.getElementById('product-detail').style.display = 'block';
+
+        document.getElementById('product-breadcrumb').textContent = product.name;
+        document.title = `Cartify — ${product.name}`;
+
+        document.getElementById('product-brand').textContent = product.brand || 'Premium Series';
+        document.getElementById('product-brand-tag').textContent = product.brand || '';
+        document.getElementById('product-name').textContent = product.name;
+        document.getElementById('product-description').textContent = product.description;
+
+        const finalPrice = product.finalPrice || product.price || 0;
+        document.getElementById('product-final-price').textContent = `$${finalPrice.toFixed(2)}`;
+        if (product.discount > 0) {
+          const oldEl = document.getElementById('product-original-price');
+          if (oldEl) { oldEl.textContent = `$${product.price.toFixed(2)}`; oldEl.style.display = 'inline'; }
+        }
+
+        document.getElementById('product-stars').innerHTML = starsHTML(product.rating?.average || 0);
+        document.getElementById('product-review-count').textContent = `(${product.rating?.count || 0} reviews)`;
+
+        const variants = product.variants || [];
+        const firstVariant = variants[0];
+        selectedColor = firstVariant?.color || '';
+
+        // Main image
+        const mainImg = document.getElementById('product-img');
+        if (firstVariant?.images?.[0]?.url) mainImg.src = firstVariant.images[0].url;
+
+        // Thumbnails
+        const thumbContainer = document.getElementById('product-thumbnails');
+        const allImages = variants.flatMap(v =>
+          (v.images || []).map(img => ({ url: img.url, color: v.color }))
+        ).slice(0, 4);
+        thumbContainer.innerHTML = allImages.map(img => `
+            <div class="col-3">
+              <img src="${img.url}" class="small-img w-100"
+                   style="border-radius:12px;cursor:pointer;object-fit:cover;height:80px;"
+                   alt="${img.color}"
+                   onclick="document.getElementById('product-img').src='${img.url}';
+                            document.querySelectorAll('.small-img').forEach(s=>s.style.opacity='0.6');
+                            this.style.opacity='1';"
+                   onerror="this.src='./img/placeholder.png'" />
+            </div>`).join('');
+        if (allImages.length > 0) {
+          const first = thumbContainer.querySelector('.small-img');
+          if (first) first.style.opacity = '1';
+        }
+
+        // Color swatches
+        const colorContainer = document.getElementById('color-options');
+        colorContainer.innerHTML = variants.map((v, i) => {
+          const available = v.stock - v.reserved;
+          return `
+              <div class="d-flex flex-column align-items-center gap-1">
+                <span class="color-option ${i === 0 ? 'active' : ''}"
+                      style="background-color:${v.colorHex || '#ccc'};width:35px;height:35px;
+                             border-radius:50%;display:inline-block;cursor:pointer;border:2px solid transparent;"
+                      title="${v.color}"
+                      data-color="${v.color}"
+                      data-stock="${available}"
+                      data-image="${v.images?.[0]?.url || ''}"
+                      onclick="selectColorVariant(this)"></span>
+                <small style="font-size:0.65rem;color:#64748b;">${v.color}</small>
+              </div>`;
+        }).join('');
+
+        updateStockBadge(firstVariant ? firstVariant.stock - firstVariant.reserved : 0);
+        loadRelated(product.category, product._id);
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById('product-loading').innerHTML =
+          `<p class="text-danger py-5">Failed to load product: ${err.message}</p>`;
+      }
+    }
+
+    function updateStockBadge(available) {
+      const badge = document.getElementById('stock-badge');
+      if (!badge) return;
+      if (available <= 0) { badge.textContent = 'Out of Stock'; badge.style.background = '#fef2f2'; badge.style.color = '#ef4444'; }
+      else if (available <= 5) { badge.textContent = `Only ${available} left`; badge.style.background = '#fff7ed'; badge.style.color = '#f97316'; }
+      else { badge.textContent = `${available} in stock`; badge.style.background = '#f0fdf4'; badge.style.color = '#22c55e'; }
+    }
+
+    // Expose color selector globally (used by onclick= in generated HTML)
+    window.selectColorVariant = function (el) {
+      document.querySelectorAll('.color-option').forEach(c => {
+        c.classList.remove('active');
+        c.style.border = '2px solid transparent';
+        c.style.outline = '';
+      });
+      el.classList.add('active');
+      el.style.border = '2px solid #02067e';
+      el.style.outline = '2px solid #fff';
+      el.style.outlineOffset = '-4px';
+      selectedColor = el.dataset.color;
+      const img = el.dataset.image;
+      if (img) document.getElementById('product-img').src = img;
+      updateStockBadge(parseInt(el.dataset.stock) || 0);
+    };
+
+    // ── Quantity controls ────────────────────────────────────────────────
+    document.getElementById('decrease')?.addEventListener('click', () => {
+      if (_qty > 1) { _qty--; document.getElementById('quantity').textContent = _qty; }
+    });
+    document.getElementById('increase')?.addEventListener('click', () => {
+      _qty++; document.getElementById('quantity').textContent = _qty;
+    });
+    // ── Add to Cart — single handler, owned by this inline module ────────
+    // We give the button id="add-to-cart-btn" but REMOVE class btn-add-cart
+    // so main.js delegation does NOT also fire it.
+    // (The class is removed dynamically below after the module loads)
+    const atcBtn = document.getElementById('add-to-cart-btn');
+    if (atcBtn) {
+      atcBtn.classList.remove('btn-add-cart');
+      atcBtn.addEventListener('click', async () => {
+        if (!currentProduct) return;
+        if (!selectedColor) { alert('Please select a color variant.'); return; }
+        atcBtn.disabled = true;
+        atcBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Adding...';
+        try {
+          const data = await cartAPI.add(currentProduct._id, selectedColor, _qty);
+          if (data.stockLimitReached) {
+            atcBtn.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i> Only ${data.available} left`;
+          } else {
+            atcBtn.innerHTML = '<i class="fas fa-check me-2"></i> Added!';
+            atcBtn.style.backgroundColor = '#22c55e';
+            await updateCartBadge();
+          }
+        } catch (err) {
+          console.error(err);
+          atcBtn.innerHTML = '<i class="fas fa-times me-2"></i> Failed';
+        }
+        setTimeout(() => {
+          atcBtn.disabled = false;
+          atcBtn.innerHTML = '<i class="fas fa-shopping-cart me-2"></i> Add to Cart';
+          atcBtn.style.backgroundColor = '';
+        }, 2000);
+      });
+    }
+    // ── Related products ─────────────────────────────────────────────────
+    async function loadRelated(category, excludeId) {
+      const grid = document.getElementById('product-grid');
+      if (!grid) return;
+      try {
+        const data = await productsAPI.getAll({ category, limit: 8 });
+        const products = (data.products || []).filter(p => p._id !== excludeId).slice(0, 4);
+        grid.innerHTML = products.map((p, i) => {
+          const image = p.variants?.[0]?.images?.[0]?.url || '';
+          const color = p.variants?.[0]?.color || '';
+          const price = p.finalPrice || p.price || 0;
+          const rating = p.rating?.average || 0;
+          const count = p.rating?.count || 0;
+          return `
+              <div class="col product-item wow fadeInUp" data-wow-delay="${i * 0.1}s"
+                   data-product-id="${p._id}" data-default-color="${color}">
+                <div class="product-card" style="cursor:pointer;">
+                  <div class="product-img-wrapper">
+                    <button class="btn-wishlist" 
+                     data-product-id="${p._id}">
+                      <i class="fa-regular fa-heart"></i>
+                    </button>
+                    <img src="${image}" alt="${p.name}"
+                         onerror="this.src='./img/placeholder.png'" loading="lazy" />
+                  </div>
+                  <div class="product-details">
+                    <div class="d-flex align-items-center mb-2">
+                      <div class="rating">${Array(Math.floor(rating)).fill('<i class="fa-solid fa-star"></i>').join('')}</div>
+                      <span class="rating-count">(${count})</span>
+                    </div>
+                    <h3 class="product-title">${p.name}</h3>
+                    <p class="text-muted small">${p.category}</p>
+                    <div class="product-price-row">
+                      <div class="price">$${price.toFixed ? price.toFixed(2) : price}</div>
+                      <button class="btn-add-cart" 
+                              data-product-id="${p._id}" data-color="${color}">
+                        <i class="fa-solid fa-cart-arrow-down"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>`;
+        }).join('');
+        if (window.WOW) { try { new WOW({ live: true }).init(); } catch (_) { } }
+      } catch (_) { }
+    }
+
+    loadProduct();
+  </script>
+  <script type="module" src="./Js/main.js"></script>
+</body>
+
+</html>

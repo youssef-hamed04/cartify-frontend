@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartify Admin — Orders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./CSS/all.min.css" />
+  <link rel="stylesheet" href="./CSS/admin.css" />
+</head>
+<body>
+  <aside class="admin-sidebar" id="admin-sidebar"></aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+      <span class="page-title">Orders</span>
+    </header>
+
+    <div class="admin-content">
+      <div class="panel">
+        <div class="table-toolbar">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" id="search-input" placeholder="Search orders…" />
+          </div>
+          <select class="filter-select" id="status-filter">
+            <option value="">All statuses</option>
+            <option value="processing">Processing</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <span id="table-info" style="margin-left:auto;font-size:.8rem;color:var(--neutral-400)"></span>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="orders-body">
+              <tr><td colspan="7"><div class="spinner-wrap"><div class="spin"></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination-bar">
+          <span id="pg-info"></span>
+          <div class="pagination-btns" id="pg-btns"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Detail Modal -->
+  <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+    <div class="modal-box">
+      <div class="modal-header">
+        <i class="fa-solid fa-receipt" style="color:var(--accent)"></i>
+        <span class="modal-title" id="modal-title">Order Details</span>
+        <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <div class="spinner-wrap"><div class="spin"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { requireAdmin, injectSidebar, fmtDateTime, fmtDate, statusBadge, buildPagination, toast } from './Js/admin-core.js';
+    import { ordersAdminAPI, returnsAdminAPI } from './Js/admin-api.js';
+
+    const user = await requireAdmin();
+    if (!user) throw '';
+    let pendingCount = 0;
+    try { const pd = await returnsAdminAPI.getAll({ status:'pending', limit:1 }); pendingCount = pd.data?.total || pd.total || 0; } catch {}
+    injectSidebar(user, pendingCount);
+
+    let page = 1;
+    const LIMIT = 15;
+    let totalPages = 1;
+    let searchTimer;
+
+    async function loadOrders() {
+      const body = document.getElementById('orders-body');
+      body.innerHTML = `<tr><td colspan="7"><div class="spinner-wrap"><div class="spin"></div></div></td></tr>`;
+
+      const search = document.getElementById('search-input').value.trim();
+      const status = document.getElementById('status-filter').value;
+      const params = { page, limit: LIMIT };
+      if (status) params.status = status;
+      if (search) params.search = search;
+
+      try {
+        const res  = await ordersAdminAPI.getAll(params);
+        const rows = res.data?.orders || res.orders || res.data?.data?.orders || [];
+        const total = res.data?.total || res.total || rows.length;
+        totalPages = res.data?.totalPages || res.totalPages || Math.ceil(total / LIMIT);
+
+        if (!rows.length) {
+          body.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fa-solid fa-receipt"></i><h3>No orders found</h3></div></td></tr>`;
+          buildPagination('pg-btns','pg-info',1,1,0,LIMIT,loadOrders);
+          return;
+        }
+
+        body.innerHTML = rows.map(o => {
+          const itemCount = (o.items || []).length;
+          const customer  = o.userId?.name || o.userId?.email || o.shippingAddress?.fullName || '—';
+          const total     = o.totalPrice || o.total || 0;
+          return `<tr>
+            <td style="font-family:monospace;font-size:.72rem;color:var(--neutral-400)">${o._id.slice(-10)}</td>
+            <td style="font-size:.85rem">${customer}</td>
+            <td style="font-size:.82rem">${itemCount} item${itemCount !== 1 ? 's' : ''}</td>
+            <td style="font-weight:600">$${Number(total).toFixed(2)}</td>
+            <td>${statusBadge(o.status)}</td>
+            <td style="font-size:.75rem;color:var(--neutral-400)">${fmtDate(o.createdAt)}</td>
+            <td>
+              <button class="btn-action btn-ghost" style="font-size:.75rem;padding:5px 10px"
+                      onclick="openDetail('${o._id}')">
+                <i class="fa-solid fa-eye"></i> View
+              </button>
+            </td>
+          </tr>`;
+        }).join('');
+
+        buildPagination('pg-btns','pg-info', page, totalPages, total, LIMIT, p => { page = p; loadOrders(); });
+      } catch (err) {
+        body.innerHTML = `<tr><td colspan="7"><div class="empty-state" style="color:var(--danger)"><i class="fa-solid fa-circle-exclamation"></i><h3>${err.message}</h3></div></td></tr>`;
+      }
+    }
+
+    window.openDetail = async function(orderId) {
+      const modal  = document.getElementById('modal');
+      const mbody  = document.getElementById('modal-body');
+      const mtitle = document.getElementById('modal-title');
+      modal.classList.add('open');
+      mbody.innerHTML = `<div class="spinner-wrap"><div class="spin"></div></div>`;
+
+      try {
+        const res = await ordersAdminAPI.getAll({ _id: orderId, limit: 1 });
+        const orders = res.data?.orders || res.orders || [];
+        const o = orders.find(x => x._id === orderId) || orders[0];
+        if (!o) throw new Error('Order not found');
+
+        mtitle.textContent = `Order — ${orderId.slice(-10)}`;
+        const items = o.items || [];
+        const addr  = o.shippingAddress || {};
+
+        mbody.innerHTML = `
+          <div class="detail-grid" style="margin-bottom:20px">
+            <div class="detail-field"><label>Status</label><div class="field-val">${statusBadge(o.status)}</div></div>
+            <div class="detail-field"><label>Total</label><div class="field-val" style="font-size:1.1rem;font-weight:700">$${Number(o.totalPrice||0).toFixed(2)}</div></div>
+            <div class="detail-field"><label>Payment</label><div class="field-val">${o.paymentMethod || '—'}</div></div>
+            <div class="detail-field"><label>Placed</label><div class="field-val">${fmtDateTime(o.createdAt)}</div></div>
+            ${addr.governorate ? `<div class="detail-field"><label>Governorate</label><div class="field-val">${addr.governorate}</div></div>` : ''}
+            ${addr.fullName    ? `<div class="detail-field"><label>Recipient</label><div class="field-val">${addr.fullName}</div></div>` : ''}
+          </div>
+
+          <div style="margin-bottom:20px">
+            <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--neutral-400);margin-bottom:10px">Order Items</div>
+            <ul class="items-list">
+              ${items.map(i => `
+                <li>
+                  <div>
+                    <div style="font-weight:600">${i.name || i.productId?.name || '—'}</div>
+                    <div style="font-size:.75rem;color:var(--neutral-400)">${i.color || ''} · qty ${i.quantity}</div>
+                  </div>
+                  <div style="font-weight:600">$${Number((i.unitPrice||i.price||0)*i.quantity).toFixed(2)}</div>
+                </li>`).join('')}
+            </ul>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <span style="font-size:.82rem;color:var(--neutral-600);font-weight:600">Update status:</span>
+            ${['processing','shipped','delivered','cancelled'].map(s => `
+              <button class="btn-action ${s==='delivered'?'btn-success':s==='cancelled'?'btn-danger':'btn-ghost'}"
+                      style="font-size:.78rem"
+                      onclick="updateStatus('${o._id}','${s}')"
+                      ${o.status===s?'disabled':''}>
+                ${s.charAt(0).toUpperCase()+s.slice(1)}
+              </button>`).join('')}
+          </div>`;
+      } catch (err) {
+        mbody.innerHTML = `<div class="empty-state" style="color:var(--danger)"><i class="fa-solid fa-circle-exclamation"></i><h3>${err.message}</h3></div>`;
+      }
+    };
+
+    window.closeModal  = () => document.getElementById('modal').classList.remove('open');
+    window.updateStatus = async (id, status) => {
+      try {
+        await ordersAdminAPI.updateStatus(id, status);
+        toast(`Status updated to "${status}"`, 'success');
+        closeModal(); loadOrders();
+      } catch (err) { toast('Failed: ' + err.message, 'error'); }
+    };
+
+    document.getElementById('search-input').addEventListener('input', () => {
+      clearTimeout(searchTimer); searchTimer = setTimeout(() => { page=1; loadOrders(); }, 380);
+    });
+    document.getElementById('status-filter').addEventListener('change', () => { page=1; loadOrders(); });
+    document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+    loadOrders();
+  </script>
+</body>
+</html>

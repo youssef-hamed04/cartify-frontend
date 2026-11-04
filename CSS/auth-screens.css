@@ -1,0 +1,143 @@
+/* =============================================
+   auth-screens.css — Cartify Auth Pages
+   login, signup, forgot-password, verify-email,
+   reset-password, password-success
+   ============================================= */
+
+:root {
+  --primary: #02067e;
+  --primary-light: #1a56db;
+  --radius-pill: 999px;
+}
+
+.auth-page {
+  background: #f1f5f9;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.login-container {
+  border-radius: 2rem !important;
+}
+
+/* Icon circle */
+.auth-icon-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--primary);
+  box-shadow: 0 4px 16px rgba(2,6,126,0.10);
+}
+
+.auth-icon-circle--success {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #16a34a;
+}
+
+.header-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+}
+
+/* Inputs */
+.custom-input {
+  background: #f8fafc !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 0.75rem !important;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.95rem;
+  color: #1e293b;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  padding-left: 1rem !important;
+}
+.custom-input:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(2,6,126,0.10) !important;
+  outline: none;
+  background: #fff !important;
+}
+
+/* Password field wrapper */
+.pw-field-wrapper {
+  position: relative;
+}
+.pw-field-wrapper .custom-input {
+  padding-right: 3rem !important;
+}
+.pw-toggle-btn {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+.pw-toggle-btn:hover { color: var(--primary); }
+
+/* OTP boxes */
+.otp-box {
+  width: 50px !important;
+  height: 58px !important;
+  font-size: 1.5rem !important;
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 0.75rem !important;
+  background: #f8fafc !important;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  color: #1e293b;
+  caret-color: var(--primary);
+}
+.otp-box:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(2,6,126,0.10) !important;
+  background: #fff !important;
+  outline: none;
+}
+
+/* Primary button */
+.primary-btn {
+  background: linear-gradient(90deg, var(--primary) 0%, #1a56db 100%) !important;
+  border: none !important;
+  color: #fff !important;
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: 0.3px;
+  transition: opacity 0.2s, transform 0.1s;
+}
+.primary-btn:hover { opacity: 0.92; transform: translateY(-1px); }
+.primary-btn:active { opacity: 1; transform: translateY(0); }
+.primary-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* Password strength segments */
+.security-segment {
+  flex: 1;
+  height: 5px;
+  border-radius: 99px;
+  background: #e2e8f0;
+  transition: background 0.3s;
+}
+
+/* Divider */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}

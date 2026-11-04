@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartify — Accessories</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./CSS/animate.min.css" />
+  <link rel="stylesheet" href="./CSS/wow.min.css" />
+  <link rel="stylesheet" href="./CSS/all.min.css" />
+  <link rel="stylesheet" href="./CSS/bootstrap.min.css" />
+  <link rel="stylesheet" href="./CSS/mdb.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="./CSS/Style.css" />
+  <link rel="stylesheet" href="./CSS/cartify-ui.css" />
+</head>
+<body data-category="accessories">
+  <nav class="navbar navbar-expand-lg nav-home sticky-top">
+    <div class="container">
+      <a class="navbar-brand me-2 brand-name" href="./index.html">
+        <img src="./img/the main logo 2.png" alt="Cartify Logo" loading="lazy" style="margin-top:-1px" />
+      </a>
+      <button data-mdb-collapse-init class="navbar-toggler" type="button"
+        data-mdb-target="#navbarButtonsExample" aria-controls="navbarButtonsExample"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarButtonsExample">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-4 px-4 nav-linkss">
+          <li class="nav-item"><a class="nav-link" data-page="home" href="./index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="categories" href="./Categories.html">Categories</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="returns" href="./returns.html">Returns</a></li>
+          <li class="nav-item"><a class="nav-link" data-page="support" href="./support.html">Support</a></li>
+        </ul>
+        <form class="d-flex nav-search">
+          <div class="input-group mx-3">
+            <span class="input-group-text border-end-0 icon">
+              <i class="fa-solid fa-magnifying-glass fa-xs" style="color:rgb(148,163,184)"></i>
+            </span>
+            <input class="form-control border-start-0 word" type="search"
+              placeholder="Search Products..." style="text-overflow:ellipsis" />
+          </div>
+        </form>
+        <div class="nav-icons-group">
+          <a class="text-reset" href="./profile.html" title="Account">
+            <img src="./img/MAN Icon.png" alt="Account" />
+          </a>
+          <a class="text-reset cart-icon-wrapper" href="./cart.html" title="Cart">
+            <i class="fa-solid fa-cart-shopping" style="color:#1d2538"></i>
+            <span class="cart-badge">0</span>
+          </a>
+          <a class="text-reset wishlist-nav-icon" href="./wishlist.html" title="Wishlist">
+            <img src="./img/Vector.png" alt="Wishlist" />
+            <span class="wishlist-badge">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <div class="breadcrumb-custom wow fadeIn" data-wow-delay="0.2s">
+      <a href="./index.html"><i class="fa-solid fa-house me-1"></i> Home</a>
+      <i class="fa-solid fa-chevron-right mx-2" style="font-size:0.6rem"></i>
+      <a href="./Categories.html">Categories</a>
+      <i class="fa-solid fa-chevron-right mx-2" style="font-size:0.6rem"></i>
+      <span class="active">Accessories</span>
+    </div>
+
+    <section class="category-banner wow fadeInUp" data-wow-delay="0.3s">
+      <div class="banner-content w-100">
+        <span class="badge-premium">PREMIUM COLLECTION</span>
+        <h1 class="category-title">Accessories</h1>
+        <p class="category-desc">Upgrade your everyday style with our curated collection of trendy accessories and elegant essentials designed to complete every look.</p>
+      </div>
+    </section>
+
+    <section class="filters-bar wow fadeIn" data-wow-delay="0.4s">
+      <div class="d-flex gap-2 flex-wrap filters-category">
+        <button class="filter-btn"><i class="fa-solid fa-layer-group"></i> Category <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.7rem"></i></button>
+        <button class="filter-btn">Price Range <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.7rem"></i></button>
+        <button class="filter-btn">Rating <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.7rem"></i></button>
+      </div>
+      <div class="sort-by mt-3 mt-md-0">
+        Sort by:
+        <div class="dropdown ms-2">
+          <button class="filter-btn bg-transparent px-2" type="button" data-mdb-dropdown-init data-mdb-ripple-init aria-expanded="false">
+            Most Popular <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.7rem"></i>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Most Popular</a></li>
+            <li><a class="dropdown-item" href="#">Newest</a></li>
+            <li><a class="dropdown-item" href="#">Price: Low to High</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div id="product-grid-accessories" class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4 mt-2"></div>
+
+    <ul class="pagination-custom wow fadeIn" data-wow-delay="1.0s"></ul>
+
+    <section class="recommended-section wow fadeInUp" data-wow-delay="0.3s">
+      <div class="section-header">
+        <h2 class="section-title">Recommended for You</h2>
+      </div>
+      <div id="recommended-grid-accessories" class="row row-cols-2 row-cols-md-4 g-4"></div>
+    </section>
+  </main>
+
+  <footer class="footer wow fadeIn" data-wow-offset="100">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-3 col-md-6"><div class="footer-logo"><img src="./img/icon.png" alt="Cartify Logo" /></div><p class="footer-desc">Your ultimate destination for the latest in tech and style.</p></div>
+        <div class="col-lg-3 col-md-6"><h4 class="footer-title">Quick Links</h4><ul class="footer-links"><li><a href="./index.html">Home</a></li><li><a href="./Categories.html">Categories</a></li></ul></div>
+        <div class="col-lg-3 col-md-6"><h4 class="footer-title">Support</h4><ul class="footer-links"><li><a href="#">Help Center</a></li><li><a href="#">Shipping Info</a></li><li><a href="#">Returns &amp; Refunds</a></li></ul></div>
+        <div class="col-lg-3 col-md-6"><h4 class="footer-title">Newsletter</h4><p class="newsletter-desc">Get the latest tech deals in your inbox.</p><form class="newsletter-form"><div class="newsletter-input-wrapper mb-3"><input type="email" placeholder="email@example.com" class="form-control" /></div><button type="submit" class="w-100">Join</button></form></div>
+      </div>
+      <div class="footer-bottom mt-5">
+        <div class="copyright">&copy; 2026 Cartify E-commerce. All rights reserved.</div>
+        <div class="bottom-links"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./Js/all.min.js"></script>
+  <script src="./Js/wow.min.js"></script>
+  <script>new WOW().init();</script>
+  <script src="./Js/jquery.slim.min.js"></script>
+  <script src="./Js/bootstrap.min.js"></script>
+  <script src="./Js/mdb.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script type="module" src="./Js/main.js"></script>
+  <script type="module" src="./Js/index.js"></script>
+  <script type="module">
+    // Load recommended products for this category
+    import { productsAPI } from './Js/api.js';
+    (async () => {
+      const catMap = { fashion:'Fashion', living:'Home & Living', beauty:'Beauty', accessories:'Accessories', school:'School Supplies' };
+      const cat = 'accessories';
+      const catName = catMap[cat];
+      if (!catName) return;
+      try {
+        const grid = document.getElementById('recommended-grid-accessories');
+        if (!grid) return;
+        const data = await productsAPI.getAll({ category: catName, limit: 4, sort: 'rating' });
+        const products = data.products || [];
+        grid.innerHTML = products.map((p, i) => {
+          const img   = p.variants?.[0]?.images?.[0]?.url || '';
+          const bg    = i === 1 ? 'background-color:#f7e6dc' : i === 2 ? 'background-color:#f8e5cc' : '';
+          const price = p.finalPrice || p.price || 0;
+          return `<div class="col">
+            <div class="rec-card" style="cursor:pointer;" onclick="window.location.href='./product.html?id=${p._id}'">
+              <div class="rec-img-wrapper" style="${bg}">
+                <img src="${img}" alt="${p.name}" onerror="this.src='./img/placeholder.png'" loading="lazy" />
+              </div>
+              <h4 class="rec-title">${p.name}</h4>
+              <div class="rec-price">$${price.toFixed ? price.toFixed(2) : price}</div>
+            </div>
+          </div>`;
+        }).join('');
+      } catch(_) {}
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cartify — Sign Up</title>
+    <meta name="description" content="Create your Cartify account for smarter shopping and automated returns." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./CSS/animate.min.css" />
+    <link rel="stylesheet" href="./CSS/wow.min.css" />
+    <link rel="stylesheet" href="./CSS/all.min.css" />
+    <link rel="stylesheet" href="./CSS/bootstrap.min.css" />
+    <link rel="stylesheet" href="./CSS/mdb.min.css" />
+    <link rel="stylesheet" href="./CSS/Style.css" />
+  <link rel="stylesheet" href="./CSS/cartify-ui.css" />
+  <link rel="stylesheet" href="./CSS/auth-screens.css" />
+  </head>
+  <body class="auth-page d-flex align-items-center justify-content-center bg-light m-0">
+    <div class="container d-flex justify-content-center">
+      <div class="login-container signup-container bg-white rounded-5 shadow-lg position-relative p-3 my-4 animate__animated animate__zoomIn animate__faster"
+           style="max-width:440px;width:100%;">
+
+        <button class="btn-close position-absolute top-0 end-0 m-3" aria-label="Close"
+                onclick="window.location.href='index.html'"></button>
+
+        <div class="d-flex align-items-center justify-content-center mx-auto mb-3">
+          <img src="./img/icon.png" alt="Cartify Logo" class="img-fluid" style="max-height:70px;" />
+        </div>
+
+        <div class="text-center mb-2">
+          <h1 class="h5 fw-bold mb-1 header-title">Create Account</h1>
+          <p class="text-muted small mb-0">Sign up for your Cartify account</p>
+        </div>
+
+        <!-- Alert -->
+        <div id="signup-alert" class="alert d-none mb-3 rounded-4 small fw-semibold" role="alert"></div>
+
+        <form id="signup-form">
+          <div class="mb-2">
+            <label for="fullname" class="form-label small fw-bold text-dark mb-1" style="font-size:0.8rem;">Full Name</label>
+            <input type="text" class="form-control rounded-pill py-1 px-3 small custom-input"
+                   id="fullname" placeholder="Your full name" required minlength="4" maxlength="30" />
+          </div>
+          <div class="mb-2">
+            <label for="email" class="form-label small fw-bold text-dark mb-1" style="font-size:0.8rem;">Email Address</label>
+            <input type="email" class="form-control rounded-pill py-1 px-3 small custom-input"
+                   id="email" placeholder="name@example.com" required />
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-bold text-dark mb-1" style="font-size:0.8rem;">Terms</label>
+            <div class="form-check mb-0">
+              <input class="form-check-input" type="checkbox" id="terms" required />
+              <label class="form-check-label text-muted" for="terms" style="font-size:0.75rem;">
+                I agree to the <a href="#" class="text-decoration-none fw-bold signup-link">Terms</a>
+                &amp; <a href="#" class="text-decoration-none fw-bold signup-link">Privacy</a>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" id="signup-btn"
+            class="btn btn-primary w-100 rounded-pill py-1 mt-2 fw-bold primary-btn">
+            <span id="signup-btn-text">Create Account</span>
+            <span id="signup-spinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+          </button>
+        </form>
+
+        <div class="d-flex align-items-center my-2">
+          <hr class="flex-grow-1 text-muted m-0" />
+          <span class="mx-3 text-uppercase text-muted fw-semibold"
+                style="letter-spacing:.05em;font-size:.65rem;">Or sign up with</span>
+          <hr class="flex-grow-1 text-muted m-0" />
+        </div>
+
+        <div class="d-flex gap-2 mb-2">
+          <button type="button"
+            class="btn btn-outline-secondary w-100 rounded-pill d-flex align-items-center justify-content-center py-1 social-btn"
+            disabled title="Coming soon">
+            <i class="fa-brands fa-google fa-lg mx-2" style="color:#000;"></i>
+            <span class="fw-semibold text-dark text-capitalize" style="font-size:0.8rem;">Google</span>
+          </button>
+          <button type="button"
+            class="btn btn-outline-secondary w-100 rounded-pill d-flex align-items-center justify-content-center py-1 social-btn"
+            disabled title="Coming soon">
+            <i class="fa-brands fa-apple fs-6 me-2 text-dark"></i>
+            <span class="fw-semibold text-dark text-capitalize" style="font-size:0.8rem;">Apple</span>
+          </button>
+        </div>
+
+        <div class="text-center">
+          <p class="text-muted mb-0" style="font-size:0.8rem;">
+            Already have an account?
+            <a href="./login.html" class="text-decoration-none fw-bold text-primary signup-link">Login</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="./Js/all.min.js"></script>
+    <script src="./Js/wow.min.js"></script>
+    <script>new WOW().init();</script>
+    <script src="./Js/jquery.slim.min.js"></script>
+    <script src="./Js/bootstrap.min.js"></script>
+    <script src="./Js/mdb.umd.min.js"></script>
+    <script type="module">
+      import { login, getUser } from './Js/auth.js';
+
+      // Already logged in → redirect
+      if (getUser()) window.location.href = './profile.html';
+
+      document.getElementById('signup-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const fullname = document.getElementById('fullname').value.trim();
+        const email    = document.getElementById('email').value.trim();
+        const terms    = document.getElementById('terms').checked;
+        const btn      = document.getElementById('signup-btn');
+        const btnText  = document.getElementById('signup-btn-text');
+        const spinner  = document.getElementById('signup-spinner');
+        const alertEl  = document.getElementById('signup-alert');
+
+        // Basic validation
+        if (fullname.length < 4) {
+          alertEl.textContent = 'Full name must be at least 4 characters.';
+          alertEl.className = 'alert alert-danger mb-3 rounded-4 small fw-semibold';
+          alertEl.classList.remove('d-none');
+          return;
+        }
+        if (!email.includes('@') || !email.includes('.')) {
+          alertEl.textContent = 'Please enter a valid email address.';
+          alertEl.className = 'alert alert-danger mb-3 rounded-4 small fw-semibold';
+          alertEl.classList.remove('d-none');
+          return;
+        }
+        if (!terms) {
+          alertEl.textContent = 'Please accept the terms and privacy policy.';
+          alertEl.className = 'alert alert-danger mb-3 rounded-4 small fw-semibold';
+          alertEl.classList.remove('d-none');
+          return;
+        }
+
+        btn.disabled = true;
+        btnText.textContent = 'Creating account...';
+        spinner.classList.remove('d-none');
+        alertEl.classList.add('d-none');
+
+        try {
+          // The backend creates the account if it doesn't exist
+          const user = await login(email);
+
+          // After login, update the user's name via profile update
+          const nameParts = fullname.split(' ');
+          const firstName = nameParts[0];
+          const lastName  = nameParts.slice(1).join(' ') || '';
+
+          if (firstName) {
+            try {
+              const { authAPI } = await import('./Js/api.js');
+              await authAPI.updateMe({ firstName, lastName });
+            } catch(_) {}
+          }
+
+          alertEl.textContent = 'Account created successfully! Redirecting...';
+          alertEl.className = 'alert alert-success mb-3 rounded-4 small fw-semibold';
+          alertEl.classList.remove('d-none');
+
+          setTimeout(() => window.location.href = './profile.html', 1000);
+
+        } catch(err) {
+          alertEl.textContent = err.message || 'Sign up failed. Please try again.';
+          alertEl.className = 'alert alert-danger mb-3 rounded-4 small fw-semibold';
+          alertEl.classList.remove('d-none');
+          btn.disabled = false;
+          btnText.textContent = 'Create Account';
+          spinner.classList.add('d-none');
+        }
+      });
+    </script>
+  </body>
+</html>

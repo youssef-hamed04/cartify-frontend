@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartify Admin — Users</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./CSS/all.min.css" />
+  <link rel="stylesheet" href="./CSS/admin.css" />
+</head>
+<body>
+  <aside class="admin-sidebar" id="admin-sidebar"></aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+      <span class="page-title">Users</span>
+    </header>
+
+    <div class="admin-content">
+      <div class="panel">
+        <div class="table-toolbar">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" id="search-input" placeholder="Search users…" />
+          </div>
+          <span id="table-info" style="margin-left:auto;font-size:.8rem;color:var(--neutral-400)"></span>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Phone</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody id="users-body">
+              <tr><td colspan="5"><div class="spinner-wrap"><div class="spin"></div> Loading…</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination-bar">
+          <span id="pg-info"></span>
+          <div class="pagination-btns" id="pg-btns"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { requireAdmin, injectSidebar, fmtDate, buildPagination } from './Js/admin-core.js';
+    import { usersAdminAPI, returnsAdminAPI } from './Js/admin-api.js';
+
+    const user = await requireAdmin();
+    if (!user) throw '';
+
+    let pendingCount = 0;
+    try {
+      const pd = await returnsAdminAPI.getAll({ status: 'pending', limit: 1 });
+      pendingCount = pd.data?.total || pd.total || 0;
+    } catch {}
+    injectSidebar(user, pendingCount);
+
+    let page = 1;
+    const LIMIT = 20;
+    let totalPages = 1;
+    let searchTimer;
+
+    async function loadUsers() {
+      const body = document.getElementById('users-body');
+      body.innerHTML = `<tr><td colspan="5"><div class="spinner-wrap"><div class="spin"></div></div></td></tr>`;
+
+      const search = document.getElementById('search-input').value.trim();
+      const params = { page, limit: LIMIT };
+      if (search) params.search = search;
+
+      try {
+        const res  = await usersAdminAPI.getAll(params);
+        const rows = res.data?.users || res.users || res.data?.data?.users || [];
+        const total = res.data?.total || res.total || rows.length;
+        totalPages  = res.data?.totalPages || res.totalPages || Math.ceil(total / LIMIT);
+
+        if (!rows.length) {
+          body.innerHTML = `<tr><td colspan="5"><div class="empty-state">
+            <i class="fa-solid fa-users"></i><h3>No users found</h3></div></td></tr>`;
+          return;
+        }
+
+        body.innerHTML = rows.map(u => `
+          <tr>
+            <td style="font-weight:600">${u.name || '—'}</td>
+            <td style="font-size:.85rem">${u.email || '—'}</td>
+            <td>
+              <span class="badge ${u.role === 'admin' ? 'badge-info' : 'badge-completed'}" style="font-size:.7rem">
+                ${u.role || 'user'}
+              </span>
+            </td>
+            <td style="font-size:.82rem">${u.phone || '—'}</td>
+            <td style="font-size:.75rem;color:var(--neutral-400)">${fmtDate(u.createdAt)}</td>
+          </tr>`).join('');
+
+        buildPagination('pg-btns', 'pg-info', page, totalPages, total, LIMIT, p => { page = p; loadUsers(); });
+
+      } catch (err) {
+        body.innerHTML = `<tr><td colspan="5"><div class="empty-state" style="color:var(--danger)">
+          <i class="fa-solid fa-circle-exclamation"></i><h3>${err.message}</h3></div></td></tr>`;
+      }
+    }
+
+    document.getElementById('search-input').addEventListener('input', () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => { page = 1; loadUsers(); }, 380);
+    });
+
+    loadUsers();
+  </script>
+</body>
+</html>
