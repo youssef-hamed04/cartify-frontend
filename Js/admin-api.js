@@ -39,6 +39,7 @@ export const productsAdminAPI = {
     return adminFetch(`/products${q ? '?' + q : ''}`);
   },
   delete: (id) => adminFetch(`/products/${id}`, { method: 'DELETE' }),
+  setWeights: (id, weights) => adminFetch(`/products/${id}/weights`, { method: 'PATCH', body: JSON.stringify({ weights }) }),
 };
 
 // ── Orders ────────────────────────────────────────────────────────────────────

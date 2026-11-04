@@ -115,14 +115,18 @@
       if (v.verdict === 'processing') return '<span class="badge badge-processing">Checking…</span>';
       if (v.verdict === 'error') return `<span class="badge badge-failed" title="${v.error || ''}">Check failed</span>`;
       const ok = v.verdict === 'match';
-      const pct = v.visual?.score != null ? Math.round(v.visual.score * 100) + '%' : '—';
+      // Photo match (vs. catalog photos) when available, otherwise the label check
+      const usePhoto = v.photo?.passed != null;
+      const check = usePhoto ? v.photo : v.visual || {};
+      const pct = `${usePhoto ? 'Photo' : 'Image'} ${check.score != null ? Math.round(check.score * 100) + '%' : '—'}${check.passed ? ' ✓' : ' ✗'}`;
       const w = v.weight || {};
       const weightTxt = w.passed == null
         ? 'weight not checked'
         : `${w.measured} g / ${w.expected} g ${w.passed ? '✓' : '✗'}`;
       return `<div style="display:flex;flex-direction:column;gap:3px;min-width:150px">
         <span class="badge ${ok ? 'badge-completed' : 'badge-pending'}">${ok ? 'Item matches' : 'Needs review'}</span>
-        <span style="font-size:.72rem;color:var(--neutral-500)">Image ${pct}${v.visual?.passed ? ' ✓' : ' ✗'} · ${weightTxt}</span>
+        <span style="font-size:.72rem;color:var(--neutral-500)">${pct} · ${weightTxt}</span>
+        ${usePhoto ? `<span style="font-size:.7rem;color:var(--neutral-400)" title="Closest of ${v.photo.compared} catalog items">Looks like: ${v.photo.closest}</span>` : ''}
         ${!ok && v.reasons?.length ? `<span style="font-size:.7rem;color:#92400e">${v.reasons[0]}</span>` : ''}
       </div>`;
     }

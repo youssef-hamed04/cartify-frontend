@@ -49,11 +49,12 @@
                 <th>Discount</th>
                 <th>Rating</th>
                 <th>Variants</th>
+                <th title="Used by the SmartBox to check returned items">Box weight</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody id="products-body">
-              <tr><td colspan="8"><div class="spinner-wrap"><div class="spin"></div> Loading…</div></td></tr>
+              <tr><td colspan="9"><div class="spinner-wrap"><div class="spin"></div> Loading…</div></td></tr>
             </tbody>
           </table>
         </div>
@@ -87,7 +88,7 @@
 
     async function loadProducts() {
       const body = document.getElementById('products-body');
-      body.innerHTML = `<tr><td colspan="8"><div class="spinner-wrap"><div class="spin"></div></div></td></tr>`;
+      body.innerHTML = `<tr><td colspan="9"><div class="spinner-wrap"><div class="spin"></div></div></td></tr>`;
 
       const search   = document.getElementById('search-input').value.trim();
       const category = document.getElementById('cat-filter').value;
@@ -102,7 +103,7 @@
         totalPages  = res.data?.totalPages || res.totalPages || Math.ceil(total / LIMIT);
 
         if (!rows.length) {
-          body.innerHTML = `<tr><td colspan="8"><div class="empty-state">
+          body.innerHTML = `<tr><td colspan="9"><div class="empty-state">
             <i class="fa-solid fa-box"></i><h3>No products found</h3></div></td></tr>`;
           return;
         }
@@ -128,6 +129,7 @@
               ${rating.toFixed(1)} (${p.rating?.count || 0})
             </td>
             <td style="font-size:.82rem">${vars} color${vars !== 1 ? 's' : ''}</td>
+            <td>${weightInputs(p)}</td>
             <td>
               <button class="btn-action btn-danger" style="font-size:.75rem;padding:5px 10px"
                       onclick="deleteProduct('${p._id}','${p.name.replace(/'/g,'')}')">
@@ -140,10 +142,37 @@
         buildPagination('pg-btns', 'pg-info', page, totalPages, total, LIMIT, p => { page = p; loadProducts(); });
 
       } catch (err) {
-        body.innerHTML = `<tr><td colspan="8"><div class="empty-state" style="color:var(--danger)">
+        body.innerHTML = `<tr><td colspan="9"><div class="empty-state" style="color:var(--danger)">
           <i class="fa-solid fa-circle-exclamation"></i><h3>${err.message}</h3></div></td></tr>`;
       }
     }
+
+    // One grams field per colour; the SmartBox compares its scale reading with this
+    const escAttr = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    function weightInputs(p) {
+      return (p.variants || []).map(v => `
+        <label style="display:flex;align-items:center;gap:6px;font-size:.78rem;margin:2px 0;white-space:nowrap" title="${escAttr(v.color)}">
+          <span style="width:10px;height:10px;border-radius:50%;flex:none;border:1px solid var(--neutral-300,#cbd5e1);background:${escAttr(v.colorHex || '#fff')}"></span>
+          <input type="number" min="1" step="1" inputmode="numeric" class="weight-input"
+                 data-id="${p._id}" data-color="${escAttr(v.color)}" value="${v.weight ?? ''}" placeholder="—"
+                 style="width:70px;padding:4px 6px;border:1px solid ${v.weight ? 'var(--neutral-200,#e2e8f0)' : '#f59e0b'};border-radius:6px;font:inherit">
+          g
+        </label>`).join('');
+    }
+
+    document.getElementById('products-body').addEventListener('change', async e => {
+      const input = e.target.closest('.weight-input');
+      if (!input) return;
+      const raw = input.value.trim();
+      if (raw !== '' && !(Number(raw) > 0)) { toast('Weight must be a positive number of grams', 'error'); return; }
+      try {
+        await productsAdminAPI.setWeights(input.dataset.id, { [input.dataset.color]: raw === '' ? null : Number(raw) });
+        input.style.borderColor = raw === '' ? '#f59e0b' : 'var(--neutral-200,#e2e8f0)';
+        toast(raw === '' ? `Weight cleared for ${input.dataset.color}` : `Saved ${raw} g for ${input.dataset.color}`, 'success');
+      } catch (err) {
+        toast('Save failed: ' + err.message, 'error');
+      }
+    });
 
     window.deleteProduct = async function(id, name) {
       if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
