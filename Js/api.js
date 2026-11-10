@@ -105,3 +105,13 @@ export const reviewsAPI = {
 };
 
 export default apiFetch;
+
+// ─── AI Shopping Assistant ────────────────────────────────────────────────────
+// Talks to the backend agent; the AI key never reaches the browser.
+export const assistantAPI = {
+  status: () => apiFetch('/assistant/status'),
+  chat: (message, conversationId) => apiFetch('/assistant/chat', { method: 'POST', body: { message, ...(conversationId ? { conversationId } : {}) } }),
+  conversation: (id) => apiFetch(`/assistant/conversations/${id}`),
+  confirm: (actionId, conversationId) => apiFetch(`/assistant/actions/${actionId}/confirm`, { method: 'POST', body: { conversationId } }),
+  cancel: (actionId, conversationId) => apiFetch(`/assistant/actions/${actionId}/cancel`, { method: 'POST', body: { conversationId } }),
+};

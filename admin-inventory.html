@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartify Admin — Branch & Inventory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./CSS/all.min.css" />
+  <link rel="stylesheet" href="./CSS/admin.css" />
+  <link rel="stylesheet" href="./CSS/admin-ai.css" />
+</head>
+<body>
+  <aside class="admin-sidebar" id="admin-sidebar"></aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+      <span class="page-title">Branch & Inventory</span>
+    </header>
+
+    <div class="admin-content">
+      <div class="dash">
+        <div class="dash-head">
+          <div>
+            <h1>Branch & inventory intelligence</h1>
+            <p id="head-line">Stock across branches, compared with the demand forecast.</p>
+          </div>
+          <div class="head-actions">
+            <div class="seg" id="horizon" role="group" aria-label="Forecast period">
+              <button data-h="7">7 days</button><button data-h="30" class="active">30 days</button><button data-h="90">90 days</button>
+            </div>
+            <a class="btn-action btn-ghost" href="./admin-forecasting.html"><i class="fa-solid fa-chart-line"></i> Forecasts</a>
+            <button class="btn-action btn-primary" id="generate-btn"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate recommendations</button>
+          </div>
+        </div>
+
+        <div id="notices" style="display:flex;flex-direction:column;gap:10px"></div>
+
+        <!-- Branch overview -->
+        <div class="branches" id="branches">
+          <div class="card branch-card"><div class="skeleton" style="height:120px"></div></div>
+          <div class="card branch-card"><div class="skeleton" style="height:120px"></div></div>
+          <div class="card branch-card"><div class="skeleton" style="height:120px"></div></div>
+          <div class="card branch-card"><div class="skeleton" style="height:120px"></div></div>
+        </div>
+
+        <div class="row row-1-1">
+          <!-- Recommendations -->
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Suggested transfers & reorders</div>
+                <div class="card-sub" id="recs-sub">Proposals only — nothing moves until you approve and complete it</div>
+              </div>
+              <select class="filter-select" id="recs-status"><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="all">All</option></select>
+            </div>
+            <div class="card-body"><div class="scroll-list" id="recs"><div class="skeleton" style="height:220px"></div></div></div>
+          </div>
+
+          <!-- Alerts -->
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Alerts</div>
+                <div class="card-sub" id="alerts-sub">&nbsp;</div>
+              </div>
+            </div>
+            <div class="tabs" id="alert-tabs">
+              <button data-tab="low" class="active">Low stock</button><button data-tab="excess">Excess stock</button><button data-tab="anomalies">Unusual changes</button>
+            </div>
+            <div class="card-body"><div class="scroll-list list" id="alerts"><div class="skeleton" style="height:220px"></div></div></div>
+          </div>
+        </div>
+
+        <div class="row row-2-1">
+          <!-- Branch inventory -->
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title" id="inv-title">Branch inventory</div>
+                <div class="card-sub" id="inv-sub">&nbsp;</div>
+              </div>
+              <div class="card-tools">
+                <div class="search-box" style="min-width:150px"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="inv-search" placeholder="Search…" /></div>
+                <select class="filter-select" id="inv-status"><option value="all">All items</option><option value="low">Low stock</option><option value="excess">Spare stock</option><option value="out">Out of stock</option></select>
+              </div>
+            </div>
+            <div class="card-body" style="padding-left:0;padding-right:0;padding-bottom:0">
+              <div class="admin-table-wrap">
+                <table class="admin-table">
+                  <thead><tr><th>Product</th><th>Available</th><th class="hide-sm">Forecast</th><th class="hide-sm">Cover</th><th>Status</th><th></th></tr></thead>
+                  <tbody id="inv-rows"><tr><td colspan="6"><div class="spinner-wrap"><div class="spin"></div></div></td></tr></tbody>
+                </table>
+              </div>
+              <div class="pagination-bar"><span id="inv-pg-info"></span><div class="pagination-btns" id="inv-pg"></div></div>
+            </div>
+          </div>
+
+          <!-- Inventory agent -->
+          <div class="card agent">
+            <div class="card-head">
+              <div>
+                <div class="card-title"><i class="fa-solid fa-robot" style="color:var(--accent)"></i> Inventory agent</div>
+                <div class="card-sub">Ask about stock, sales and forecasts — answers come from live data</div>
+              </div>
+              <button class="btn-action btn-ghost btn-sm" id="agent-new" title="Start a new conversation"><i class="fa-solid fa-plus"></i> New</button>
+            </div>
+            <div class="card-body">
+              <div class="agent-msgs" id="agent-msgs" aria-live="polite"></div>
+              <div class="quick" id="agent-quick">
+                <button>Which branch has the lowest inventory?</button>
+                <button>Which products are likely to run out soon?</button>
+                <button>Which branch has excess stock?</button>
+                <button>What should we transfer this week?</button>
+                <button>Compare sales between branches</button>
+                <button>Which products have increasing demand?</button>
+              </div>
+              <form class="agent-input" id="agent-form">
+                <textarea id="agent-text" rows="1" maxlength="2000" placeholder="Ask the inventory agent…" aria-label="Message to the inventory agent"></textarea>
+                <button class="btn-action btn-primary" id="agent-send" type="submit" aria-label="Send"><i class="fa-solid fa-paper-plane"></i></button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stock movements -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Stock movements</div>
+              <div class="card-sub">Transfers, supplier deliveries and stock corrections. Approving reserves the stock at the source; completing moves it.</div>
+            </div>
+            <div class="card-tools">
+              <select class="filter-select" id="mv-status"><option value="all">All statuses</option><option value="open">Open (requested / approved)</option><option value="requested">Requested</option><option value="approved">Approved</option><option value="completed">Completed</option><option value="rejected">Rejected</option><option value="cancelled">Cancelled</option></select>
+              <select class="filter-select" id="mv-type"><option value="">All types</option><option value="transfer">Transfers</option><option value="replenishment">Supplier deliveries</option><option value="adjustment">Adjustments</option></select>
+              <button class="btn-action btn-accent" id="new-transfer"><i class="fa-solid fa-right-left"></i> New transfer</button>
+            </div>
+          </div>
+          <div class="card-body" style="padding-left:0;padding-right:0;padding-bottom:0">
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead><tr><th>#</th><th>Type</th><th>Product</th><th class="hide-sm">From → To</th><th>Qty</th><th>Status</th><th class="hide-sm">Source</th><th class="hide-sm">Date</th><th></th></tr></thead>
+                <tbody id="mv-rows"><tr><td colspan="9"><div class="spinner-wrap"><div class="spin"></div></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="pagination-bar"><span id="mv-pg-info"></span><div class="pagination-btns" id="mv-pg"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal (transfer request / stock adjustment) -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal-box" style="max-width:560px">
+      <div class="modal-header">
+        <i class="fa-solid fa-right-left" style="color:var(--accent)" id="modal-icon"></i>
+        <span class="modal-title" id="modal-title">New transfer request</span>
+        <button class="modal-close" id="modal-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { requireAdmin, injectSidebar, fmtDate, fmtDateTime, toast, buildPagination } from './Js/admin-core.js';
+    import { inventoryAdminAPI, branchesAdminAPI, agentAdminAPI, returnsAdminAPI } from './Js/admin-api.js';
+
+    const user = await requireAdmin();
+    if (!user) throw '';
+    let pendingReturns = 0;
+    try { const r = await returnsAdminAPI.getAll({ status: 'pending', limit: 1 }); pendingReturns = r.total || 0; } catch {}
+    injectSidebar(user, pendingReturns);
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    const n0 = (v) => Math.round(Number(v || 0)).toLocaleString('en-US');
+    const empty = (icon, text) => `<div class="empty"><i class="fa-solid ${icon}"></i>${text}</div>`;
+    const RISK = { high: ['err', 'Urgent'], medium: ['warn', 'Reorder'], low: ['wait', 'Below safety'], none: ['ok', 'Covered'] };
+    const riskChip = (r) => (RISK[r] ? `<span class="chip ${RISK[r][0]}">${RISK[r][1]}</span>` : '<span class="chip none">No forecast</span>');
+    const PRIO = { high: 'err', medium: 'warn', low: 'wait' };
+    const MV_STATUS = { requested: 'badge-pending', approved: 'badge-processing', completed: 'badge-completed', rejected: 'badge-denied', cancelled: 'badge-expired' };
+    const MV_TYPE = { transfer: ['fa-right-left', 'Transfer'], replenishment: ['fa-truck', 'Supplier'], adjustment: ['fa-pen-to-square', 'Adjustment'] };
+    const VIA = { dashboard: 'Dashboard', inventory_agent: 'AI agent', recommendation: 'Recommendation', api: 'API', demo_seed: '' };
+
+    const state = { horizon: 30, branches: [], branchId: null, invPage: 1, invStatus: 'all', invSearch: '', alertTab: 'low', mvPage: 1, mvStatus: 'all', mvType: '', recStatus: 'pending', conversationId: null };
+    try { state.conversationId = sessionStorage.getItem('cartify_inventory_agent') || null; } catch {}
+
+    // ── Overview / branch cards ──────────────────────────────────────────────
+    async function loadOverview() {
+      try {
+        const o = await inventoryAdminAPI.overview({ horizonDays: state.horizon });
+        state.branches = o.branches;
+        if (!state.branchId || !o.branches.some((b) => b.id === state.branchId)) state.branchId = o.branches[0]?.id || null;
+        const notes = [];
+        if (o.forecast?.isSynthetic) notes.push(`<div class="notice warn"><i class="fa-solid fa-flask"></i><div><b>Demonstration data — not real sales.</b> Branches, branch stock and sales history here are the sample Mansoura dataset from <code>npm run seed:ai-demo</code>. Recommendations based on it are for trying the workflow only.</div></div>`);
+        if (!o.forecast) notes.push(`<div class="notice info"><i class="fa-solid fa-circle-info"></i><div>No demand forecast has been run yet, so low stock uses a fixed threshold and no transfers can be suggested. <a href="./admin-forecasting.html">Run a forecast</a>.</div></div>`);
+        if (!o.branches.length) notes.push(`<div class="notice info"><i class="fa-solid fa-store"></i><div>No branches yet. Add branches through <code>POST /branches</code>, or load the demo dataset with <code>npm run seed:ai-demo</code>.</div></div>`);
+        document.getElementById('notices').innerHTML = notes.join('');
+        document.getElementById('head-line').textContent = `${o.branches.length} branches · lowest inventory: ${o.lowestInventory || '—'} · ${o.pendingRecommendations} pending recommendation${o.pendingRecommendations === 1 ? '' : 's'} · ${o.openMovements} open movement${o.openMovements === 1 ? '' : 's'}${o.forecast ? ` · forecast data up to ${fmtDate(o.forecast.asOf)}` : ''}`;
+        renderBranches(o);
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    function renderBranches(o) {
+      const el = document.getElementById('branches');
+      if (!o.branches.length) { el.innerHTML = ''; return; }
+      el.innerHTML = o.branches.map((b) => {
+        const f = b.forecast;
+        const ratio = f && f.predictedDemand ? Math.min(1, b.available / f.predictedDemand) : null;
+        const color = ratio == null ? 'var(--neutral-400)' : ratio < 0.5 ? 'var(--danger)' : ratio < 1 ? 'var(--warning)' : 'var(--success)';
+        return `<button class="card branch-card ${b.id === state.branchId ? 'active' : ''}" data-branch="${b.id}">
+          <div class="branch-top"><span class="branch-name">${esc(b.name)}</span>${b.status === 'active' ? '' : `<span class="badge badge-expired">${esc(b.status)}</span>`}${b.isDemo ? '<span class="chip demo">demo</span>' : ''}</div>
+          <div class="branch-stats">
+            <div><b>${n0(b.available)}</b>available</div>
+            <div><b style="color:${b.lowStock ? 'var(--danger)' : 'inherit'}">${b.lowStock}</b>low stock</div>
+            <div><b>${f ? f.surplusItems : '—'}</b>spare stock</div>
+          </div>
+          ${f ? `<div><div class="cover-label"><span>Stock vs ${state.horizon}-day demand</span><span>${n0(b.available)} / ${n0(f.predictedDemand)}</span></div>
+            <div class="cover"><i style="width:${Math.round(ratio * 100)}%;background:${color}"></i></div></div>
+            <div class="item-meta">${f.highRisk} urgent · ${f.increasing} rising · reorder ${n0(f.replenishmentUnits)} units</div>` : '<div class="item-meta">No forecast yet</div>'}
+        </button>`;
+      }).join('');
+      el.querySelectorAll('[data-branch]').forEach((c) => c.addEventListener('click', () => {
+        state.branchId = c.dataset.branch; state.invPage = 1;
+        el.querySelectorAll('[data-branch]').forEach((x) => x.classList.toggle('active', x === c));
+        loadInventory();
+      }));
+    }
+
+    // ── Recommendations ──────────────────────────────────────────────────────
+    async function loadRecs() {
+      const el = document.getElementById('recs');
+      try {
+        const r = await inventoryAdminAPI.recommendations({ status: state.recStatus, limit: 50 });
+        document.getElementById('recs-sub').textContent = `${r.total} ${state.recStatus === 'all' ? '' : state.recStatus} · proposals only — nothing moves until you approve and complete it`;
+        if (!r.recommendations.length) {
+          el.innerHTML = state.recStatus === 'pending' ? empty('fa-wand-magic-sparkles', 'No pending recommendations. Press <b>Generate recommendations</b> to compute transfers and reorders from the latest forecast.') : empty('fa-inbox', 'Nothing here');
+          return;
+        }
+        el.innerHTML = r.recommendations.map((x) => `
+          <div class="rec" data-id="${x.id}">
+            <div class="rec-top">
+              <span class="chip ${PRIO[x.priority] || 'none'}">${esc(x.priority)}</span>
+              <span class="rec-title">${x.type === 'stock_transfer' ? '<i class="fa-solid fa-right-left"></i> Transfer' : '<i class="fa-solid fa-truck"></i> Reorder'} ${n0(x.suggestedAction.quantity)} × ${esc(x.product?.name)}</span>
+              ${x.status !== 'pending' ? `<span class="badge ${x.status === 'approved' ? 'badge-completed' : x.status === 'rejected' ? 'badge-denied' : 'badge-expired'}">${esc(x.status)}</span>` : ''}
+            </div>
+            <div class="rec-route">${x.from ? `<b>${esc(x.from.name)}</b> → ` : 'Supplier → '}<b>${esc(x.to?.name)}</b>${x.evidence?.distanceKm != null ? ` · ${x.evidence.distanceKm} km` : ''}</div>
+            <div class="rec-why">${esc(x.reasoning)}</div>
+            ${x.status === 'pending' ? `<div class="rec-actions">
+                <button class="btn-action btn-ghost btn-sm" data-act="reject">Reject</button>
+                <button class="btn-action btn-success btn-sm" data-act="approve"><i class="fa-solid fa-check"></i> Approve</button>
+              </div>` : `<div class="item-meta">${x.reviewedBy ? `${esc(x.reviewedBy)} · ${fmtDateTime(x.reviewedAt)}` : ''}${x.reviewNote ? ` · ${esc(x.reviewNote)}` : ''}</div>`}
+          </div>`).join('');
+        el.querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => decide(b.closest('.rec').dataset.id, b.dataset.act, b)));
+      } catch (e) { el.innerHTML = empty('fa-triangle-exclamation', esc(e.message)); }
+    }
+
+    async function decide(id, act, btn) {
+      let note = '';
+      if (act === 'reject') { note = prompt('Reason for rejecting (optional):') ?? null; if (note === null) return; }
+      btn.disabled = true;
+      try {
+        const r = await inventoryAdminAPI.decide(id, act, note);
+        toast(act === 'approve' ? `Approved — movement #${r.movement.movementNumber} created and stock reserved. Complete it when the goods arrive.` : 'Recommendation rejected', 'success');
+        await Promise.all([loadRecs(), loadMovements(), loadOverview()]);
+      } catch (e) { toast(e.message, 'error'); btn.disabled = false; }
+    }
+
+    // ── Alerts ───────────────────────────────────────────────────────────────
+    async function loadAlerts() {
+      const el = document.getElementById('alerts'), sub = document.getElementById('alerts-sub');
+      el.innerHTML = '<div class="skeleton" style="height:200px"></div>';
+      try {
+        if (state.alertTab === 'low') {
+          const r = await inventoryAdminAPI.lowStock({ horizonDays: state.horizon, limit: 30 });
+          sub.textContent = `${r.total} product-branches · ${r.method}`;
+          el.innerHTML = r.items.length ? r.items.map((i) => `
+            <div class="item"><span class="thumb"><i class="fa-solid fa-box"></i></span>
+              <div class="item-main"><div class="item-title">${esc(i.productName)}</div><div class="item-meta">${esc(i.branchName)} · ${n0(i.available)} available${i.daysOfCover != null ? ` · ${i.daysOfCover} days of cover` : ''}${i.predictedDemand != null ? ` · needs ${n0(i.predictedDemand)}` : ''}</div></div>
+              <div class="item-side">${i.shortageRisk ? riskChip(i.shortageRisk) : '<span class="chip warn">Low</span>'}${i.suggestedReplenishment ? `<span class="item-meta">reorder ${n0(i.suggestedReplenishment)}</span>` : ''}</div>
+            </div>`).join('') : empty('fa-circle-check', 'No low stock');
+        } else if (state.alertTab === 'excess') {
+          const r = await inventoryAdminAPI.excess({ horizonDays: state.horizon, limit: 30 });
+          sub.textContent = r.definition || r.note || '';
+          el.innerHTML = r.items?.length ? r.items.map((i) => `
+            <div class="item"><span class="thumb"><i class="fa-solid fa-boxes-stacked"></i></span>
+              <div class="item-main"><div class="item-title">${esc(i.productName)}</div><div class="item-meta">${esc(i.branchName)} · ${n0(i.available)} available vs ${n0(i.predictedDemand)} forecast + ${n0(i.safetyStock)} safety</div></div>
+              <div class="item-side"><span class="chip ${i.excessUnits ? 'warn' : 'wait'}">${i.excessUnits ? `${n0(i.excessUnits)} overstock` : `${n0(i.surplusUnits)} spare`}</span></div>
+            </div>`).join('') : empty('fa-scale-balanced', r.note || 'No spare stock');
+        } else {
+          const r = await inventoryAdminAPI.anomalies({ days: 14 });
+          sub.textContent = `Last ${r.windowDays} days · stock corrections and sales spikes/drops vs the previous 8 weeks${r.isSynthetic ? ' · demo data' : ''}`;
+          const ICON = { large_adjustment: 'fa-pen-to-square', sales_spike: 'fa-arrow-trend-up', sales_drop: 'fa-arrow-trend-down' };
+          el.innerHTML = r.anomalies.length ? r.anomalies.map((a) => `
+            <div class="item"><span class="thumb"><i class="fa-solid ${ICON[a.type] || 'fa-circle-exclamation'}"></i></span>
+              <div class="item-main"><div class="item-title">${esc(a.productName)} · ${esc(a.branchName)}</div><div class="item-meta" style="white-space:normal">${esc(a.detail)}</div></div>
+              <div class="item-side"><span class="chip ${a.severity === 'high' ? 'err' : 'warn'}">${esc(a.type.replace('_', ' '))}</span></div>
+            </div>`).join('') : empty('fa-circle-check', 'Nothing unusual');
+        }
+      } catch (e) { el.innerHTML = empty('fa-triangle-exclamation', esc(e.message)); }
+    }
+
+    // ── Branch inventory table ───────────────────────────────────────────────
+    const INV_LIMIT = 10;
+    let invItems = [];
+    async function loadInventory() {
+      const body = document.getElementById('inv-rows');
+      if (!state.branchId) { body.innerHTML = `<tr><td colspan="6">${empty('fa-store', 'No branch selected')}</td></tr>`; return; }
+      body.innerHTML = `<tr><td colspan="6"><div class="spinner-wrap"><div class="spin"></div></div></td></tr>`;
+      try {
+        const r = await inventoryAdminAPI.branch(state.branchId, { horizonDays: state.horizon, status: state.invStatus, search: state.invSearch, page: state.invPage, limit: INV_LIMIT });
+        invItems = r.items;
+        document.getElementById('inv-title').textContent = `${r.branch.name} inventory`;
+        document.getElementById('inv-sub').textContent = `${r.total} products · ${r.branch.address}`;
+        body.innerHTML = r.items.length ? r.items.map((i, idx) => `
+          <tr>
+            <td><b>${esc(i.productName)}</b><span class="sub">${esc(i.category)} · updated ${fmtDate(i.lastUpdated)}</span></td>
+            <td class="num"><b>${n0(i.available)}</b><span class="sub">${n0(i.quantity)} on hand${i.reserved ? ` · ${n0(i.reserved)} reserved` : ''}</span></td>
+            <td class="num hide-sm">${i.forecast ? `${n0(i.forecast.predictedDemand)}<span class="sub">safety ${n0(i.forecast.safetyStock)}</span>` : '—'}</td>
+            <td class="num hide-sm">${i.forecast?.daysOfCover != null ? `${i.forecast.daysOfCover} d` : '—'}</td>
+            <td>${riskChip(i.forecast?.shortageRisk)}${i.forecast?.surplusUnits ? `<span class="sub">${n0(i.forecast.surplusUnits)} spare</span>` : ''}</td>
+            <td style="text-align:right;white-space:nowrap">
+              <button class="btn-action btn-ghost btn-sm" data-adjust="${idx}" title="Correct the stock count"><i class="fa-solid fa-pen"></i></button>
+              <button class="btn-action btn-ghost btn-sm" data-transfer="${idx}" title="Request a transfer to this branch"><i class="fa-solid fa-right-left"></i></button>
+            </td>
+          </tr>`).join('') : `<tr><td colspan="6">${empty('fa-box-open', 'No products match')}</td></tr>`;
+        body.querySelectorAll('[data-adjust]').forEach((b) => b.addEventListener('click', () => openAdjust(invItems[b.dataset.adjust])));
+        body.querySelectorAll('[data-transfer]').forEach((b) => b.addEventListener('click', () => openTransfer({ productId: invItems[b.dataset.transfer].productId, productName: invItems[b.dataset.transfer].productName, to: state.branchId })));
+        buildPagination('inv-pg', 'inv-pg-info', r.page, r.totalPages, r.total, INV_LIMIT, (p) => { state.invPage = p; loadInventory(); });
+      } catch (e) { body.innerHTML = `<tr><td colspan="6">${empty('fa-triangle-exclamation', esc(e.message))}</td></tr>`; }
+    }
+
+    // ── Stock movements ──────────────────────────────────────────────────────
+    const MV_LIMIT = 10;
+    async function loadMovements() {
+      const body = document.getElementById('mv-rows');
+      try {
+        const r = await inventoryAdminAPI.movements({ status: state.mvStatus, type: state.mvType, page: state.mvPage, limit: MV_LIMIT });
+        body.innerHTML = r.movements.length ? r.movements.map((m) => `
+          <tr data-id="${m.id}">
+            <td class="num">${m.number}</td>
+            <td><i class="fa-solid ${MV_TYPE[m.type][0]}" style="color:var(--neutral-400)"></i> ${MV_TYPE[m.type][1]}</td>
+            <td><b>${esc(m.product?.name)}</b>${m.reason ? `<span class="sub" title="${esc(m.reason)}">${esc(m.reason.length > 60 ? m.reason.slice(0, 60) + '…' : m.reason)}</span>` : ''}</td>
+            <td class="hide-sm">${m.type === 'adjustment' ? esc(m.to?.name) : `${esc(m.from?.name || 'Supplier')} → ${esc(m.to?.name)}`}</td>
+            <td class="num">${m.type === 'adjustment' ? `${m.delta > 0 ? '+' : ''}${m.delta}` : n0(m.quantity)}</td>
+            <td><span class="badge ${MV_STATUS[m.status]}">${esc(m.status)}</span></td>
+            <td class="hide-sm">${esc(VIA[m.requestedVia] ?? m.requestedVia)}${m.isDemo ? ' <span class="chip demo">demo</span>' : ''}</td>
+            <td class="hide-sm nowrap">${fmtDate(m.completedAt || m.approvedAt || m.createdAt)}</td>
+            <td style="text-align:right;white-space:nowrap">
+              ${m.status === 'requested' ? `<button class="btn-action btn-ghost btn-sm" data-mv="reject">Reject</button> <button class="btn-action btn-success btn-sm" data-mv="approve">Approve</button>` : ''}
+              ${m.status === 'approved' ? `<button class="btn-action btn-ghost btn-sm" data-mv="cancel">Cancel</button> <button class="btn-action btn-primary btn-sm" data-mv="complete" title="Goods arrived: move the stock">Complete</button>` : ''}
+            </td>
+          </tr>`).join('') : `<tr><td colspan="9">${empty('fa-truck', 'No stock movements')}</td></tr>`;
+        body.querySelectorAll('[data-mv]').forEach((b) => b.addEventListener('click', () => movementAction(b.closest('tr').dataset.id, b.dataset.mv, b)));
+        buildPagination('mv-pg', 'mv-pg-info', r.page, r.totalPages, r.total, MV_LIMIT, (p) => { state.mvPage = p; loadMovements(); });
+      } catch (e) { body.innerHTML = `<tr><td colspan="9">${empty('fa-triangle-exclamation', esc(e.message))}</td></tr>`; }
+    }
+
+    async function movementAction(id, act, btn) {
+      const confirmText = { complete: 'Mark as completed? The stock will be moved now.', cancel: 'Cancel this approved movement? The reserved stock will be released.' };
+      if (confirmText[act] && !confirm(confirmText[act])) return;
+      let note = '';
+      if (act === 'reject') { note = prompt('Reason for rejecting (optional):'); if (note === null) return; }
+      btn.disabled = true;
+      try {
+        await inventoryAdminAPI.movementAction(id, act, note);
+        toast({ approve: 'Approved — stock reserved at the source', complete: 'Completed — stock moved', reject: 'Rejected', cancel: 'Cancelled — reservation released' }[act], 'success');
+        await Promise.all([loadMovements(), loadOverview(), loadInventory()]);
+      } catch (e) { toast(e.message, 'error'); btn.disabled = false; }
+    }
+
+    // ── Modals ───────────────────────────────────────────────────────────────
+    const modal = document.getElementById('modal');
+    const closeModal = () => modal.classList.remove('open');
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+    async function openTransfer({ productId, productName, to } = {}) {
+      document.getElementById('modal-title').textContent = 'New transfer request';
+      document.getElementById('modal-icon').className = 'fa-solid fa-right-left';
+      const opts = (sel) => state.branches.filter((b) => b.status === 'active').map((b) => `<option value="${b.id}" ${b.id === sel ? 'selected' : ''}>${esc(b.name)}</option>`).join('');
+      let products = invItems.map((i) => ({ id: i.productId, name: i.productName }));
+      if (productId && !products.some((p) => p.id === productId)) products.unshift({ id: productId, name: productName });
+      document.getElementById('modal-body').innerHTML = `
+        <form id="transfer-form" class="form-grid">
+          <div class="full"><label>Product</label><select name="productId" required>${products.map((p) => `<option value="${p.id}" ${p.id === productId ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select><div class="form-hint">Products of the selected branch table. Pick another branch card to see more.</div></div>
+          <div><label>From branch</label><select name="sourceBranchId" required>${opts(state.branches.find((b) => b.id !== to)?.id)}</select></div>
+          <div><label>To branch</label><select name="destinationBranchId" required>${opts(to || state.branchId)}</select></div>
+          <div><label>Quantity</label><input name="quantity" type="number" min="1" max="100000" step="1" required value="1" /></div>
+          <div id="src-stock" class="form-hint" style="align-self:end"></div>
+          <div class="full"><label>Reason</label><input name="reason" maxlength="300" placeholder="e.g. University Branch is running low" /></div>
+          <div class="full form-actions"><button type="button" class="btn-action btn-ghost" id="t-cancel">Cancel</button><button class="btn-action btn-primary" type="submit"><i class="fa-solid fa-paper-plane"></i> Create request</button></div>
+        </form>`;
+      modal.classList.add('open');
+      const form = document.getElementById('transfer-form');
+      const showStock = async () => {
+        try {
+          const d = await inventoryAdminAPI.product(form.productId.value, { horizonDays: state.horizon });
+          const s = d.branches.find((b) => b.branchId === form.sourceBranchId.value);
+          document.getElementById('src-stock').textContent = s ? `${s.branchName}: ${s.available} available${s.forecast ? `, ${s.forecast.surplus} spare after its own forecast` : ''}` : '';
+        } catch {}
+      };
+      form.productId.addEventListener('change', showStock); form.sourceBranchId.addEventListener('change', showStock); showStock();
+      document.getElementById('t-cancel').addEventListener('click', closeModal);
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(form));
+        data.quantity = Number(data.quantity); data.type = 'transfer';
+        try {
+          const r = await inventoryAdminAPI.createMovement(data);
+          toast(`Transfer request #${r.movement.movementNumber} created — approve it in Stock movements`, 'success');
+          closeModal(); state.mvPage = 1; loadMovements(); loadOverview();
+        } catch (err) { toast(err.message, 'error'); }
+      });
+    }
+
+    function openAdjust(item) {
+      document.getElementById('modal-title').textContent = `Correct stock — ${item.productName}`;
+      document.getElementById('modal-icon').className = 'fa-solid fa-pen-to-square';
+      document.getElementById('modal-body').innerHTML = `
+        <form id="adjust-form" class="form-grid">
+          <div><label>Units on hand (counted)</label><input name="quantity" type="number" min="${item.reserved}" step="1" required value="${item.quantity}" /><div class="form-hint">${item.reserved} reserved for approved transfers</div></div>
+          <div><label>Safety stock override</label><input name="safetyStock" type="number" min="0" step="1" value="${item.safetyStockOverride ?? ''}" placeholder="auto (${item.forecast?.safetyStock ?? '—'})" /></div>
+          <div class="full"><label>Reason</label><input name="reason" maxlength="300" required placeholder="e.g. Monthly stock count" /></div>
+          <div class="full form-actions"><button type="button" class="btn-action btn-ghost" id="a-cancel">Cancel</button><button class="btn-action btn-primary" type="submit">Save</button></div>
+        </form>`;
+      modal.classList.add('open');
+      const form = document.getElementById('adjust-form');
+      document.getElementById('a-cancel').addEventListener('click', closeModal);
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = { quantity: Number(form.quantity.value), reason: form.reason.value, safetyStock: form.safetyStock.value === '' ? null : Number(form.safetyStock.value) };
+        try {
+          await inventoryAdminAPI.setStock(state.branchId, item.productId, payload);
+          toast('Stock updated and logged as an adjustment', 'success');
+          closeModal(); loadInventory(); loadOverview(); loadMovements();
+        } catch (err) { toast(err.message, 'error'); }
+      });
+    }
+
+    // ── Inventory agent chat ─────────────────────────────────────────────────
+    const msgs = document.getElementById('agent-msgs');
+    // Minimal, safe formatting for model text: escape first, then **bold** and "- " lists.
+    function formatText(text) {
+      const lines = esc(text).split('\n');
+      let html = '', inList = false;
+      for (const raw of lines) {
+        const line = raw.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+        const li = line.match(/^\s*(?:[-•*]|\d+\.)\s+(.*)$/);
+        if (li) { if (!inList) { html += '<ul>'; inList = true; } html += `<li>${li[1]}</li>`; continue; }
+        if (inList) { html += '</ul>'; inList = false; }
+        if (line.trim()) html += `<p>${line}</p>`;
+      }
+      return html + (inList ? '</ul>' : '');
+    }
+    function blockHTML(b) {
+      if (b.type === 'transfer_suggestions') {
+        return `<div class="block-card"><div class="block-label"><i class="fa-solid fa-database"></i> Live data · suggested transfers (${b.horizonDays}-day forecast)</div>
+          ${b.transfers.map((t) => `<div class="row-line"><span>${esc(t.productName)}<br><span class="muted">${esc(t.from.branchName)} → ${esc(t.to.branchName)}</span></span><b>${n0(t.quantity)}</b></div>`).join('')}</div>`;
+      }
+      if (b.type === 'confirm_action') {
+        return `<div class="block-card" data-action="${esc(b.actionId)}"><div class="block-label" style="color:var(--brand-blue)"><i class="fa-solid fa-hand"></i> Needs your confirmation</div>
+          <div><b>${esc(b.summary)}</b>${b.reason ? `<div class="muted">${esc(b.reason)}</div>` : ''}</div>
+          <div class="muted" style="margin-top:4px">${esc(b.from?.name)}: ${n0(b.from?.available)} available · ${esc(b.to?.name)}: ${n0(b.to?.available)} available</div>
+          <div class="block-actions"><button class="btn-action btn-ghost btn-sm" data-decide="cancel">Cancel</button><button class="btn-action btn-primary btn-sm" data-decide="confirm"><i class="fa-solid fa-check"></i> Create request</button></div></div>`;
+      }
+      return '';
+    }
+    function addMsg(role, text, blocks = [], extraCls = '') {
+      const div = document.createElement('div');
+      div.className = `msg ${role} ${extraCls}`;
+      div.innerHTML = role === 'ai'
+        ? `${formatText(text)}${blocks.map(blockHTML).join('')}<span class="ai-label"><i class="fa-solid fa-wand-magic-sparkles"></i> AI-generated summary — figures come from the live tools; check the tables before acting</span>`
+        : esc(text);
+      msgs.appendChild(div);
+      div.querySelectorAll('[data-decide]').forEach((btn) => btn.addEventListener('click', () => decideAction(btn.closest('[data-action]'), btn.dataset.decide)));
+      msgs.scrollTop = msgs.scrollHeight;
+      return div;
+    }
+    async function decideAction(card, decision) {
+      card.querySelectorAll('button').forEach((b) => (b.disabled = true));
+      try {
+        const r = decision === 'confirm' ? await agentAdminAPI.confirm(card.dataset.action, state.conversationId) : await agentAdminAPI.cancel(card.dataset.action, state.conversationId);
+        card.querySelector('.block-actions').innerHTML = `<span class="chip ${decision === 'confirm' ? 'ok' : 'none'}">${esc(r.result.message)}</span>`;
+        if (decision === 'confirm') { loadMovements(); loadOverview(); }
+      } catch (e) {
+        card.querySelector('.block-actions').innerHTML = `<span class="chip err">${esc(e.message)}</span>`;
+      }
+    }
+    async function send(text) {
+      text = text.trim();
+      if (!text) return;
+      addMsg('user', text);
+      const typing = document.createElement('div');
+      typing.className = 'msg ai'; typing.innerHTML = '<span class="typing"><i></i><i></i><i></i></span>';
+      msgs.appendChild(typing); msgs.scrollTop = msgs.scrollHeight;
+      document.getElementById('agent-send').disabled = true;
+      try {
+        const r = await agentAdminAPI.chat(text, state.conversationId || undefined);
+        state.conversationId = r.conversationId;
+        try { sessionStorage.setItem('cartify_inventory_agent', r.conversationId); } catch {}
+        typing.remove();
+        addMsg('ai', r.reply.text || '(no answer)', r.reply.blocks);
+      } catch (e) {
+        typing.remove();
+        if (e.status === 404) { state.conversationId = null; try { sessionStorage.removeItem('cartify_inventory_agent'); } catch {} }
+        addMsg('sys', e.message, [], 'fail');
+      }
+      document.getElementById('agent-send').disabled = false;
+    }
+    async function initAgent() {
+      try {
+        const s = await agentAdminAPI.status();
+        if (!s.enabled) {
+          msgs.innerHTML = empty('fa-plug-circle-xmark', 'The inventory agent is not available: the server has no AI provider key (<code>ANTHROPIC_API_KEY</code>). Everything else on this page works without it.');
+          document.getElementById('agent-form').style.display = 'none'; document.getElementById('agent-quick').style.display = 'none';
+          return;
+        }
+      } catch {}
+      if (state.conversationId) {
+        try {
+          const h = await agentAdminAPI.history(state.conversationId);
+          h.transcript.forEach((t) => addMsg(t.role === 'assistant' ? 'ai' : t.role === 'user' ? 'user' : 'sys', t.text, t.blocks || [], t.ok === false ? 'fail' : ''));
+          msgs.querySelectorAll('[data-action]').forEach((card) => { if (!h.pendingActions.some((a) => a.actionId === card.dataset.action)) card.querySelector('.block-actions').innerHTML = '<span class="chip none">Handled</span>'; });
+        } catch { state.conversationId = null; }
+      }
+      if (!msgs.children.length) addMsg('ai', 'Hi! I can check stock across branches, read the demand forecast, compare branch sales and suggest transfers. What would you like to know?');
+    }
+    document.getElementById('agent-form').addEventListener('submit', (e) => { e.preventDefault(); const t = document.getElementById('agent-text'); send(t.value); t.value = ''; });
+    document.getElementById('agent-text').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('agent-form').requestSubmit(); } });
+    document.getElementById('agent-quick').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => send(b.textContent)));
+    document.getElementById('agent-new').addEventListener('click', () => { state.conversationId = null; try { sessionStorage.removeItem('cartify_inventory_agent'); } catch {} msgs.innerHTML = ''; initAgent(); });
+
+    // ── Events ───────────────────────────────────────────────────────────────
+    document.querySelectorAll('#horizon button').forEach((b) => b.addEventListener('click', () => {
+      document.querySelectorAll('#horizon button').forEach((x) => x.classList.toggle('active', x === b));
+      state.horizon = Number(b.dataset.h); loadOverview().then(loadInventory); loadAlerts();
+    }));
+    document.querySelectorAll('#alert-tabs button').forEach((b) => b.addEventListener('click', () => {
+      document.querySelectorAll('#alert-tabs button').forEach((x) => x.classList.toggle('active', x === b));
+      state.alertTab = b.dataset.tab; loadAlerts();
+    }));
+    document.getElementById('recs-status').addEventListener('change', (e) => { state.recStatus = e.target.value; loadRecs(); });
+    document.getElementById('inv-status').addEventListener('change', (e) => { state.invStatus = e.target.value; state.invPage = 1; loadInventory(); });
+    let t;
+    document.getElementById('inv-search').addEventListener('input', (e) => { clearTimeout(t); t = setTimeout(() => { state.invSearch = e.target.value.trim(); state.invPage = 1; loadInventory(); }, 300); });
+    document.getElementById('mv-status').addEventListener('change', (e) => { state.mvStatus = e.target.value; state.mvPage = 1; loadMovements(); });
+    document.getElementById('mv-type').addEventListener('change', (e) => { state.mvType = e.target.value; state.mvPage = 1; loadMovements(); });
+    document.getElementById('new-transfer').addEventListener('click', () => openTransfer({}));
+    document.getElementById('generate-btn').addEventListener('click', async (e) => {
+      const btn = e.currentTarget; btn.disabled = true;
+      try {
+        const r = await inventoryAdminAPI.generate(state.horizon);
+        toast(`${r.created} recommendations (${r.transfers} transfers, ${r.replenishments} reorders) from the ${state.horizon}-day forecast`, 'success');
+        state.recStatus = 'pending'; document.getElementById('recs-status').value = 'pending';
+        await Promise.all([loadRecs(), loadOverview()]);
+      } catch (err) { toast(err.message, 'error'); }
+      btn.disabled = false;
+    });
+
+    await loadOverview();
+    await Promise.all([loadRecs(), loadAlerts(), loadInventory(), loadMovements(), initAgent()]);
+  </script>
+</body>
+</html>

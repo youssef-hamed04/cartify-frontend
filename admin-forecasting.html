@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartify Admin — Demand Forecasting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./CSS/all.min.css" />
+  <link rel="stylesheet" href="./CSS/admin.css" />
+  <link rel="stylesheet" href="./CSS/admin-ai.css" />
+</head>
+<body>
+  <aside class="admin-sidebar" id="admin-sidebar"></aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+      <span class="page-title">Demand Forecasting</span>
+    </header>
+
+    <div class="admin-content">
+      <div class="dash">
+        <div class="dash-head">
+          <div>
+            <h1>Demand forecasting</h1>
+            <p id="run-line">Predicted demand per product and branch, compared with the stock you have.</p>
+          </div>
+          <div class="head-actions">
+            <div class="seg" id="horizon" role="group" aria-label="Forecast period">
+              <button data-h="7">7 days</button><button data-h="30" class="active">30 days</button><button data-h="90">90 days</button>
+            </div>
+            <select class="filter-select" id="branch-filter" aria-label="Location"><option value="all">All locations</option><option value="online">Online store</option></select>
+            <button class="btn-action btn-primary" id="run-btn"><i class="fa-solid fa-rotate"></i> Run forecast</button>
+          </div>
+        </div>
+
+        <div id="notices" style="display:flex;flex-direction:column;gap:10px"></div>
+
+        <div class="kpis" id="kpis">
+          <div class="card kpi"><div class="skeleton" style="height:76px"></div></div>
+          <div class="card kpi"><div class="skeleton" style="height:76px"></div></div>
+          <div class="card kpi"><div class="skeleton" style="height:76px"></div></div>
+          <div class="card kpi"><div class="skeleton" style="height:76px"></div></div>
+        </div>
+
+        <div class="row row-2-1">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title" id="chart-title">Demand trend</div>
+                <div class="card-sub" id="chart-sub">Weekly units sold, then the forecast</div>
+              </div>
+              <select class="filter-select" id="chart-product" aria-label="Product for the chart" style="max-width:240px"></select>
+            </div>
+            <div class="card-body">
+              <div class="chart" id="trend-chart"><div class="skeleton" style="height:100%"></div></div>
+              <div class="chart-legend" id="chart-legend"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Stock shortage alerts</div>
+                <div class="card-sub" id="alerts-sub">&nbsp;</div>
+              </div>
+            </div>
+            <div class="card-body"><div class="list" id="alerts"><div class="skeleton" style="height:200px"></div></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Product forecasts</div>
+              <div class="card-sub" id="table-sub">&nbsp;</div>
+            </div>
+            <div class="card-tools">
+              <div class="search-box" style="min-width:160px"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="search" placeholder="Search products…" /></div>
+              <select class="filter-select" id="group-by"><option value="location">By location</option><option value="product">By product (all locations)</option></select>
+              <select class="filter-select" id="risk-filter"><option value="">Any stock status</option><option value="at_risk">Shortage expected</option><option value="high">Urgent only</option><option value="none">Covered</option></select>
+              <select class="filter-select" id="trend-filter"><option value="">Any trend</option><option value="increasing">Increasing demand</option><option value="decreasing">Decreasing demand</option><option value="stable">Stable</option></select>
+              <select class="filter-select" id="sort"><option value="risk">Sort: risk</option><option value="demand">Sort: demand</option><option value="growth">Sort: growing</option><option value="replenishment">Sort: reorder qty</option></select>
+            </div>
+          </div>
+          <div class="card-body" style="padding-left:0;padding-right:0;padding-bottom:0">
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead><tr><th>Product</th><th class="hide-sm">Location</th><th>Predicted demand</th><th>Available</th><th class="hide-sm">Cover</th><th>Trend</th><th>Suggested reorder</th><th>Status</th></tr></thead>
+                <tbody id="rows"><tr><td colspan="8"><div class="spinner-wrap"><div class="spin"></div></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="pagination-bar"><span id="pg-info"></span><div class="pagination-btns" id="pg-btns"></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Model evaluation</div>
+              <div class="card-sub" id="eval-sub">How each candidate model scored on the most recent, unseen weeks</div>
+            </div>
+          </div>
+          <div class="card-body" id="eval"><div class="skeleton" style="height:160px"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { requireAdmin, injectSidebar, fmtDate, fmtDateTime, toast, buildPagination } from './Js/admin-core.js';
+    import { forecastAdminAPI, branchesAdminAPI, returnsAdminAPI } from './Js/admin-api.js';
+
+    const user = await requireAdmin();
+    if (!user) throw '';
+    let pendingReturns = 0;
+    try { const r = await returnsAdminAPI.getAll({ status: 'pending', limit: 1 }); pendingReturns = r.total || 0; } catch {}
+    injectSidebar(user, pendingReturns);
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    const n0 = (v) => Math.round(Number(v || 0)).toLocaleString('en-US');
+    const pct = (v) => (v == null ? '—' : `${(v * 100).toFixed(1)}%`);
+    const empty = (icon, text) => `<div class="empty"><i class="fa-solid ${icon}"></i>${text}</div>`;
+    const ago = (iso) => { const m = Math.round((Date.now() - new Date(iso)) / 60000); return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m / 60)} h ago` : fmtDate(iso); };
+    const RISK = {
+      high:   { cls: 'err',  label: 'Urgent',        tip: 'Runs out before a new delivery could arrive' },
+      medium: { cls: 'warn', label: 'Reorder',       tip: 'Stock will not cover the forecast period' },
+      low:    { cls: 'wait', label: 'Below safety',  tip: 'Covers the forecast but not the safety stock' },
+      none:   { cls: 'ok',   label: 'Covered',       tip: 'Stock covers the forecast and safety stock' },
+    };
+    const riskChip = (r) => `<span class="chip ${RISK[r]?.cls || 'none'}" title="${esc(RISK[r]?.tip || '')}">${RISK[r]?.label || '—'}</span>`;
+    const trendHTML = (t, p) => {
+      if (t === 'increasing') return `<span class="trend up"><i class="fa-solid fa-arrow-trend-up"></i> +${Math.round(p * 100)}%</span>`;
+      if (t === 'decreasing') return `<span class="trend down"><i class="fa-solid fa-arrow-trend-down"></i> ${Math.round(p * 100)}%</span>`;
+      if (t === 'stable') return `<span class="trend flat"><i class="fa-solid fa-minus"></i> Stable</span>`;
+      return '<span class="muted">—</span>';
+    };
+
+    const state = { horizon: 30, branchId: 'all', groupBy: 'location', risk: '', trend: '', search: '', sort: 'risk', page: 1, product: null };
+    const LIMIT = 12;
+
+    // ── Branch filter options ────────────────────────────────────────────────
+    try {
+      const { branches = [] } = await branchesAdminAPI.getAll();
+      document.getElementById('branch-filter').insertAdjacentHTML('beforeend', branches.map((b) => `<option value="${b._id}">${esc(b.name)}</option>`).join(''));
+    } catch {}
+
+    // ── Service / data status banners ────────────────────────────────────────
+    async function loadStatus() {
+      const box = document.getElementById('notices');
+      try {
+        const s = await forecastAdminAPI.status();
+        const notes = [];
+        if (!s.aiService?.reachable) notes.push(`<div class="notice err"><i class="fa-solid fa-plug-circle-xmark"></i><div><b>The forecasting service is not running</b> (${esc(s.aiService?.url)}). Saved forecasts are still shown, but you cannot run a new one. Start it with <code>cd ai-service && .venv/bin/uvicorn app.main:app --port 8001</code> (see <code>ai-service/README.md</code>).</div></div>`);
+        if (!s.data?.source) notes.push(`<div class="notice err"><i class="fa-solid fa-database"></i><div><b>Not enough sales history to train a model.</b> ${esc(s.data?.reason)}</div></div>`);
+        box.innerHTML = notes.join('');
+        document.getElementById('run-btn').disabled = !s.aiService?.reachable || !s.data?.source;
+      } catch (e) {
+        box.innerHTML = `<div class="notice err"><i class="fa-solid fa-triangle-exclamation"></i><div>${esc(e.message)}</div></div>`;
+      }
+    }
+
+    function dataNotice(run) {
+      const el = document.getElementById('data-notice');
+      el?.remove();
+      if (!run?.isSynthetic) return;
+      document.getElementById('notices').insertAdjacentHTML('beforeend', `<div class="notice warn" id="data-notice"><i class="fa-solid fa-flask"></i><div><b>Demonstration data — not real sales.</b> Cartify does not have enough order history yet, so this forecast was trained on the synthetic dataset from <code>npm run seed:ai-demo</code> (4 sample Mansoura branches). Use it to try the feature, not for real purchasing decisions. It switches to real orders automatically once there is enough history.</div></div>`);
+    }
+
+    // ── Main view ────────────────────────────────────────────────────────────
+    async function loadAll() {
+      const [kpiRes, alertRes] = await Promise.allSettled([
+        forecastAdminAPI.latest({ horizonDays: state.horizon, branchId: state.branchId, limit: 500, sort: 'demand' }),
+        forecastAdminAPI.latest({ horizonDays: state.horizon, branchId: state.branchId, risk: 'at_risk', sort: 'risk', limit: 6 }),
+      ]);
+      if (kpiRes.status === 'rejected') { toast(kpiRes.reason.message, 'error'); return; }
+      const view = kpiRes.value;
+      if (!view.run) {
+        document.getElementById('kpis').innerHTML = `<div class="card kpi" style="grid-column:1/-1">${empty('fa-chart-line', 'No forecast has been run yet. Press <b>Run forecast</b> to train the model and predict demand.')}</div>`;
+        ['trend-chart', 'alerts', 'eval'].forEach((id) => (document.getElementById(id).innerHTML = ''));
+        document.getElementById('rows').innerHTML = `<tr><td colspan="8">${empty('fa-box', 'No forecast yet')}</td></tr>`;
+        return;
+      }
+      dataNotice(view.run);
+      const h = view.horizon;
+      document.getElementById('run-line').textContent = `Data up to ${fmtDate(view.run.asOf)} · ${view.run.historyDays} days of history · ${view.run.seriesCount} product-location series · run ${ago(view.run.createdAt)} · model: ${h.selectedModelLabel}`;
+      renderKpis(view);
+      renderProductPicker(view.rows);
+      renderAlerts(alertRes.status === 'fulfilled' ? alertRes.value : null);
+      renderEval(view);
+      await Promise.all([loadTable(), loadChart()]);
+    }
+
+    function renderKpis(view) {
+      const s = view.summary, H = state.horizon;
+      const best = (view.horizon.candidates || []).find((c) => c.name === view.horizon.selectedModel);
+      const base = (view.horizon.candidates || []).find((c) => c.name === 'moving_average_28d');
+      const kpis = [
+        { label: 'Predicted demand', icon: 'fa-chart-line', value: n0(s.totalPredicted), sub: `units in the next <b>${H} days</b> · <b>${n0(s.totalAvailable)}</b> available now` },
+        { label: 'Shortages expected', icon: 'fa-triangle-exclamation', value: s.highRisk + s.mediumRisk, sub: `<b>${s.highRisk}</b> urgent (inside the lead time)`, cls: s.highRisk ? 'danger' : s.mediumRisk ? 'alert' : 'good' },
+        { label: 'Increasing demand', icon: 'fa-arrow-trend-up', value: s.increasing, sub: `<b>${s.decreasing}</b> decreasing · rest stable`, cls: 'good' },
+        { label: 'Suggested reorder', icon: 'fa-truck-ramp-box', value: n0(s.replenishmentUnits), sub: best ? `model error ±${n0(best.mae)} units/item (MAE)${base && best.name !== base.name ? `, ${Math.round((1 - best.mae / base.mae) * 100)}% better than baseline` : ''}` : 'units to cover forecast + safety stock' },
+      ];
+      document.getElementById('kpis').innerHTML = kpis.map((k) => `
+        <div class="card kpi ${k.cls || ''}">
+          <div class="kpi-top"><span class="kpi-label">${k.label}</span><span class="kpi-icon"><i class="fa-solid ${k.icon}"></i></span></div>
+          <div class="kpi-value">${k.value}</div>
+          <div class="kpi-sub">${k.sub}</div>
+        </div>`).join('');
+    }
+
+    function renderProductPicker(rows) {
+      const sel = document.getElementById('chart-product');
+      const seen = new Map();
+      rows.forEach((r) => { if (!seen.has(r.productId)) seen.set(r.productId, r.productName); });
+      const list = [...seen.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+      if (!state.product || !seen.has(state.product)) state.product = rows[0]?.productId || null;
+      sel.innerHTML = list.map(([id, name]) => `<option value="${id}" ${id === state.product ? 'selected' : ''}>${esc(name)}</option>`).join('');
+    }
+
+    function renderAlerts(view) {
+      const box = document.getElementById('alerts');
+      document.getElementById('alerts-sub').textContent = view ? `${view.summary.highRisk} urgent · ${view.summary.mediumRisk} to reorder · ${view.settings.leadTimeDays}-day lead time` : '';
+      if (!view?.rows?.length) { box.innerHTML = empty('fa-circle-check', 'Stock covers the forecast everywhere'); return; }
+      box.innerHTML = view.rows.map((r) => `
+        <div class="item clickable" data-product="${r.productId}">
+          <span class="thumb"><i class="fa-solid fa-box"></i></span>
+          <div class="item-main">
+            <div class="item-title">${esc(r.productName)}</div>
+            <div class="item-meta">${esc(r.branchName)} · ${n0(r.available)} left · ${r.daysOfCover == null ? '—' : `${r.daysOfCover} days of cover`}</div>
+          </div>
+          <div class="item-side">${riskChip(r.shortageRisk)}<span class="item-meta">reorder ${n0(r.suggestedReplenishment)}</span></div>
+        </div>`).join('');
+      box.querySelectorAll('[data-product]').forEach((el) => el.addEventListener('click', () => selectProduct(el.dataset.product)));
+    }
+
+    async function loadTable() {
+      const body = document.getElementById('rows');
+      body.innerHTML = `<tr><td colspan="8"><div class="spinner-wrap"><div class="spin"></div></div></td></tr>`;
+      try {
+        const v = await forecastAdminAPI.latest({ horizonDays: state.horizon, branchId: state.branchId, groupBy: state.groupBy, risk: state.risk, trend: state.trend, search: state.search, sort: state.sort, page: state.page, limit: LIMIT });
+        document.getElementById('table-sub').textContent = `${v.total} ${state.groupBy === 'product' ? 'products' : 'product-locations'} · next ${state.horizon} days · click a row to chart it`;
+        if (!v.rows.length) { body.innerHTML = `<tr><td colspan="8">${empty('fa-magnifying-glass', 'No products match these filters')}</td></tr>`; buildPagination('pg-btns', 'pg-info', 1, 1, 0, LIMIT, () => {}); return; }
+        body.innerHTML = v.rows.map((r) => `
+          <tr class="clickable ${r.productId === state.product ? 'selected' : ''}" data-product="${r.productId}">
+            <td><b>${esc(r.productName)}</b><span class="sub">${esc(r.category)}${r.lowConfidence ? ' · <i class="fa-solid fa-circle-info"></i> short history' : ''}</span></td>
+            <td class="hide-sm">${esc(r.branchName)}</td>
+            <td class="num"><b>${n0(r.predictedDemand)}</b><span class="sub">range ${n0(r.low)}–${n0(r.high)}</span></td>
+            <td class="num">${n0(r.available)}${r.inbound ? `<span class="sub">+${n0(r.inbound)} on the way</span>` : ''}</td>
+            <td class="num hide-sm">${r.daysOfCover == null ? '—' : `${r.daysOfCover} d`}</td>
+            <td>${trendHTML(r.trend, r.trendPct)}</td>
+            <td class="num">${r.suggestedReplenishment ? `<b>${n0(r.suggestedReplenishment)}</b>` : '<span class="muted">0</span>'}<span class="sub">safety ${n0(r.safetyStock)}</span></td>
+            <td>${riskChip(r.shortageRisk)}${r.stockoutDaysLast28 ? `<span class="sub">${r.stockoutDaysLast28} sold-out days (28d)</span>` : ''}</td>
+          </tr>`).join('');
+        body.querySelectorAll('tr[data-product]').forEach((tr) => tr.addEventListener('click', () => selectProduct(tr.dataset.product)));
+        buildPagination('pg-btns', 'pg-info', v.page, v.totalPages, v.total, LIMIT, (p) => { state.page = p; loadTable(); });
+      } catch (e) {
+        body.innerHTML = `<tr><td colspan="8">${empty('fa-triangle-exclamation', esc(e.message))}</td></tr>`;
+      }
+    }
+
+    function selectProduct(id) {
+      state.product = id;
+      document.getElementById('chart-product').value = id;
+      document.querySelectorAll('#rows tr[data-product]').forEach((tr) => tr.classList.toggle('selected', tr.dataset.product === id));
+      loadChart();
+      document.getElementById('trend-chart').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // ── Trend chart: weekly history + forecast weeks with the prediction range ──
+    async function loadChart() {
+      const el = document.getElementById('trend-chart');
+      if (!state.product) { el.innerHTML = empty('fa-chart-column', 'Pick a product'); return; }
+      try {
+        const d = await forecastAdminAPI.product(state.product, { horizonDays: state.horizon, branchId: state.branchId });
+        document.getElementById('chart-title').textContent = d.product.name;
+        document.getElementById('chart-sub').textContent = `${state.branchId === 'all' ? 'All locations' : d.locations[0]?.branchName || ''} · weekly units sold (last 26 weeks), then the ${state.horizon}-day forecast`;
+        drawChart(el, d.history, d.total, state.horizon);
+      } catch (e) {
+        el.innerHTML = empty('fa-triangle-exclamation', esc(e.message));
+      }
+    }
+
+    function drawChart(el, history, total, H) {
+      const fWeeks = Math.max(1, Math.round(H / 7));
+      const perWeek = total ? (total.predictedDemand / H) * 7 : 0;
+      const lo = total ? (total.low / H) * 7 : 0, hi = total ? (total.high / H) * 7 : 0;
+      const bars = [...history.map((w) => ({ ...w, kind: 'hist' })), ...Array.from({ length: fWeeks }, (_, i) => ({ kind: 'fc', units: perWeek, i }))];
+      const max = Math.max(4, ...history.map((w) => w.units), hi) * 1.1;
+      const W = 720, Hh = 210, padL = 34, padB = 22, gap = bars.length > 30 ? 3 : 5;
+      const bw = (W - padL - gap * (bars.length - 1)) / bars.length;
+      const y = (v) => (Hh - padB) - (v / max) * (Hh - padB - 8);
+      const ticks = [0, Math.round(max / 2), Math.round(max)];
+      const xOf = (i) => padL + i * (bw + gap);
+      const fStart = xOf(history.length) - gap / 2;
+      el.innerHTML = `
+        <svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" role="img" aria-label="Weekly demand and forecast">
+          ${ticks.map((t) => `<line class="grid" x1="${padL}" x2="${W}" y1="${y(t)}" y2="${y(t)}"/><text x="0" y="${y(t) + 4}">${t}</text>`).join('')}
+          <rect class="band" x="${fStart}" y="${y(hi)}" width="${W - fStart}" height="${Math.max(2, y(lo) - y(hi))}" rx="4"><title>Forecast range ${Math.round(lo)}–${Math.round(hi)} units/week</title></rect>
+          <line class="divider" x1="${fStart}" x2="${fStart}" y1="0" y2="${Hh - padB}"/>
+          <text x="${fStart + 4}" y="12">Forecast</text>
+          ${bars.map((b, i) => {
+            const x = xOf(i), h = Math.max((Hh - padB) - y(b.units), b.units ? 2 : 0);
+            const label = b.kind === 'hist' ? `Week of ${fmtDate(b.weekStart)}: ${b.units} units${b.stockoutDays ? ` · ${b.stockoutDays} sold-out day(s)` : ''}` : `Forecast week ${b.i + 1}: ~${Math.round(b.units)} units`;
+            const showX = b.kind === 'hist' ? (i % 4 === 0) : false;
+            return `<g><title>${esc(label)}</title>
+              <rect x="${x}" y="0" width="${bw}" height="${Hh - padB}" fill="transparent"/>
+              <rect class="bar ${b.kind === 'fc' ? 'fc' : ''}" x="${x}" y="${(Hh - padB) - h}" width="${bw}" height="${h}" rx="${Math.min(4, bw / 3)}"/>
+              ${b.stockoutDays ? `<circle class="so" cx="${x + bw / 2}" cy="${(Hh - padB) - h - 6}" r="3"/>` : ''}
+              ${showX ? `<text x="${x + bw / 2}" y="${Hh - 4}" text-anchor="middle">${new Date(b.weekStart).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</text>` : ''}
+            </g>`;
+          }).join('')}
+        </svg>`;
+      const recentAvg = history.slice(-4).reduce((a, w) => a + w.units, 0) / 4;
+      document.getElementById('chart-legend').innerHTML = `
+        <div><b>${total ? n0(total.predictedDemand) : '—'}</b>predicted (${H} days)</div>
+        <div><b>${total ? `${n0(total.low)}–${n0(total.high)}` : '—'}</b>likely range</div>
+        <div><b>${n0(recentAvg)}</b>units/week, last 4 weeks</div>
+        <div><b>${total ? n0(total.available) : '—'}</b>available now</div>
+        <div><span class="swatch" style="background:#c7d2fe"></span>sold <span class="swatch" style="background:var(--brand-blue);margin-left:10px"></span>forecast <span class="swatch" style="background:var(--warning);border-radius:50%;margin-left:10px"></span>sold-out days</div>`;
+    }
+
+    // ── Model evaluation ─────────────────────────────────────────────────────
+    function renderEval(view) {
+      const h = view.horizon, el = document.getElementById('eval');
+      const cands = [...(h.candidates || [])].sort((a, b) => a.mae - b.mae);
+      const base = cands.find((c) => c.name === 'moving_average_28d');
+      const warn = (h.warnings || []).map((w) => `<div class="notice warn" style="margin-bottom:12px"><i class="fa-solid fa-circle-info"></i><div>${esc(w)}</div></div>`).join('');
+      if (!cands.length) { el.innerHTML = warn || empty('fa-flask', 'No evaluation available for this horizon'); return; }
+      const t = h.test || {};
+      document.getElementById('eval-sub').textContent = `${state.horizon}-day horizon · test period ${fmtDate(t.from)} – ${fmtDate(t.to)} · ${n0(t.trainSamples)} training / ${n0(t.testSamples)} test samples`;
+      el.innerHTML = `${warn}
+        <div class="admin-table-wrap">
+          <table class="eval-table">
+            <thead><tr><th>Model</th><th title="Mean absolute error, units per product-location over the horizon">MAE</th><th title="Root mean squared error">RMSE</th><th title="Total absolute error / total demand">WAPE</th><th class="hide-sm" title="Mean absolute % error where demand ≥ 5 units">MAPE</th><th class="hide-sm" title="Over (+) or under (−) forecasting overall">Bias</th></tr></thead>
+            <tbody>${cands.map((c) => `
+              <tr class="${c.name === h.selectedModel ? 'best' : ''}">
+                <td>${c.name === h.selectedModel ? '<i class="fa-solid fa-circle-check" style="color:var(--success)"></i> ' : ''}${esc(c.label)}</td>
+                <td>${c.mae.toFixed(2)}</td><td>${c.rmse.toFixed(2)}</td><td>${pct(c.wape)}</td><td class="hide-sm">${pct(c.mape)}</td><td class="hide-sm">${c.bias == null ? '—' : `${c.bias > 0 ? '+' : ''}${(c.bias * 100).toFixed(1)}%`}</td>
+              </tr>`).join('')}</tbody>
+          </table>
+        </div>
+        ${(h.featureImportance || []).length ? `<div class="list-label" style="font-size:.72rem;font-weight:600;color:var(--neutral-400);text-transform:uppercase;letter-spacing:.6px;margin-top:18px">Most important inputs</div>
+          <div class="bars-inline">${h.featureImportance.slice(0, 6).map((f) => `<div class="bar-row"><span>${esc(f.feature)}</span><div class="track"><i style="width:${Math.round(f.importance * 100 / h.featureImportance[0].importance)}%"></i></div><span>${(f.importance * 100).toFixed(0)}%</span></div>`).join('')}</div>` : ''}
+        <p class="eval-note">
+          <b>How it works.</b> One model is trained across all products and locations to predict average daily demand over the next ${state.horizon} days.
+          Models are tested on the most recent weeks they never saw (a time-based split, with training windows ending before the test period starts) and the lowest MAE wins${base ? ` — the selected model is ${Math.round((1 - cands[0].mae / base.mae) * 100)}% more accurate than a 28-day moving average` : ''}.
+          Days when an item was sold out are not counted as zero demand: demand is measured on in-stock days only.
+          Safety stock uses a ${Math.round(view.settings.serviceLevel * 100)}% service level and a ${view.settings.leadTimeDays}-day lead time.
+        </p>`;
+    }
+
+    // ── Events ───────────────────────────────────────────────────────────────
+    document.querySelectorAll('#horizon button').forEach((b) => b.addEventListener('click', () => {
+      document.querySelectorAll('#horizon button').forEach((x) => x.classList.toggle('active', x === b));
+      state.horizon = Number(b.dataset.h); state.page = 1; loadAll();
+    }));
+    document.getElementById('branch-filter').addEventListener('change', (e) => { state.branchId = e.target.value; state.page = 1; loadAll(); });
+    document.getElementById('chart-product').addEventListener('change', (e) => selectProduct(e.target.value));
+    for (const [id, key] of [['group-by', 'groupBy'], ['risk-filter', 'risk'], ['trend-filter', 'trend'], ['sort', 'sort']]) {
+      document.getElementById(id).addEventListener('change', (e) => { state[key] = e.target.value; state.page = 1; loadTable(); });
+    }
+    let timer;
+    document.getElementById('search').addEventListener('input', (e) => { clearTimeout(timer); timer = setTimeout(() => { state.search = e.target.value.trim(); state.page = 1; loadTable(); }, 300); });
+    document.getElementById('run-btn').addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      btn.disabled = true; btn.innerHTML = '<span class="spin" style="width:14px;height:14px;border-width:2px"></span> Training…';
+      try {
+        const r = await forecastAdminAPI.run();
+        toast(`Forecast ready: ${r.horizons.map((h) => `${h.horizonDays}d → ${h.selectedModelLabel}`).join(' · ')}`, 'success');
+        await loadAll();
+      } catch (err) { toast(err.message, 'error'); }
+      btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Run forecast';
+    });
+
+    await loadStatus();
+    await loadAll();
+  </script>
+</body>
+</html>

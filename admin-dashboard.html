@@ -200,6 +200,31 @@
           </div>
         </div>
 
+        <!-- Demand & inventory intelligence -->
+        <div class="row row-1-1">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Demand outlook</div>
+                <div class="card-sub" id="outlook-sub">Next 30 days</div>
+              </div>
+              <a class="card-link" href="./admin-forecasting.html">Forecasts →</a>
+            </div>
+            <div class="card-body" id="outlook"><div class="skeleton" style="height:150px"></div></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Branch stock alerts</div>
+                <div class="card-sub" id="branch-sub">&nbsp;</div>
+              </div>
+              <a class="card-link" href="./admin-inventory.html">Branch & inventory →</a>
+            </div>
+            <div class="card-body"><div class="list" id="branch-alerts"><div class="skeleton" style="height:150px"></div></div></div>
+          </div>
+        </div>
+
         <!-- Recent orders -->
         <div class="card">
           <div class="card-head">
@@ -224,7 +249,7 @@
 
   <script type="module">
     import { requireAdmin, injectSidebar, fmtDate } from './Js/admin-core.js';
-    import { statsAPI, returnsAdminAPI, cameraAdminAPI, ordersAdminAPI } from './Js/admin-api.js';
+    import { statsAPI, returnsAdminAPI, cameraAdminAPI, ordersAdminAPI, forecastAdminAPI, inventoryAdminAPI } from './Js/admin-api.js';
 
     const user = await requireAdmin();
     if (!user) throw '';
@@ -429,6 +454,44 @@
           </tr>`;
         }).join('')
       : `<tr><td colspan="6">${empty('fa-receipt', 'No orders yet')}</td></tr>`;
+
+    // ── Demand outlook + branch alerts (AI forecasting / inventory) ─────────
+    const RISK_CHIP = { high: ['err', 'Urgent'], medium: ['warn', 'Reorder'], low: ['wait', 'Below safety'], none: ['ok', 'Covered'] };
+    const [outlookR, alertsR] = await Promise.allSettled([
+      forecastAdminAPI.latest({ horizonDays: 30, limit: 1 }),
+      forecastAdminAPI.latest({ horizonDays: 30, risk: 'at_risk', sort: 'risk', limit: 4 }),
+    ]);
+    const outlook = ok(outlookR), alerts = ok(alertsR);
+    if (outlook?.run) {
+      const s = outlook.summary;
+      const best = (outlook.horizon.candidates || []).find((c) => c.name === outlook.horizon.selectedModel);
+      document.getElementById('outlook-sub').innerHTML = `Next 30 days · data up to ${fmtDate(outlook.run.asOf)}${outlook.run.isSynthetic ? ' · <span class="chip warn">demo data</span>' : ''}`;
+      document.getElementById('outlook').innerHTML = `
+        <div class="verdicts">
+          <div class="verdict ok"><b>${Math.round(s.totalPredicted).toLocaleString('en-US')}</b><span>units expected</span></div>
+          <div class="verdict warn"><b>${s.increasing}</b><span>rising demand</span></div>
+          <div class="verdict err"><b>${s.highRisk + s.mediumRisk}</b><span>shortages ahead</span></div>
+        </div>
+        <div class="list-label">Model</div>
+        <div class="item-meta" style="white-space:normal">${esc(outlook.horizon.selectedModelLabel)}${best ? ` · average error ±${Math.round(best.mae)} units per item (MAE) on unseen weeks` : ''}</div>`;
+    } else {
+      document.getElementById('outlook').innerHTML = empty('fa-chart-line', 'No forecast yet — run one on the <a href="./admin-forecasting.html">Demand Forecasting</a> page');
+    }
+    if (alerts?.rows?.length) {
+      document.getElementById('branch-sub').textContent = `${alerts.summary.highRisk} urgent · ${alerts.summary.mediumRisk} to reorder`;
+      document.getElementById('branch-alerts').innerHTML = alerts.rows.map((r) => `
+        <a class="item" href="./admin-inventory.html">
+          <span class="thumb"><i class="fa-solid fa-box"></i></span>
+          <div class="item-main">
+            <div class="item-title">${esc(r.productName)}</div>
+            <div class="item-meta">${esc(r.branchName)} · ${r.available} available · ${r.daysOfCover == null ? '—' : `${r.daysOfCover} days of cover`}</div>
+          </div>
+          <div class="item-side"><span class="chip ${RISK_CHIP[r.shortageRisk]?.[0] || 'none'}">${RISK_CHIP[r.shortageRisk]?.[1] || '—'}</span><span class="item-meta">reorder ${r.suggestedReplenishment}</span></div>
+        </a>`).join('');
+    } else {
+      document.getElementById('branch-sub').textContent = outlook?.run ? 'Stock covers the forecast' : '';
+      document.getElementById('branch-alerts').innerHTML = empty('fa-warehouse', outlook?.run ? 'No shortages expected in the next 30 days' : 'Alerts appear after the first forecast');
+    }
   </script>
 </body>
 </html>

@@ -1,0 +1,133 @@
+/* =============================================
+   assistant.css — Cartify AI Shopping Assistant widget (Js/assistant.js)
+   Uses the store palette from Style.css / cartify-ui.css.
+   ============================================= */
+
+.cartify-assistant { font-family: 'Space Grotesk', sans-serif; --ca-navy: var(--primary-color, #02067e); --ca-text: var(--text-main, #1e293b); --ca-muted: var(--text-muted, #64748b); --ca-border: var(--cu-border, #e2e8f0); --ca-bg: var(--light-bg, #f8fafc); }
+
+/* Launcher: sits above the back-to-top button (bottom: 2rem) */
+.ca-launcher {
+  position: fixed; right: 2rem; bottom: 5.5rem; z-index: 1040;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 18px; border: none; border-radius: 99px;
+  background: var(--ca-navy); color: #fff; font: 600 0.92rem 'Space Grotesk', sans-serif;
+  box-shadow: 0 8px 25px rgba(2, 6, 126, 0.3); cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+.ca-launcher:hover { transform: translateY(-2px); background: var(--primary-hover, #1a1670); }
+.ca-open .ca-launcher { display: none; }
+
+.ca-panel {
+  position: fixed; right: 2rem; bottom: 2rem; z-index: 1065; /* above the sticky navbar (1020) */
+  width: 400px; height: min(640px, calc(100vh - 4rem));
+  display: flex; flex-direction: column;
+  background: #fff; border-radius: 24px; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.22);
+  animation: ca-in 0.22s ease;
+}
+.ca-panel[hidden] { display: none; }
+@keyframes ca-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+.ca-head { display: flex; align-items: center; gap: 10px; padding: 14px 14px 14px 18px; background: var(--ca-navy); color: #fff; }
+.ca-avatar { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(255, 255, 255, 0.15); }
+.ca-title { flex: 1; display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.ca-title b { font-size: 1rem; }
+.ca-title span { font-size: 0.74rem; opacity: 0.8; }
+.ca-icon { width: 34px; height: 34px; border: none; border-radius: 50%; background: rgba(255, 255, 255, 0.12); color: #fff; cursor: pointer; }
+.ca-icon:hover { background: rgba(255, 255, 255, 0.24); }
+
+.ca-msgs { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; background: var(--ca-bg); }
+.ca-msg { display: flex; flex-direction: column; gap: 8px; max-width: 100%; }
+.ca-user { align-items: flex-end; }
+.ca-bubble { max-width: 88%; padding: 10px 14px; border-radius: 18px; font-size: 0.9rem; line-height: 1.5; color: var(--ca-text); background: #fff; border: 1px solid var(--ca-border); word-wrap: break-word; }
+.ca-user .ca-bubble { background: var(--ca-navy); color: #fff; border-color: var(--ca-navy); border-bottom-right-radius: 6px; }
+.ca-ai .ca-bubble { border-bottom-left-radius: 6px; }
+.ca-bubble p { margin: 0; }
+.ca-bubble p + p, .ca-bubble ul + p, .ca-bubble p + ul { margin-top: 6px; }
+.ca-bubble ul { margin: 0; padding-left: 18px; }
+.ca-ai-note { display: block; margin-top: 6px; font-size: 0.7rem; color: var(--ca-muted); }
+.ca-sys { align-items: center; }
+.ca-sys .ca-bubble { font-size: 0.8rem; background: #f0fdf4; border-color: #bbf7d0; color: #166534; text-align: center; }
+.ca-sys.ca-fail .ca-bubble { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+.ca-typing { display: inline-flex; gap: 4px; padding: 14px 16px; }
+.ca-typing i { width: 7px; height: 7px; border-radius: 50%; background: #94a3b8; animation: ca-blink 1s infinite; }
+.ca-typing i:nth-child(2) { animation-delay: 0.15s; }
+.ca-typing i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes ca-blink { 50% { opacity: 0.25; } }
+
+/* Verified data blocks */
+.ca-block { background: #fff; border: 1px solid var(--ca-border); border-radius: 18px; padding: 12px; font-size: 0.84rem; color: var(--ca-text); }
+.ca-verified { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 700; color: #15803d; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.4px; }
+.ca-muted { color: var(--ca-muted); }
+.ca-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; font-weight: 600; font-size: 0.82rem; color: var(--ca-navy); text-decoration: none; }
+.ca-link:hover { text-decoration: underline; }
+
+/* Product cards: the store's .product-card, scaled for the chat */
+.ca-cards { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x mandatory; }
+.ca-card { flex: 0 0 196px; scroll-snap-align: start; }
+.ca-card .product-card { border: 1px solid var(--ca-border); border-radius: 18px; cursor: pointer; }
+.ca-card .product-card:hover { transform: none; box-shadow: 0 6px 18px rgba(2, 6, 126, 0.08); }
+.ca-card .product-img-wrapper { height: 140px; border-radius: 18px 18px 0 0; }
+.ca-card .card-badge { top: 10px; left: 10px; font-size: 9px; }
+.ca-card .btn-wishlist { top: 10px; right: 10px; width: 28px; height: 28px; font-size: 12px; }
+.ca-card .product-details { padding: 12px; }
+.ca-card .product-title { font-size: 0.86rem; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ca-card .price, .ca-card .price-hot { font-size: 1rem; }
+.ca-card .price-old { font-size: 0.74rem; }
+.ca-card .btn-add-cart, .ca-card .ca-options { width: 34px; height: 34px; padding: 0; border-radius: 50%; flex: none; text-decoration: none; }
+.ca-card .ca-options { border-radius: 50%; background: #94a3b8; color: #fff; display: flex; align-items: center; justify-content: center; }
+
+/* Comparison table */
+.ca-table-wrap { overflow-x: auto; }
+.ca-table { border-collapse: collapse; width: 100%; min-width: 320px; font-size: 0.8rem; }
+.ca-table th, .ca-table td { padding: 7px 8px; border-top: 1px solid var(--ca-border); text-align: left; vertical-align: top; }
+.ca-table thead th { border-top: 0; font-weight: 700; }
+.ca-table thead a { color: var(--ca-text); text-decoration: none; display: flex; flex-direction: column; gap: 6px; }
+.ca-table thead img { width: 56px; height: 56px; object-fit: cover; border-radius: 10px; background: #f8f9fa; }
+.ca-table tbody th { color: var(--ca-muted); font-weight: 600; white-space: nowrap; }
+.ca-table s { color: var(--ca-muted); font-size: 0.74rem; }
+
+/* Cart and order cards */
+.ca-lines { list-style: none; padding: 0; margin: 0; }
+.ca-lines li, .ca-confirm-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+.ca-lines img, .ca-confirm-item img { width: 44px; height: 44px; object-fit: cover; border-radius: 10px; background: #f8f9fa; flex: none; }
+.ca-lines span, .ca-confirm-item span { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ca-lines small, .ca-confirm-item small { color: var(--ca-muted); }
+.ca-total { display: flex; justify-content: space-between; border-top: 1px solid var(--ca-border); padding-top: 8px; margin-top: 4px; }
+.ca-order-status { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ca-pill { font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 99px; background: #eef2ff; color: var(--ca-navy); }
+.ca-pill-delivered { background: #dcfce7; color: #166534; }
+.ca-pill-cancelled, .ca-pill-refunded { background: #fee2e2; color: #991b1b; }
+.ca-pill-shipping { background: #dbeafe; color: #1e40af; }
+.ca-timeline { list-style: none; margin: 10px 0 0; padding: 0 0 0 14px; border-left: 2px solid var(--ca-border); }
+.ca-timeline li { position: relative; display: flex; justify-content: space-between; gap: 8px; padding: 3px 0; font-size: 0.8rem; }
+.ca-timeline li::before { content: ''; position: absolute; left: -19px; top: 9px; width: 8px; height: 8px; border-radius: 50%; background: var(--ca-navy); }
+.ca-timeline span { color: var(--ca-muted); }
+
+/* Add-to-cart confirmation */
+.ca-confirm { border-color: #c7d2fe; background: #eef2ff; }
+.ca-confirm-title { font-weight: 700; color: var(--ca-navy); margin-bottom: 6px; }
+.ca-confirm-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+.ca-confirm-actions .btn-cta-primary { padding: 8px 18px; font-size: 0.84rem; }
+.ca-confirm-actions .btn-cta-secondary { padding: 8px 14px; font-size: 0.84rem; }
+.ca-done { font-weight: 600; font-size: 0.82rem; color: #166534; }
+.ca-done.ca-err { color: #991b1b; }
+
+/* Suggestions + input */
+.ca-suggest { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 16px 10px; background: var(--ca-bg); }
+.ca-suggest:empty { display: none; }
+.ca-suggest button { border: 1px solid var(--ca-border); background: #fff; border-radius: 99px; padding: 6px 12px; font: 500 0.78rem 'Space Grotesk', sans-serif; color: var(--ca-text); cursor: pointer; }
+.ca-suggest button:hover { border-color: var(--ca-navy); color: var(--ca-navy); }
+.ca-input { display: flex; align-items: flex-end; gap: 8px; padding: 12px 14px; border-top: 1px solid var(--ca-border); background: #fff; }
+.ca-input[hidden] { display: none; }
+.ca-input textarea { flex: 1; resize: none; border: 1px solid var(--ca-border); border-radius: 22px; padding: 10px 16px; font: 0.9rem 'Space Grotesk', sans-serif; color: var(--ca-text); outline: none; max-height: 110px; background: var(--ca-bg); }
+.ca-input textarea:focus { border-color: var(--ca-navy); background: #fff; }
+.ca-send { width: 42px; height: 42px; flex: none; border: none; border-radius: 50%; background: var(--ca-navy); color: #fff; cursor: pointer; }
+.ca-send:disabled { opacity: 0.5; cursor: wait; }
+
+@media (max-width: 576px) {
+  .ca-launcher { right: 1rem; bottom: 5rem; padding: 12px 16px; }
+  .ca-panel { inset: 0; width: 100%; height: 100%; border-radius: 0; }
+  .ca-card { flex-basis: 170px; }
+  .ca-input textarea { font-size: 16px; } /* avoids iOS zoom on focus */
+}

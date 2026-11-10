@@ -94,3 +94,47 @@ export const usersAdminAPI = {
     return adminFetch(`/users${q ? '?' + q : ''}`);
   },
 };
+
+// ── Demand forecasting ────────────────────────────────────────────────────────
+const qs = (params = {}) => {
+  const q = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== '')).toString();
+  return q ? '?' + q : '';
+};
+
+export const forecastAdminAPI = {
+  status:  ()            => adminFetch('/forecasts/status'),
+  run:     (horizons)    => adminFetch('/forecasts/run', { method: 'POST', body: JSON.stringify(horizons ? { horizons } : {}) }),
+  latest:  (params = {}) => adminFetch(`/forecasts/latest${qs(params)}`),
+  product: (id, params = {}) => adminFetch(`/forecasts/products/${id}${qs(params)}`),
+  runs:    ()            => adminFetch('/forecasts/runs'),
+};
+
+// ── Branches & inventory intelligence ─────────────────────────────────────────
+export const branchesAdminAPI = {
+  getAll: () => adminFetch('/branches'),
+};
+
+export const inventoryAdminAPI = {
+  overview:        (params = {}) => adminFetch(`/inventory/overview${qs(params)}`),
+  branch:          (id, params = {}) => adminFetch(`/inventory/branches/${id}${qs(params)}`),
+  setStock:        (branchId, productId, data) => adminFetch(`/inventory/branches/${branchId}/products/${productId}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  product:         (id, params = {}) => adminFetch(`/inventory/products/${id}${qs(params)}`),
+  lowStock:        (params = {}) => adminFetch(`/inventory/low-stock${qs(params)}`),
+  excess:          (params = {}) => adminFetch(`/inventory/excess${qs(params)}`),
+  anomalies:       (params = {}) => adminFetch(`/inventory/anomalies${qs(params)}`),
+  movements:       (params = {}) => adminFetch(`/inventory/movements${qs(params)}`),
+  createMovement:  (data) => adminFetch('/inventory/movements', { method: 'POST', body: JSON.stringify(data) }),
+  movementAction:  (id, action, note) => adminFetch(`/inventory/movements/${id}/${action}`, { method: 'PATCH', body: JSON.stringify(note ? { note } : {}) }),
+  recommendations: (params = {}) => adminFetch(`/inventory/recommendations${qs(params)}`),
+  generate:        (horizonDays) => adminFetch('/inventory/recommendations/generate', { method: 'POST', body: JSON.stringify({ horizonDays }) }),
+  decide:          (id, action, note) => adminFetch(`/inventory/recommendations/${id}/${action}`, { method: 'PATCH', body: JSON.stringify(note ? { note } : {}) }),
+};
+
+// ── Inventory agent (AI) ──────────────────────────────────────────────────────
+export const agentAdminAPI = {
+  status:  ()                         => adminFetch('/assistant/status'),
+  chat:    (message, conversationId)  => adminFetch('/assistant/inventory/chat', { method: 'POST', body: JSON.stringify({ message, conversationId }) }),
+  history: (id)                       => adminFetch(`/assistant/inventory/conversations/${id}`),
+  confirm: (actionId, conversationId) => adminFetch(`/assistant/inventory/actions/${actionId}/confirm`, { method: 'POST', body: JSON.stringify({ conversationId }) }),
+  cancel:  (actionId, conversationId) => adminFetch(`/assistant/inventory/actions/${actionId}/cancel`, { method: 'POST', body: JSON.stringify({ conversationId }) }),
+};

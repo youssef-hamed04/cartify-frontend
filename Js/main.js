@@ -13,6 +13,7 @@
 
 import { cartAPI, wishlistAPI } from './api.js';
 import { getUser, updateNavAuthUI } from './auth.js';
+import './assistant.js'; // AI shopping assistant widget (chat launcher on every store page)
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CART — backend-driven

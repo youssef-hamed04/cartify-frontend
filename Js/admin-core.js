@@ -42,6 +42,12 @@ const SIDEBAR_LINKS = [
     ]
   },
   {
+    section: 'Intelligence', links: [
+      { href: 'admin-forecasting.html', icon: 'fa-solid fa-chart-line', label: 'Demand Forecasting' },
+      { href: 'admin-inventory.html', icon: 'fa-solid fa-warehouse', label: 'Branch & Inventory' },
+    ]
+  },
+  {
     section: 'System', links: [
       { href: 'admin-camera.html', icon: 'fa-solid fa-camera', label: 'Camera Sessions' },
       { href: 'admin-users.html', icon: 'fa-solid fa-users', label: 'Users' },
