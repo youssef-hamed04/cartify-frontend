@@ -1,0 +1,120 @@
+.smartbox {
+  --box-navy: #02067e;
+  --box-periwinkle: #9eb9ff;
+  width: min(100%, 620px);
+  margin: 0 auto 40px;
+  padding: 0 10px;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.smartbox [hidden] { display: none !important; }
+.smartbox-frame { position: relative; }
+.smartbox-viewport {
+  position: relative;
+  aspect-ratio: 1.12;
+  overflow: hidden;
+  border-radius: 40px;
+}
+.smartbox.is-ready .smartbox-viewport {
+  border: 9px solid var(--box-periwinkle);
+  background: #ecedff;
+}
+.return-home .smartbox .smartbox-fallback {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  margin: 0;
+}
+.smartbox-viewport canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+  cursor: grab;
+  visibility: hidden;
+}
+.smartbox.is-ready canvas { visibility: visible; }
+.smartbox-viewport canvas:active { cursor: grabbing; }
+.smartbox-hint {
+  position: absolute;
+  top: 19px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 11px;
+  color: #38436a;
+  pointer-events: none;
+}
+.smartbox-scan {
+  position: absolute;
+  left: -5px;
+  bottom: -25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(290px, 88%);
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--box-periwinkle);
+  color: var(--box-navy);
+  box-shadow: 0 8px 20px #060f2b24;
+}
+.smartbox-scan i { font-size: 32px; }
+.smartbox-scan strong { display: block; font-size: 13px; }
+.smartbox-scan span { display: block; font-size: 11px; line-height: 1.4; }
+.smartbox-player { padding-top: 45px; }
+.smartbox-steps { display: flex; flex-wrap: wrap; gap: 8px; }
+.smartbox button {
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #ecedff;
+  background: transparent;
+  border: 1px solid #9eb9ff70;
+  border-radius: 24px;
+  padding: 10px 12px;
+  min-height: 44px;
+  cursor: pointer;
+}
+.smartbox-steps button span { margin-right: 5px; font-weight: 700; }
+.smartbox-steps button[aria-pressed='true'] {
+  background: var(--box-periwinkle);
+  border-color: var(--box-periwinkle);
+  color: var(--box-navy);
+}
+.smartbox button:hover { border-color: #ecedff; }
+.smartbox button:focus-visible, .smartbox canvas:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+}
+.smartbox .smartbox-caption {
+  color: #ecedff;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 16px 0 12px;
+  min-height: 3.2em;
+}
+.smartbox-playback { display: flex; align-items: center; gap: 16px; }
+.smartbox-progress {
+  flex: 1;
+  min-width: 0;
+  height: 4px;
+  border: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #9eb9ff30;
+  accent-color: #9eb9ff;
+}
+.smartbox-progress::-webkit-progress-bar { background: #9eb9ff30; }
+.smartbox-progress::-webkit-progress-value { background: #9eb9ff; }
+.smartbox-progress::-moz-progress-bar { background: #9eb9ff; }
+.smartbox-toggle { min-width: 78px; }
+@media (max-width: 767px) {
+  .smartbox { padding: 0 12px; }
+  .smartbox-viewport { aspect-ratio: 1; border-radius: 32px; }
+  .smartbox.is-ready .smartbox-viewport { border-width: 7px; }
+  .smartbox-hint { font-size: 10px; }
+}
