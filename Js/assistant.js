@@ -194,7 +194,7 @@ async function send(text) {
   addMessage('user', text);
   const typing = document.createElement('div');
   typing.className = 'ca-msg ca-ai';
-  typing.innerHTML = '<div class="ca-bubble ca-typing" aria-label="The assistant is typing"><i></i><i></i><i></i></div>';
+  typing.innerHTML = '<div class="ca-bubble ca-typing" aria-label="The assistant is typing"><i></i><i></i><i></i></div><span class="ca-wait">Looking through the catalog… this can take up to a minute</span>';
   msgs.appendChild(typing); msgs.scrollTop = msgs.scrollHeight;
   try {
     let r;
