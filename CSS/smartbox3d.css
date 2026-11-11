@@ -1,3 +1,23 @@
+.return-home.has-smartbox-field {
+  position: relative;
+  isolation: isolate;
+}
+.return-home.has-smartbox-field > .container-fluid {
+  position: relative;
+  z-index: 1;
+}
+.return-home > .smartbox-background-field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .return-home > .smartbox-background-field { display: none; }
+}
+
 .smartbox {
   --box-navy: #02067e;
   --box-periwinkle: #9eb9ff;

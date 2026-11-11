@@ -254,6 +254,122 @@ function createJourney(THREE, OrbitControls, RoundedBoxGeometry) {
   shadow.position.y = -0.005;
   scene.add(shadow);
 
+  const particleSprite = texture(32, 32, (ctx) => {
+    const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+    gradient.addColorStop(0, '#ffffffff');
+    gradient.addColorStop(0.3, '#ffffffb0');
+    gradient.addColorStop(1, '#ffffff00');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 32, 32);
+  });
+  const particles = new THREE.Group();
+  scene.add(particles);
+  // Seed once: replaying a step reproduces the same trajectories without frame-time randomness.
+  let particleSeed = 7762248;
+  function random() {
+    particleSeed = (Math.imul(particleSeed, 1664525) + 1013904223) >>> 0;
+    return particleSeed / 4294967296;
+  }
+  function points(count, size, palette, opacity) {
+    const geometry = new THREE.BufferGeometry();
+    const positions = new THREE.BufferAttribute(new Float32Array(count * 3), 3);
+    positions.setUsage(THREE.DynamicDrawUsage);
+    const colors = new THREE.BufferAttribute(new Float32Array(count * 3), 3);
+    const swatches = palette.map((color) => new THREE.Color(color));
+    for (let i = 0; i < count; i++) {
+      const color = swatches[i % swatches.length];
+      colors.setXYZ(i, color.r, color.g, color.b);
+    }
+    geometry.setAttribute('position', positions);
+    geometry.setAttribute('color', colors);
+    const surface = new THREE.PointsMaterial({
+      size, map: particleSprite.map, vertexColors: true, transparent: true,
+      opacity, depthWrite: false, blending: THREE.NormalBlending, toneMapped: false
+    });
+    const cloud = new THREE.Points(geometry, surface);
+    // These small dynamic clouds move beyond their initial all-zero geometry bounds.
+    cloud.frustumCulled = false;
+    particles.add(cloud);
+    return { cloud, positions, colors, surface };
+  }
+  const motes = points(120, 0.018, ['#9eb9ff', '#5c61ff'], 0.18);
+  const puff = points(40, 0.045, ['#ecedff', '#d7dbea'], 0.65);
+  const sparkles = points(60, 0.025, ['#22c55e'], 0.8);
+  // Bigger and denser than the other clouds: it has to read clearly on the light background
+  const burst = points(180, 0.055, [
+    '#22c55e', '#5c61ff', '#22c55e', '#02067e', '#5c61ff', '#9eb9ff', '#22c55e'
+  ], 1);
+  const moteSeeds = Array.from({ length: 120 }, () => ({
+    angle: random() * Math.PI * 2, radius: 0.8 + random() * 0.6,
+    height: random() * 2.4, speed: 0.035 + random() * 0.035
+  }));
+  const puffSeeds = Array.from({ length: 40 }, (_, i) => ({
+    angle: i / 40 * Math.PI * 2 + random() * 0.08, spread: 0.02 + random() * 0.03
+  }));
+  const sparkleSeeds = Array.from({ length: 60 }, () => ({
+    x: -0.1 + (random() - 0.5) * 0.53, z: (random() - 0.5) * 0.48,
+    phase: random() * Math.PI * 2, frequency: 18 + random() * 12
+  }));
+  const burstSeeds = Array.from({ length: 180 }, () => {
+    const angle = random() * Math.PI * 2;
+    // Wide and fairly low arcs keep the burst inside the frame of the step-5 camera
+    const speed = 0.35 + random() * 0.6;
+    return { x: Math.cos(angle) * speed, y: 0.7 + random() * 0.8, z: Math.sin(angle) * speed };
+  });
+  const sparkleGreen = new THREE.Color('#22c55e');
+  sparkles.colors.setUsage(THREE.DynamicDrawUsage);
+  let driftTime = 0;
+  let backgroundField = null;
+
+  function updateParticles(t, delta) {
+    particles.visible = !motion.matches;
+    if (motion.matches) return;
+    driftTime += delta; // ambient drift keeps going while paused; only the journey stops
+    moteSeeds.forEach((seed, i) => {
+      const angle = seed.angle + driftTime * 0.025;
+      motes.positions.setXYZ(i, Math.cos(angle) * seed.radius,
+        (seed.height + driftTime * seed.speed) % 2.4, Math.sin(angle) * seed.radius);
+    });
+    motes.positions.needsUpdate = true;
+
+    // Contact is at 82% of the drop; finish the puff before this step ends (~0.38 s).
+    const puffAge = (t - 0.82) * steps[2].duration;
+    puff.cloud.visible = step === 2 && puffAge >= 0 && puffAge < 0.38;
+    if (puff.cloud.visible) {
+      const life = puffAge / 0.38;
+      puffSeeds.forEach((seed, i) => {
+        const radius = 0.22 + seed.spread * (1 - Math.pow(1 - life, 2));
+        puff.positions.setXYZ(i, -0.1 + Math.cos(seed.angle) * radius,
+          0.235 + Math.sin(life * Math.PI) * 0.018, Math.sin(seed.angle) * radius);
+      });
+      puff.surface.opacity = 0.65 * Math.pow(1 - life, 2);
+      puff.positions.needsUpdate = true;
+    }
+
+    sparkles.cloud.visible = step === 3 && scan.visible;
+    if (sparkles.cloud.visible) {
+      sparkleSeeds.forEach((seed, i) => {
+        const flicker = 0.35 + 0.65 * Math.pow(Math.sin(t * steps[3].duration * seed.frequency + seed.phase), 2);
+        sparkles.positions.setXYZ(i, seed.x, scan.position.y + 0.003, seed.z);
+        sparkles.colors.setXYZ(i, sparkleGreen.r * flicker, sparkleGreen.g * flicker, sparkleGreen.b * flicker);
+      });
+      sparkles.positions.needsUpdate = true;
+      sparkles.colors.needsUpdate = true;
+    }
+
+    const burstAge = t * steps[4].duration;
+    burst.cloud.visible = step === 4 && burstAge < 1.6;
+    if (burst.cloud.visible) {
+      burstSeeds.forEach((velocity, i) => {
+        burst.positions.setXYZ(i, -0.1 + velocity.x * burstAge,
+          1.56 + velocity.y * burstAge - 0.5 * 2.4 * burstAge * burstAge,
+          velocity.z * burstAge);
+      });
+      burst.surface.opacity = Math.pow(1 - burstAge / 1.6, 1.2);
+      burst.positions.needsUpdate = true;
+    }
+  }
+
   const steps = [
     { duration: 2.5, eye: [0.95, 1.42, 1.8], target: [0.22, 1.02, 0.25], caption: 'Enter your Locker ID, then your four-digit unlock code.' },
     { duration: 1.8, eye: [1.1, 2.8, 2.1], target: [0, 1.05, 0], caption: 'Your code unlocks the lid. The green light means the box is ready.' },
@@ -408,6 +524,9 @@ function createJourney(THREE, OrbitControls, RoundedBoxGeometry) {
     animating = false;
     cameraTween = false;
     elapsed = steps[step].duration;
+    particles.visible = false;
+    backgroundField?.dispose();
+    backgroundField = null;
     updateUI();
   });
 
@@ -429,6 +548,13 @@ function createJourney(THREE, OrbitControls, RoundedBoxGeometry) {
     failed = true;
     stop();
     resizeObserver.disconnect();
+    backgroundField?.dispose();
+    backgroundField = null;
+    particles.children.forEach((cloud) => {
+      cloud.geometry.dispose();
+      cloud.material.dispose();
+    });
+    particleSprite.map.dispose();
     controls.dispose();
     renderer.dispose();
     canvas.remove();
@@ -458,6 +584,7 @@ function createJourney(THREE, OrbitControls, RoundedBoxGeometry) {
       }
       const t = clamp(elapsed / steps[step].duration, 0, 1);
       pose(t);
+      updateParticles(t, delta);
       if (cameraTween && !motion.matches) {
         const amount = ease(clamp(t / 0.75, 0, 1));
         camera.position.lerpVectors(startEye, endEye.fromArray(steps[step].eye), amount);
@@ -473,6 +600,11 @@ function createJourney(THREE, OrbitControls, RoundedBoxGeometry) {
         root.querySelector('.smartbox-hint').hidden = false;
         root.querySelector('.smartbox-scan').hidden = false;
         resize();
+      }
+      // The decorative field only exists after a successful 3D frame, and shares this RAF.
+      if (!motion.matches) {
+        backgroundField ??= createBackgroundField(root.closest('.return-home'));
+        backgroundField?.draw(delta);
       }
       raf = requestAnimationFrame(frame);
     } catch (error) {
@@ -492,6 +624,73 @@ function createJourney(THREE, OrbitControls, RoundedBoxGeometry) {
       active = value;
       if (!active) stop();
       else if (!raf && !failed) raf = requestAnimationFrame(frame);
+    }
+  };
+}
+
+function createBackgroundField(section) {
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  if (!context) return null;
+  canvas.className = 'smartbox-background-field';
+  canvas.setAttribute('aria-hidden', 'true');
+  const dots = Array.from({ length: 60 }, () => ({
+    x: Math.random(), y: Math.random(),
+    vx: (Math.random() - 0.5) * 5, vy: -2 - Math.random() * 4,
+    radius: 0.6 + Math.random() * 0.7
+  }));
+  let width = 1;
+  let height = 1;
+  let pixelRatio = 1;
+  function resize() {
+    width = Math.max(1, section.clientWidth);
+    height = Math.max(1, section.clientHeight);
+    pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(width * pixelRatio);
+    canvas.height = Math.round(height * pixelRatio);
+    context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+  }
+  const observer = new ResizeObserver(resize);
+  section.classList.add('has-smartbox-field');
+  section.prepend(canvas);
+  resize();
+  observer.observe(section);
+  return {
+    draw(delta) {
+      if (pixelRatio !== Math.min(window.devicePixelRatio || 1, 2)) resize();
+      context.clearRect(0, 0, width, height);
+      context.fillStyle = '#9eb9ff';
+      context.strokeStyle = '#9eb9ff';
+      for (const dot of dots) {
+        dot.x = (dot.x + dot.vx * delta / width + 1) % 1;
+        dot.y = (dot.y + dot.vy * delta / height + 1) % 1;
+      }
+      for (let i = 0; i < dots.length; i++) {
+        const dot = dots[i];
+        const x = dot.x * width;
+        const y = dot.y * height;
+        context.globalAlpha = 0.22;
+        context.beginPath();
+        context.arc(x, y, dot.radius, 0, Math.PI * 2);
+        context.fill();
+        for (let j = i + 1; j < dots.length; j++) {
+          const other = dots[j];
+          const distance = Math.hypot(x - other.x * width, y - other.y * height);
+          if (distance >= 110) continue;
+          context.globalAlpha = 0.09 * (1 - distance / 110);
+          context.lineWidth = 0.6;
+          context.beginPath();
+          context.moveTo(x, y);
+          context.lineTo(other.x * width, other.y * height);
+          context.stroke();
+        }
+      }
+      context.globalAlpha = 1;
+    },
+    dispose() {
+      observer.disconnect();
+      canvas.remove();
+      section.classList.remove('has-smartbox-field');
     }
   };
 }
