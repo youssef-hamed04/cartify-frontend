@@ -202,7 +202,7 @@
         { label: 'Predicted demand', icon: 'fa-chart-line', value: n0(s.totalPredicted), sub: `units in the next <b>${H} days</b> · <b>${n0(s.totalAvailable)}</b> available now` },
         { label: 'Shortages expected', icon: 'fa-triangle-exclamation', value: s.highRisk + s.mediumRisk, sub: `<b>${s.highRisk}</b> urgent (inside the lead time)`, cls: s.highRisk ? 'danger' : s.mediumRisk ? 'alert' : 'good' },
         { label: 'Increasing demand', icon: 'fa-arrow-trend-up', value: s.increasing, sub: `<b>${s.decreasing}</b> decreasing · rest stable`, cls: 'good' },
-        { label: 'Suggested reorder', icon: 'fa-truck-ramp-box', value: n0(s.replenishmentUnits), sub: best ? `model error ±${n0(best.mae)} units/item (MAE)${base && best.name !== base.name ? `, ${Math.round((1 - best.mae / base.mae) * 100)}% better than baseline` : ''}` : 'units to cover forecast + safety stock' },
+        { label: 'Suggested reorder', icon: 'fa-truck-ramp-box', value: n0(s.replenishmentUnits), sub: best ? `model error ±${n0(best.mae)} units/item (MAE)${base && best.name !== base.name ? `, ${Math.round((1 - best.mae / (best.scoredOn?.baselineMae || base.mae)) * 100)}% better than baseline` : ''}` : 'units to cover forecast + safety stock' },
       ];
       document.getElementById('kpis').innerHTML = kpis.map((k) => `
         <div class="card kpi ${k.cls || ''}">
@@ -338,16 +338,17 @@
             <thead><tr><th>Model</th><th title="Mean absolute error, units per product-location over the horizon">MAE</th><th title="Root mean squared error">RMSE</th><th title="Total absolute error / total demand">WAPE</th><th class="hide-sm" title="Mean absolute % error where demand ≥ 5 units">MAPE</th><th class="hide-sm" title="Over (+) or under (−) forecasting overall">Bias</th></tr></thead>
             <tbody>${cands.map((c) => `
               <tr class="${c.name === h.selectedModel ? 'best' : ''}">
-                <td>${c.name === h.selectedModel ? '<i class="fa-solid fa-circle-check" style="color:var(--success)"></i> ' : ''}${esc(c.label)}</td>
+                <td>${c.name === h.selectedModel ? '<i class="fa-solid fa-circle-check" style="color:var(--success)"></i> ' : ''}${esc(c.label)}${c.scoredOn ? ' <sup title="Scored on a subset of the test samples">1</sup>' : ''}</td>
                 <td>${c.mae.toFixed(2)}</td><td>${c.rmse.toFixed(2)}</td><td>${pct(c.wape)}</td><td class="hide-sm">${pct(c.mape)}</td><td class="hide-sm">${c.bias == null ? '—' : `${c.bias > 0 ? '+' : ''}${(c.bias * 100).toFixed(1)}%`}</td>
               </tr>`).join('')}</tbody>
           </table>
         </div>
+        ${cands.filter((c) => c.scoredOn).slice(0, 1).map((c) => `<p class="eval-note" style="margin-top:8px"><sup>1</sup> Prophet fits one model per product-location, so Prophet and the average are scored on the ${n0(c.scoredOn.samples)} test samples of ${c.scoredOn.testDates} test dates. On exactly those samples the best ML model (${esc(cands.find((x) => x.name === c.scoredOn.comparedWith)?.label || c.scoredOn.comparedWith)}) has MAE ${c.scoredOn.comparedMae.toFixed(2)} and the 28-day moving average ${c.scoredOn.baselineMae == null ? '—' : c.scoredOn.baselineMae.toFixed(2)}. They are selected only if they beat the best ML model there.</p>`).join('')}
         ${(h.featureImportance || []).length ? `<div class="list-label" style="font-size:.72rem;font-weight:600;color:var(--neutral-400);text-transform:uppercase;letter-spacing:.6px;margin-top:18px">Most important inputs</div>
           <div class="bars-inline">${h.featureImportance.slice(0, 6).map((f) => `<div class="bar-row"><span>${esc(f.feature)}</span><div class="track"><i style="width:${Math.round(f.importance * 100 / h.featureImportance[0].importance)}%"></i></div><span>${(f.importance * 100).toFixed(0)}%</span></div>`).join('')}</div>` : ''}
         <p class="eval-note">
-          <b>How it works.</b> One model is trained across all products and locations to predict average daily demand over the next ${state.horizon} days.
-          Models are tested on the most recent weeks they never saw (a time-based split, with training windows ending before the test period starts) and the lowest MAE wins${base ? ` — the selected model is ${Math.round((1 - cands[0].mae / base.mae) * 100)}% more accurate than a 28-day moving average` : ''}.
+          <b>How it works.</b> The ML models are trained once across all products and locations to predict average daily demand over the next ${state.horizon} days; Prophet (when installed) fits one model per product-location.
+          Models are tested on the most recent weeks they never saw (a time-based split, with training windows ending before the test period starts) and the lowest MAE wins${(() => { const sel = cands.find((c) => c.name === h.selectedModel); const b = sel?.scoredOn?.baselineMae || base?.mae; return sel && b && sel.name !== 'moving_average_28d' ? ` — the selected model is ${Math.round((1 - sel.mae / b) * 100)}% more accurate than a 28-day moving average` : ''; })()}.
           Days when an item was sold out are not counted as zero demand: demand is measured on in-stock days only.
           Safety stock uses a ${Math.round(view.settings.serviceLevel * 100)}% service level and a ${view.settings.leadTimeDays}-day lead time.
         </p>`;
