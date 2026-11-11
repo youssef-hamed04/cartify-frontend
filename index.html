@@ -17,6 +17,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <link rel="stylesheet" href="./CSS/Style.css" />
   <link rel="stylesheet" href="./CSS/cartify-ui.css" />
+  <link rel="stylesheet" href="./CSS/smartbox3d.css" />
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
 </head>
 
 <body>
@@ -166,7 +168,32 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-6 mt-5 left-return">
-          <img src="./img/Group 1.png" alt="Smart Return Box" />
+          <div class="smartbox" aria-label="SmartBox return journey">
+            <div class="smartbox-frame">
+              <div class="smartbox-viewport">
+                <img class="smartbox-fallback" src="./img/Group 1.png" alt="Smart Return Box" />
+              </div>
+              <span class="smartbox-hint" hidden>Drag to rotate · Swipe sideways on mobile</span>
+              <div class="smartbox-scan" hidden>
+                <i class="fa-solid fa-qrcode" aria-hidden="true"></i>
+                <div><strong>SCAN ME!</strong><span>Type your code, drop the item — the box checks it for you.</span></div>
+              </div>
+            </div>
+            <div class="smartbox-player" hidden>
+              <div class="smartbox-steps" role="group" aria-label="Return steps">
+                <button type="button" data-step="0" aria-pressed="true" aria-current="step"><span>1</span> Enter your code</button>
+                <button type="button" data-step="1" aria-pressed="false"><span>2</span> Lid opens</button>
+                <button type="button" data-step="2" aria-pressed="false"><span>3</span> Drop your item</button>
+                <button type="button" data-step="3" aria-pressed="false"><span>4</span> Weigh &amp; photo</button>
+                <button type="button" data-step="4" aria-pressed="false"><span>5</span> Verified</button>
+              </div>
+              <p class="smartbox-caption" id="smartbox-caption" aria-live="polite" aria-atomic="true">Enter your Locker ID, then your four-digit unlock code.</p>
+              <div class="smartbox-playback">
+                <progress class="smartbox-progress" max="1" value="0" aria-label="Current step progress"></progress>
+                <button class="smartbox-toggle" type="button" aria-pressed="true" aria-label="Pause return journey">Pause</button>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="col-md-6 mt-5">
           <div class="right-return">
@@ -271,6 +298,7 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script type="module" src="./Js/main.js"></script>
   <script type="module" src="./Js/index.js"></script>
+  <script type="module" src="./Js/smartbox3d.js"></script>
 </body>
 
 </html>
