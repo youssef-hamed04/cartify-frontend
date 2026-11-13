@@ -103,7 +103,7 @@
             <div class="card-head">
               <div>
                 <div class="card-title"><i class="fa-solid fa-robot" style="color:var(--accent)"></i> Inventory agent</div>
-                <div class="card-sub">Ask about stock, sales and forecasts — answers come from live data</div>
+                <div class="card-sub">Ask about stock, sales and forecasts — answers come from live data · runs on a local open-source model</div>
               </div>
               <button class="btn-action btn-ghost btn-sm" id="agent-new" title="Start a new conversation"><i class="fa-solid fa-plus"></i> New</button>
             </div>
@@ -495,7 +495,7 @@
       if (!text) return;
       addMsg('user', text);
       const typing = document.createElement('div');
-      typing.className = 'msg ai'; typing.innerHTML = '<span class="typing"><i></i><i></i><i></i></span>';
+      typing.className = 'msg ai'; typing.innerHTML = '<span class="typing"><i></i><i></i><i></i></span> <span class="muted" style="font-size:.74rem">Checking the data… the local AI model can take a minute</span>';
       msgs.appendChild(typing); msgs.scrollTop = msgs.scrollHeight;
       document.getElementById('agent-send').disabled = true;
       try {
@@ -515,7 +515,7 @@
       try {
         const s = await agentAdminAPI.status();
         if (!s.enabled) {
-          msgs.innerHTML = empty('fa-plug-circle-xmark', 'The inventory agent is not available: the server has no AI provider key (<code>ANTHROPIC_API_KEY</code>). Everything else on this page works without it.');
+          msgs.innerHTML = empty('fa-plug-circle-xmark', `The inventory agent is not available: the local AI model is not running${s.reason ? ` (${esc(s.reason)})` : ''}. See <code>docs/AI_FEATURES.md</code> (section 9, Installation and running). Everything else on this page works without it.`);
           document.getElementById('agent-form').style.display = 'none'; document.getElementById('agent-quick').style.display = 'none';
           return;
         }
