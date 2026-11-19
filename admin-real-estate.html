@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cartify Admin — Real Estate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./CSS/all.min.css" />
+    <link rel="stylesheet" href="./CSS/admin.css" />
+    <link rel="stylesheet" href="./CSS/admin-ai.css" />
+    <link rel="stylesheet" href="./CSS/real-estate.css" />
+  </head>
+  <body>
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="admin-main">
+      <header class="admin-header">
+        <button type="button" class="hamburger" id="hamburger" aria-label="Toggle sidebar">
+          <i class="fa-solid fa-bars"> </i>
+        </button>
+        <span class="page-title">Real Estate</span>
+      </header>
+      <main class="admin-content re-page">
+        <div class="dash">
+          <header class="dash-head">
+            <div>
+              <h1>Real Estate</h1>
+              <p>Review Dakahlia listings and monitor price estimates.</p>
+            </div>
+          </header>
+          <p id="status" role="status" aria-live="polite"></p>
+          <section id="stats" class="re-grid" aria-label="Property statistics"></section>
+          <div id="city-stats"></div>
+          <fieldset class="re-switch" id="status-tabs">
+            <legend>Listing status</legend>
+            <label for="tab-pending">
+              <input id="tab-pending" name="status" type="radio" value="pending" checked />
+              <span id="count-pending">Pending</span>
+            </label>
+            <label for="tab-approved">
+              <input id="tab-approved" name="status" type="radio" value="approved" />
+              <span id="count-approved">Approved</span>
+            </label>
+            <label for="tab-rejected">
+              <input id="tab-rejected" name="status" type="radio" value="rejected" />
+              <span id="count-rejected">Rejected</span>
+            </label>
+            <label for="tab-closed">
+              <input id="tab-closed" name="status" type="radio" value="closed" />
+              <span id="count-closed">Sold / Rented</span>
+            </label>
+            <label for="tab-all">
+              <input id="tab-all" name="status" type="radio" value="" />
+              <span id="count-all">All</span>
+            </label>
+          </fieldset>
+          <div id="listings"></div>
+          <nav id="pagination" class="re-pagination" aria-label="Listing pages"></nav>
+          <section class="card re-panel">
+            <h2>Price model</h2>
+            <button id="retrain" class="btn-action btn-primary" type="button">Retrain model</button>
+            <p id="model-status" role="status"></p>
+            <div id="model"></div>
+          </section>
+        </div>
+      </main>
+    </div>
+    <dialog id="action-dialog" aria-labelledby="dialog-title">
+      <form method="dialog" id="dialog-form">
+        <h2 id="dialog-title">Confirm action</h2>
+        <p id="dialog-message"></p>
+        <div id="reason-field" hidden>
+          <label for="reason">Reason for rejection</label>
+          <textarea id="reason" name="reason" maxlength="1000"></textarea>
+        </div>
+        <div class="re-actions">
+          <button type="submit" name="decision" value="cancel" formnovalidate autofocus>
+            Cancel
+          </button>
+          <button type="submit" name="decision" value="confirm" id="dialog-confirm">Confirm</button>
+        </div>
+      </form>
+    </dialog>
+    <script type="module" src="./Js/admin-real-estate.js"></script>
+  </body>
+</html>
