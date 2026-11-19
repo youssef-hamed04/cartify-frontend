@@ -3,7 +3,9 @@
  * All backend communication goes through this file.
  */
 
-const API_BASE = 'http://localhost:3001';
+// Local dev talks to the backend directly; the deployed site goes through Vercel's /api proxy (vercel.json),
+// so login cookies stay first-party.
+const API_BASE = (['localhost', '127.0.0.1'].includes(location.hostname) ? 'http://localhost:3001' : '/api');
 // const API_BASE = 'https://cartify-backend-mqtt.vercel.app';
 
 // ─── Core fetch wrapper ───────────────────────────────────────────────────────

@@ -4,7 +4,9 @@
  * Uses credentials: 'include' exactly like the existing api.js.
  */
 
-const BASE = 'http://localhost:3001';
+// Local dev talks to the backend directly; the deployed site goes through Vercel's /api proxy (vercel.json),
+// so login cookies stay first-party.
+const BASE = (['localhost', '127.0.0.1'].includes(location.hostname) ? 'http://localhost:3001' : '/api');
 
 async function adminFetch(path, options = {}) {
   const res = await fetch(BASE + path, {
