@@ -32,6 +32,7 @@ const SIDEBAR_LINKS = [
   },
   {
     section: 'Catalogue', links: [
+      { href: 'admin-real-estate.html', icon: 'fa-solid fa-building', label: 'Real Estate' },
       { href: 'admin-products.html', icon: 'fa-solid fa-box', label: 'Products' },
     ]
   },

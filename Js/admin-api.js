@@ -15,7 +15,7 @@ async function adminFetch(path, options = {}) {
     ...options,
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw Object.assign(new Error(data.err || data.message || 'Request failed'), { status: res.status, data });
+  if (!res.ok) throw Object.assign(new Error(data.err || data.msg || data.message || 'Request failed'), { status: res.status, data });
   return data;
 }
 
@@ -101,6 +101,15 @@ export const usersAdminAPI = {
 const qs = (params = {}) => {
   const q = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== '')).toString();
   return q ? '?' + q : '';
+};
+
+export const realEstateAdminAPI = {
+  properties: (params = {}) => adminFetch('/real-estate/admin/properties' + qs(params)),
+  review: (id, action, reason = '') => adminFetch(`/real-estate/admin/properties/${encodeURIComponent(id)}/review`, { method: 'PATCH', body: JSON.stringify({ action, reason }) }),
+  delete: (id) => adminFetch(`/real-estate/properties/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+  stats: () => adminFetch('/real-estate/admin/stats'),
+  train: () => adminFetch('/real-estate/admin/model/train', { method: 'POST' }),
+  model: () => adminFetch('/real-estate/admin/model'),
 };
 
 export const forecastAdminAPI = {
