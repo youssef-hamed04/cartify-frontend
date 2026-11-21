@@ -148,6 +148,10 @@ const STATUS_MAP = {
   processing_order: 'badge-processing',
   shipped: 'badge-info',
   cancelled: 'badge-denied',
+  // Order statuses used by the backend
+  placed: 'badge-pending',
+  shipping: 'badge-processing',
+  refunded: 'badge-expired',
 };
 export function statusBadge(status) {
   const cls = STATUS_MAP[status] || 'badge-info';

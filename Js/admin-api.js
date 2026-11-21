@@ -58,8 +58,12 @@ export const ordersAdminAPI = {
     const q = new URLSearchParams(params).toString();
     return adminFetch(`/orders${q ? '?' + q : ''}`);
   },
+  // The backend route is PATCH /orders/:id (statuses: placed, confirmed, shipping, delivered, cancelled, refunded)
   updateStatus: (id, status) =>
-    adminFetch(`/orders/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+    adminFetch(`/orders/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+  // Cancelling goes through its own route so the items are put back in stock
+  cancel: (id) =>
+    adminFetch(`/orders/${id}/cancel`, { method: 'PATCH' }),
 };
 
 // ── Returns ───────────────────────────────────────────────────────────────────
@@ -69,8 +73,9 @@ export const returnsAdminAPI = {
     return adminFetch(`/returns${q ? '?' + q : ''}`);
   },
   getById: (id)        => adminFetch(`/returns/${id}`),
+  // The backend route is PATCH /returns/:id (statuses: pending, completed, expired, denied)
   updateStatus: (id, status) =>
-    adminFetch(`/returns/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+    adminFetch(`/returns/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) }),
 };
 
 // ── Camera sessions ───────────────────────────────────────────────────────────

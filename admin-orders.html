@@ -28,10 +28,12 @@
           </div>
           <select class="filter-select" id="status-filter">
             <option value="">All statuses</option>
-            <option value="processing">Processing</option>
-            <option value="shipped">Shipped</option>
+            <option value="placed">Placed</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="shipping">Shipping</option>
             <option value="delivered">Delivered</option>
             <option value="cancelled">Cancelled</option>
+            <option value="refunded">Refunded</option>
           </select>
           <span id="table-info" style="margin-left:auto;font-size:.8rem;color:var(--neutral-400)"></span>
         </div>
@@ -183,12 +185,12 @@
 
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
             <span style="font-size:.82rem;color:var(--neutral-600);font-weight:600">Update status:</span>
-            ${['processing','shipped','delivered','cancelled'].map(s => `
+            ${[['confirmed','Confirm'],['shipping','Shipping'],['delivered','Delivered'],['cancelled','Cancel order']].map(([s, label]) => `
               <button class="btn-action ${s==='delivered'?'btn-success':s==='cancelled'?'btn-danger':'btn-ghost'}"
                       style="font-size:.78rem"
                       onclick="updateStatus('${o._id}','${s}')"
-                      ${o.status===s?'disabled':''}>
-                ${s.charAt(0).toUpperCase()+s.slice(1)}
+                      ${o.status===s || ['delivered','cancelled'].includes(o.status) ? 'disabled' : ''}>
+                ${label}
               </button>`).join('')}
           </div>`;
       } catch (err) {
@@ -199,7 +201,9 @@
     window.closeModal  = () => document.getElementById('modal').classList.remove('open');
     window.updateStatus = async (id, status) => {
       try {
-        await ordersAdminAPI.updateStatus(id, status);
+        // Cancel through its own route so the items go back in stock
+        if (status === 'cancelled') await ordersAdminAPI.cancel(id);
+        else await ordersAdminAPI.updateStatus(id, status);
         toast(`Status updated to "${status}"`, 'success');
         closeModal(); loadOrders();
       } catch (err) { toast('Failed: ' + err.message, 'error'); }
