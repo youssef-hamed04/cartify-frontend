@@ -4125,3 +4125,5 @@ body.auth-page {
 /* ============================================
    END TRACKING PAGE
    ============================================ */
+/* Keep two-word nav items such as "Real Estate" on one line */
+.nav-linkss .nav-link { white-space: nowrap; }

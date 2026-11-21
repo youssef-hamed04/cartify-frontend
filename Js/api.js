@@ -108,6 +108,19 @@ export const reviewsAPI = {
 
 export default apiFetch;
 
+export const realEstateAPI = {
+  locations: () => apiFetch('/real-estate/locations'),
+  estimate: (body) => apiFetch('/real-estate/estimate', { method: 'POST', body }),
+  market: (listingType = 'sale') => apiFetch(`/real-estate/market?${new URLSearchParams({ listingType })}`),
+  properties: (params = {}) => apiFetch(`/real-estate/properties?${new URLSearchParams(params)}`),
+  property: (id) => apiFetch(`/real-estate/properties/${encodeURIComponent(id)}`),
+  create: (body) => apiFetch('/real-estate/properties', { method: 'POST', body }),
+  myProperties: () => apiFetch('/real-estate/my-properties'),
+  update: (id, body) => apiFetch(`/real-estate/properties/${encodeURIComponent(id)}`, { method: 'PATCH', body }),
+  status: (id, status) => apiFetch(`/real-estate/properties/${encodeURIComponent(id)}/status`, { method: 'PATCH', body: { status } }),
+  delete: (id) => apiFetch(`/real-estate/properties/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+};
+
 // ─── AI Shopping Assistant ────────────────────────────────────────────────────
 // Talks to the backend agent; the AI key never reaches the browser.
 export const assistantAPI = {

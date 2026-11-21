@@ -579,7 +579,8 @@ if (navbar) {
   document.querySelectorAll('.nav-link[data-page]').forEach(link => {
     link.classList.remove('active');
     const pt = link.dataset.page;
-    if (pt === 'home' && pg === 'index.html') link.classList.add('active');
+    if (pt === 'real-estate' && ['real-estate.html', 'property.html', 'price-estimator.html', 'sell-property.html', 'my-properties.html'].includes(pg)) { link.classList.add('active'); link.setAttribute('aria-current', 'page'); }
+    else if (pt === 'home' && pg === 'index.html') link.classList.add('active');
     else if (pt === 'returns' && pg === 'returns.html') link.classList.add('active');
     else if (pt === 'support' && pg === 'support.html') link.classList.add('active');
     else if (pt === 'categories' && (

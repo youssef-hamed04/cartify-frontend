@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cartify — Property</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./CSS/all.min.css" />
+    <link rel="stylesheet" href="./CSS/bootstrap.min.css" />
+    <link rel="stylesheet" href="./CSS/mdb.min.css" />
+    <link rel="stylesheet" href="./CSS/Style.css" />
+    <link rel="stylesheet" href="./CSS/cartify-ui.css" />
+    <link rel="stylesheet" href="./CSS/real-estate.css" />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg nav-home sticky-top">
+      <div class="container">
+        <a class="navbar-brand me-2 brand-name" href="./index.html">
+          <img
+            src="./img/the main logo 2.png"
+            alt="Cartify Logo"
+            loading="lazy"
+            style="margin-top: -1px"
+          />
+        </a>
+        <button
+          data-mdb-collapse-init
+          class="navbar-toggler"
+          type="button"
+          data-mdb-target="#navbarButtonsExample"
+          aria-controls="navbarButtonsExample"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <i class="fas fa-bars"> </i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarButtonsExample">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-4 px-4 nav-linkss">
+            <li class="nav-item">
+              <a class="nav-link" data-page="home" href="./index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-page="categories" href="./Categories.html">Categories</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" data-page="real-estate" href="./real-estate.html">Real Estate</a></li>
+            <li class="nav-item">
+              <a class="nav-link" data-page="returns" href="./returns.html">Returns</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-page="support" href="./support.html">Support</a>
+            </li>
+          </ul>
+          <form class="d-flex nav-search">
+            <div class="input-group mx-3">
+              <span class="input-group-text border-end-0 icon">
+                <i class="fa-solid fa-magnifying-glass fa-xs" style="color: rgb(148, 163, 184)">
+                </i>
+              </span>
+              <label class="visually-hidden" for="nav-product-search">Search products</label>
+              <input
+                id="nav-product-search"
+                name="q"
+                class="form-control border-start-0 word"
+                type="search"
+                placeholder="Search Products..."
+                style="text-overflow: ellipsis"
+              />
+            </div>
+          </form>
+          <div class="nav-icons-group">
+            <a class="text-reset" href="./profile.html" title="Account">
+              <img src="./img/MAN Icon.png" alt="Account" />
+            </a>
+            <a class="text-reset" href="./my-properties.html" title="My properties" aria-label="My properties"><i class="fa-solid fa-building" style="color:#1d2538" aria-hidden="true"></i></a>
+            <a class="text-reset cart-icon-wrapper" href="./cart.html" title="Cart">
+              <i class="fa-solid fa-cart-shopping" style="color: #1d2538"> </i>
+              <span class="cart-badge">0</span>
+            </a>
+            <a class="text-reset wishlist-nav-icon" href="./wishlist.html" title="Wishlist">
+              <img src="./img/Vector.png" alt="Wishlist" />
+              <span class="wishlist-badge">0</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <main class="re-page container py-5">
+      <p id="status" role="status" aria-live="polite"></p>
+      <div id="property-content" hidden>
+        <header class="re-hero">
+          <h1 id="property-title"></h1>
+          <p id="property-location"></p>
+          <p id="property-price" class="re-price"></p>
+        </header>
+        <div id="gallery" class="re-gallery"></div>
+        <section class="re-panel">
+          <h2>Property details</h2>
+          <dl id="details" class="re-details"></dl>
+          <h2>Amenities</h2>
+          <ul id="amenities"></ul>
+          <h2>Description</h2>
+          <p id="description" class="re-description"></p>
+        </section>
+        <section id="estimate" class="re-panel" aria-label="Price estimate"></section>
+        <p id="data-note"></p>
+        <section class="re-panel">
+          <h2>Contact the owner</h2>
+          <p id="owner"></p>
+          <div id="contact"></div>
+        </section>
+        <h2>Similar properties</h2>
+        <p id="similar-status" role="status"></p>
+        <div id="similar" class="re-grid"></div>
+      </div>
+    </main>
+    <footer class="footer" data-wow-offset="100">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-3 col-md-6">
+            <div class="footer-logo">
+              <img src="./img/icon.png" alt="Cartify Logo" />
+            </div>
+            <p class="footer-desc">Your ultimate destination for the latest in tech and style.</p>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <h4 class="footer-title">Quick Links</h4>
+            <ul class="footer-links">
+              <li>
+                <a href="./index.html">Home</a>
+              </li>
+              <li>
+                <a href="./Categories.html">Categories</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <h4 class="footer-title">Support</h4>
+            <ul class="footer-links">
+              <li>
+                <a href="./support.html#mission">Help Center</a>
+              </li>
+              <li>
+                <a href="./support.html#contact">Shipping Info</a>
+              </li>
+              <li>
+                <a href="./support.html#terms">Returns &amp; Refunds</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <h4 class="footer-title">Newsletter</h4>
+            <p class="newsletter-desc">Get the latest tech deals in your inbox.</p>
+            <form class="newsletter-form">
+              <div class="newsletter-input-wrapper mb-3">
+                <label class="visually-hidden" for="newsletter-email">Email address</label>
+                <input
+                  id="newsletter-email"
+                  name="email"
+                  type="email"
+                  placeholder="email@example.com"
+                  class="form-control"
+                />
+              </div>
+              <button type="submit" class="w-100">Join</button>
+            </form>
+          </div>
+        </div>
+        <div class="footer-bottom mt-5">
+          <div class="copyright">&copy; 2026 Cartify E-commerce. All rights reserved.</div>
+          <div class="bottom-links">
+            <a href="./support.html#privacy">Privacy Policy</a>
+            <a href="./support.html#terms">Terms of Service</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <script src="./Js/mdb.umd.min.js"></script>
+    <script type="module" src="./Js/main.js"></script>
+    <script type="module" src="./Js/property-page.js"></script>
+  </body>
+</html>
